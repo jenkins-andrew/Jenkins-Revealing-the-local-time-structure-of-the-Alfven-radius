@@ -23,6 +23,6 @@ for r in np.arange(1, 10, 1):
             Bphi.append(Bp)
 
 
-np.savetxt('test.txt', np.c_[rInRJ, thetaInRadians, phiInRadians,
+np.savetxt('magfieldvalues.txt', np.c_[rInRJ, thetaInRadians, phiInRadians,
                              Bradius, Btheta, Bphi], delimiter='\t', header='r\ttheta\tphi\tBr\tBtheta\tBphi')
 
