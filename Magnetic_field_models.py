@@ -463,8 +463,3 @@ Ulysses 17ev \n V1-17ev \n O6 \n O4 \n SHA \n \
         return Brint, Btint, Bpint  # returns the internal components, Br,Bt,Bp
 
         # ================================================
-
-
-Test = field_models()
-r, theta, phi = Test.Internal_Field(10, 0.1, np.pi, 'JRM09')
-np.savetxt('test.txt', np.c_[r, theta, phi], delimiter='\t', header='r\ttheta\tphi')
