@@ -53,13 +53,13 @@ Bmag = []
 
 fieldGenerator = field_models()
 
-r = 6
-theta = 0.4999*np.pi
+r = 1
+theta = 0.25*np.pi
 phi = 0
 
 x, y, z = sph_cart(r, theta, phi)
 
-while r > 1:
+while r < 0.5*np.pi:
     xInRJ.append(x)
     yInRJ.append(y)
     zInRJ.append(z)
@@ -67,10 +67,9 @@ while r > 1:
     Bmag.append(magntiudeVector(Br, Bt, Bp))
     Bx, By, Bz = sph_cart(Br, Bt, Bp)
     xMove, yMove, zMove = unitVector(Bx, By, Bz)
-    print(x, y, z)
-    x += -xMove/2
-    y += -yMove/2
-    z += -zMove/2
+    x += xMove/20
+    y += yMove/20
+    z += zMove/20
     r, theta, phi = cart_sph(x, y, z)
     print(r)
 
