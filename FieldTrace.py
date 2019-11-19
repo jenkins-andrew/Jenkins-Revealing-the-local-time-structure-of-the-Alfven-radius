@@ -53,24 +53,23 @@ Bmag = []
 
 fieldGenerator = field_models()
 
-r = 1
-theta = 0.25*np.pi
+r = 10
+theta = 0.5*np.pi
 phi = 0
 
 x, y, z = sph_cart(r, theta, phi)
 
-while r < 0.5*np.pi:
+while r > 1:
     xInRJ.append(x)
     yInRJ.append(y)
     zInRJ.append(z)
-    Br, Bt, Bp = fieldGenerator.Internal_Field(r, theta, phi, 'JRM09')
+    Br, Bt, Bp = fieldGenerator.Internal_Field(r, theta, phi, 'simple')
     Bmag.append(magntiudeVector(Br, Bt, Bp))
-    Bx, By, Bz = sph_cart(Br, Bt, Bp)
-    xMove, yMove, zMove = unitVector(Bx, By, Bz)
-    x += xMove/20
-    y += yMove/20
-    z += zMove/20
-    r, theta, phi = cart_sph(x, y, z)
+    xMove, yMove, zMove = unitVector(Br, Bt, Bp)
+    r += -xMove/1000
+    theta += -yMove/1000
+    phi += -zMove/1000
+    x, y, z = sph_cart(r, theta, phi)
     print(r)
 
 
