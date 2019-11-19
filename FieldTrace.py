@@ -53,28 +53,49 @@ Bmag = []
 
 fieldGenerator = field_models()
 
-for phi0 in np.arange(0, np.pi):
-    for theta0 in np.arange(0, np.pi, 0.1):
-        theta = theta0
-        r = 1.0
-        phi = phi0
-        x, y, z = sph_cart(r, theta, phi)
-        print(r'$\theta$' '= %5.2f and Phi = %5.2f' %(theta, phi))
-        while r >= 1:
-            xInRJ.append(x)
-            yInRJ.append(y)
-            zInRJ.append(z)
-            Br, Bt, Bp = fieldGenerator.Internal_Field(r, theta, phi, 'simple')
-            Bmag.append(magntiudeVector(Br, Bt, Bp))
-            xMove, yMove, zMove = unitVector(Br, Bt, Bp)
-            r += xMove / 1000
-            theta += yMove / 1000
-            phi += zMove / 1000
-            x, y, z = sph_cart(r, theta, phi)
+printTester = 0
+
+# for phi0 in np.arange(0, 2*np.pi):
+#     for theta0 in np.arange(0, 0.5*np.pi, 0.05):
+#         theta = theta0
+#         r = 1.0
+#         phi = phi0
+#         x, y, z = sph_cart(r, theta, phi)
+#         print(r'$\theta$' '= %5.2f and Phi = %5.2f' %(theta*180/np.pi, phi))
+#         while r >= 1:
+#             Br, Bt, Bp = fieldGenerator.Internal_Field(r, theta, phi, 'JRM09')
+#             if printTester % 10 == 0:
+#                 xInRJ.append(x)
+#                 yInRJ.append(y)
+#                 zInRJ.append(z)
+#                 Bmag.append(magntiudeVector(Br, Bt, Bp))
+#             xMove, yMove, zMove = unitVector(Br, Bt, Bp)
+#             r += xMove / 1000
+#             theta += yMove / 1000
+#             phi += zMove / 1000
+#             x, y, z = sph_cart(r, theta, phi)
+#             printTester += 1
 
 
+theta = 0.4999*np.pi
+r = 6
+phi = 0
+x, y, z = sph_cart(r, theta, phi)
+print('theta= %5.2f and Phi = %5.2f' %(theta*180/np.pi, phi))
+while r >= 1:
+    Br, Bt, Bp = fieldGenerator.Internal_Field(r, theta, phi, 'JRM09')
+    if printTester % 10 == 0:
+        xInRJ.append(x)
+        yInRJ.append(y)
+        zInRJ.append(z)
+        Bmag.append(magntiudeVector(Br, Bt, Bp))
+        print(r)
+    xMove, yMove, zMove = unitVector(Br, Bt, Bp)
+    r += -xMove / 1000
+    theta += -yMove / 1000
+    phi += -zMove / 1000
+    x, y, z = sph_cart(r, theta, phi)
+    printTester += 1
 
-
-np.savetxt('test.txt', np.c_[xInRJ, yInRJ, zInRJ,
-                             Bmag], delimiter='\t', header='x\ty\tz\tB')
+np.savetxt('plotmagfieldlines.txt', np.c_[xInRJ, yInRJ, zInRJ, Bmag], delimiter='\t', header='x\ty\tz\tB')
 
