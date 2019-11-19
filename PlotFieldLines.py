@@ -36,8 +36,22 @@ x, y, z, B = np.loadtxt('test.txt', delimiter='\t', unpack=True)
 
 fig = plt.figure()
 ax = plt.axes(projection="3d")
+plt.plot(x, y, z, '-k')
 
-plt.plot(x, y, z, '+-k')
+u, v = np.mgrid[0:2*np.pi:20j, 0:np.pi:10j]
+xs = np.cos(u)*np.sin(v)
+ys = np.sin(u)*np.sin(v)
+zs = np.cos(v)
+ax.plot_surface(xs, ys, zs, color="k")
+
+minimumAxis = min([min(x), min(y), min(z), np.amin(xs), np.amin(ys), np.amin(zs)])
+maximumAxis = max([max(x), max(y), max(z)])
+
+max = 0.5*maximumAxis
+
+ax.set_xlim3d(minimumAxis, maximumAxis)
+ax.set_ylim3d(-max, max)
+ax.set_zlim3d(minimumAxis, maximumAxis)
 ax.set_xlabel('x RJ')
 ax.set_ylabel('y RJ')
 ax.set_zlabel('z RJ')
