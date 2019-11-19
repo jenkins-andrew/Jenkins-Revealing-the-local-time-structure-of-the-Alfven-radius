@@ -2,6 +2,7 @@ from mpl_toolkits import mplot3d
 
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib import ticker, cm
 
 
 def sph_cart(r, theta, phi):
@@ -18,49 +19,44 @@ def sph_cart(r, theta, phi):
     return x, y, z
 
 
-r, theta, phi, Br, Bt, Bp = np.loadtxt('magfieldvalues.txt', delimiter='\t', unpack=True)
-
-maxR = 10
-minR = 1
-# xtest = np.arange(-maxR, maxR+1, 0.5)
-# ytest = xtest
-# ztest = xtest
-# xtest, ytest, ztest = np.meshgrid(xtest, ytest, ztest)
-x, y, z = sph_cart(r, theta, phi)
-
-mask = (np.sqrt(x**2 + y**2 + z**2) < 2)
-
-B = np.sqrt(Br**2 + Bt**2 + Bp**2)
-
-x, y, z, B = np.loadtxt('test.txt', delimiter='\t', unpack=True)
+x, y, z, B = np.loadtxt('plotmagfieldlines.txt', delimiter='\t', unpack=True)
 
 fig = plt.figure()
 ax = plt.axes(projection="3d")
 plt.plot(x, y, z, '-k')
 
+# img = ax.scatter(x, y, z, c=B, cmap=plt.cm.get_cmap('gist_rainbow'))
+# clb = fig.colorbar(img)
+# clb.ax.set_title(r'B (nT)', fontsize=18)
+
 u, v = np.mgrid[0:2*np.pi:20j, 0:np.pi:10j]
 xs = np.cos(u)*np.sin(v)
 ys = np.sin(u)*np.sin(v)
 zs = np.cos(v)
-ax.plot_surface(xs, ys, zs, color="k")
+ax.plot_surface(xs, ys, zs, color="r")
 
 minimumAxis = min([min(x), min(y), min(z), np.amin(xs), np.amin(ys), np.amin(zs)])
 maximumAxis = max([max(x), max(y), max(z)])
 
+maxz = max(z)
+
 max = 0.5*maximumAxis
 
-ax.set_xlim3d(minimumAxis, maximumAxis)
-ax.set_ylim3d(-max, max)
-ax.set_zlim3d(minimumAxis, maximumAxis)
-ax.set_xlabel('x RJ')
-ax.set_ylabel('y RJ')
-ax.set_zlabel('z RJ')
+max_range = np.array([x.max()-x.min(), y.max()-y.min(), z.max()-z.min()]).max() / 2.0
 
-# img = ax.scatter(x[mask], y[mask], z[mask], c=B[mask], cmap=plt.cm.get_cmap('gist_rainbow'))
-# clb = fig.colorbar(img)
-# clb.ax.set_title(r'B (nT)', fontsize=18)
-# ax.set_xlabel('x RJ')
-# ax.set_ylabel('y RJ')
-# ax.set_zlabel('z RJ')
+mid_x = (x.max()+x.min()) * 0.5
+mid_y = (y.max()+y.min()) * 0.5
+mid_z = (z.max()+z.min()) * 0.5
+ax.set_xlim(mid_x - max_range, mid_x + max_range)
+ax.set_ylim(mid_y - max_range, mid_y + max_range)
+ax.set_zlim(mid_z - max_range, mid_z + max_range)
+ax.set_xlabel('x RJ', size=18)
+ax.set_ylabel('y RJ', size=18)
+ax.set_zlabel('z RJ', size=18)
+
+plt.xticks(size=10)
+plt.yticks(size=10)
+ax.zaxis.set_tick_params(labelsize=10)
+
 plt.show()
 
