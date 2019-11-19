@@ -53,24 +53,26 @@ Bmag = []
 
 fieldGenerator = field_models()
 
-r = 10
-theta = 0.5*np.pi
-phi = 0
+for phi0 in np.arange(0, np.pi):
+    for theta0 in np.arange(0, np.pi, 0.1):
+        theta = theta0
+        r = 1.0
+        phi = phi0
+        x, y, z = sph_cart(r, theta, phi)
+        print(r'$\theta$' '= %5.2f and Phi = %5.2f' %(theta, phi))
+        while r >= 1:
+            xInRJ.append(x)
+            yInRJ.append(y)
+            zInRJ.append(z)
+            Br, Bt, Bp = fieldGenerator.Internal_Field(r, theta, phi, 'simple')
+            Bmag.append(magntiudeVector(Br, Bt, Bp))
+            xMove, yMove, zMove = unitVector(Br, Bt, Bp)
+            r += xMove / 1000
+            theta += yMove / 1000
+            phi += zMove / 1000
+            x, y, z = sph_cart(r, theta, phi)
 
-x, y, z = sph_cart(r, theta, phi)
 
-while r > 1:
-    xInRJ.append(x)
-    yInRJ.append(y)
-    zInRJ.append(z)
-    Br, Bt, Bp = fieldGenerator.Internal_Field(r, theta, phi, 'simple')
-    Bmag.append(magntiudeVector(Br, Bt, Bp))
-    xMove, yMove, zMove = unitVector(Br, Bt, Bp)
-    r += -xMove/1000
-    theta += -yMove/1000
-    phi += -zMove/1000
-    x, y, z = sph_cart(r, theta, phi)
-    print(r)
 
 
 np.savetxt('test.txt', np.c_[xInRJ, yInRJ, zInRJ,
