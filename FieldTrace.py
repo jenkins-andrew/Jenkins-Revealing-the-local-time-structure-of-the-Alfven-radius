@@ -77,7 +77,7 @@ fieldGenerator = field_models()
 #             printTester += 1
 
 
-theta = 0.01*np.pi
+theta = 0.005*np.pi
 r = 1
 phi = 0.5*np.pi
 step = 1000
@@ -90,7 +90,7 @@ while theta <= 0.5*np.pi:
         yInRJ.append(y)
         zInRJ.append(z)
         Bmag.append(magntiudeVector(Br, Bt, Bp))
-        print(theta)
+        print(theta*180/np.pi)
     xMove, yMove, zMove = unitVector(Br, Bt, Bp)
     # if theta < 0.01*np.pi:
     #     step = 5000
@@ -109,3 +109,4 @@ yInRJ = np.array(yInRJ)
 zInRJ = np.array(zInRJ)
 radius = np.sqrt(xInRJ**2 + yInRJ**2 + zInRJ**2)
 maxRadialDistance = max(radius)
+print(maxRadialDistance)
