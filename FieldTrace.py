@@ -77,24 +77,25 @@ fieldGenerator = field_models()
 #             printTester += 1
 
 
-theta = 0.4999*np.pi
-r = 6
-phi = 0
+theta = 0.01*np.pi
+r = 1
+phi = 0.5*np.pi
+step = 1000
 x, y, z = sph_cart(r, theta, phi)
 print('theta= %5.2f and Phi = %5.2f' %(theta*180/np.pi, phi))
-while r >= 1:
+while theta <= 0.5*np.pi:
     Br, Bt, Bp = fieldGenerator.Internal_Field(r, theta, phi, 'JRM09')
     if printTester % 100 == 0:
         xInRJ.append(x)
         yInRJ.append(y)
         zInRJ.append(z)
         Bmag.append(magntiudeVector(Br, Bt, Bp))
-        print(r)
+        print(theta)
     xMove, yMove, zMove = unitVector(Br, Bt, Bp)
-    if theta < 0.01*np.pi:
-        step = 5000
-    else:
-        step = 1000
+    # if theta < 0.01*np.pi:
+    #     step = 5000
+    # else:
+    #     step = 1000
     r += xMove / step
     theta += yMove / step
     phi += zMove / step
@@ -103,3 +104,8 @@ while r >= 1:
 
 np.savetxt('plotmagfieldlines.txt', np.c_[xInRJ, yInRJ, zInRJ, Bmag], delimiter='\t', header='x\ty\tz\tB')
 
+xInRJ = np.array(xInRJ)
+yInRJ = np.array(yInRJ)
+zInRJ = np.array(zInRJ)
+radius = np.sqrt(xInRJ**2 + yInRJ**2 + zInRJ**2)
+maxRadialDistance = max(radius)
