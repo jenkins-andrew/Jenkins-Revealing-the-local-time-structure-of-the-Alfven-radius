@@ -46,14 +46,10 @@ def magntiudeVector(x0, x1, x2):
     return np.sqrt((np.square(vector)).sum())
 
 
-# r, theta, phi, Br, Btheta, Bphi = np.loadtxt('test.txt', delimiter='\t', unpack=True)
-
-xInRJ, yInRJ, zInRJ = [], [], []
-Bmag = []
+xInRJ, yInRJ, zInRJ, Bmag = [], [], [], []
+printTester = 0
 
 fieldGenerator = field_models()
-
-printTester = 0
 
 # for phi0 in np.arange(0, 2*np.pi):
 #     for theta0 in np.arange(0, 0.5*np.pi, 0.05):
@@ -61,18 +57,22 @@ printTester = 0
 #         r = 1.0
 #         phi = phi0
 #         x, y, z = sph_cart(r, theta, phi)
-#         print(r'$\theta$' '= %5.2f and Phi = %5.2f' %(theta*180/np.pi, phi))
+#         print('Theta = %5.2f and Phi = %5.2f started' % (theta*180/np.pi, phi*180/np.pi))
 #         while r >= 1:
-#             Br, Bt, Bp = fieldGenerator.Internal_Field(r, theta, phi, 'JRM09')
+#             Br, Bt, Bp = fieldGenerator.Internal_Field(r, theta, phi, 'simple')
 #             if printTester % 10 == 0:
 #                 xInRJ.append(x)
 #                 yInRJ.append(y)
 #                 zInRJ.append(z)
 #                 Bmag.append(magntiudeVector(Br, Bt, Bp))
 #             xMove, yMove, zMove = unitVector(Br, Bt, Bp)
-#             r += xMove / 1000
-#             theta += yMove / 1000
-#             phi += zMove / 1000
+#             if r < 1.2:
+#                 step = 5000
+#             else:
+#                 step = 1000
+#             r += xMove / step
+#             theta += yMove / step
+#             phi += zMove / step
 #             x, y, z = sph_cart(r, theta, phi)
 #             printTester += 1
 
@@ -84,16 +84,20 @@ x, y, z = sph_cart(r, theta, phi)
 print('theta= %5.2f and Phi = %5.2f' %(theta*180/np.pi, phi))
 while r >= 1:
     Br, Bt, Bp = fieldGenerator.Internal_Field(r, theta, phi, 'JRM09')
-    if printTester % 10 == 0:
+    if printTester % 100 == 0:
         xInRJ.append(x)
         yInRJ.append(y)
         zInRJ.append(z)
         Bmag.append(magntiudeVector(Br, Bt, Bp))
         print(r)
     xMove, yMove, zMove = unitVector(Br, Bt, Bp)
-    r += -xMove / 1000
-    theta += -yMove / 1000
-    phi += -zMove / 1000
+    if theta < 0.01*np.pi:
+        step = 5000
+    else:
+        step = 1000
+    r += xMove / step
+    theta += yMove / step
+    phi += zMove / step
     x, y, z = sph_cart(r, theta, phi)
     printTester += 1
 
