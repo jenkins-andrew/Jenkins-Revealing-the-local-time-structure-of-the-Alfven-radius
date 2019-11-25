@@ -46,6 +46,9 @@ def magntiudeVector(x0, x1, x2):
     vector = [x0, x1, x2]
     return np.sqrt((np.square(vector)).sum())
 
+def produceTraceArrays():
+
+    return
 
 xInRJ, yInRJ, zInRJ, Bmag = [], [], [], []
 printTester = 0
@@ -60,22 +63,29 @@ for phi0 in np.arange(np.pi, np.pi+0.001, 0.25*np.pi):
             r = r0
             phi = phi0
             step = 1000
+            tempxInRJ, tempyInRJ, tempzInRJ = [], [], []
             x, y, z = sph_cart(r, theta, phi)
             print('Radius = %5.2f and Phi = %5.2f started' % (r, phi*180/np.pi))
             while r >= 1:
+                x, y, z = sph_cart(r, theta, phi)
                 Br, Bt, Bp = fieldGenerator.Internal_Field(r, theta, phi, 'simple')
                 if printTester % 1 == 0:
-                    xInRJ.append(x)
-                    yInRJ.append(y)
-                    zInRJ.append(z)
+                    tempxInRJ.append(x)
+                    tempyInRJ.append(y)
+                    tempzInRJ.append(z)
                     Bmag.append(magntiudeVector(Br, Bt, Bp))
                 xMove, yMove, zMove = unitVector(Br, Bt, Bp)
                 step = np.log10(magntiudeVector(Br, Bt, Bp)) * 10
                 r += sign*xMove / step
                 theta += sign*yMove / step
                 phi += sign*zMove / step
-                x, y, z = sph_cart(r, theta, phi)
                 printTester += 1
+            tempxInRJ = tempxInRJ[::sign]
+            tempyInRJ = tempyInRJ[::sign]
+            tempzInRJ = tempzInRJ[::sign]
+            xInRJ.extend(tempxInRJ)
+            yInRJ.extend(tempyInRJ)
+            zInRJ.extend(tempzInRJ)
 
 # theta = 0.5*np.pi
 # r = 30
@@ -99,10 +109,3 @@ for phi0 in np.arange(np.pi, np.pi+0.001, 0.25*np.pi):
 #     printTester += 1
 
 np.savetxt('plotmagfieldlines.txt', np.c_[xInRJ, yInRJ, zInRJ, Bmag], delimiter='\t', header='x\ty\tz\tB')
-
-xInRJ = np.array(xInRJ)
-yInRJ = np.array(yInRJ)
-zInRJ = np.array(zInRJ)
-radius = np.sqrt(xInRJ**2 + yInRJ**2 + zInRJ**2)
-maxRadialDistance = max(radius)
-print(maxRadialDistance)

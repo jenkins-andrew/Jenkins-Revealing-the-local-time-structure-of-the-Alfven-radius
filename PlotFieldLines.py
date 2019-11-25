@@ -23,11 +23,11 @@ x, y, z, B = np.loadtxt('plotmagfieldlines.txt', delimiter='\t', unpack=True)
 
 fig = plt.figure()
 ax = plt.axes(projection="3d")
-#plt.plot(x, y, z, '-k')
+plt.plot(x, y, z, '-k')
 
-img = ax.scatter(x, y, z, c=B, cmap=plt.cm.get_cmap('gist_rainbow'))
-clb = fig.colorbar(img)
-clb.ax.set_title(r'B (nT)', fontsize=18)
+# img = ax.scatter(x, y, z, c=B, cmap=plt.cm.get_cmap('gist_rainbow'))
+# clb = fig.colorbar(img)
+# clb.ax.set_title(r'B (nT)', fontsize=18)
 
 u, v = np.mgrid[0:2*np.pi:20j, 0:np.pi:10j]
 xs = np.cos(u)*np.sin(v)
