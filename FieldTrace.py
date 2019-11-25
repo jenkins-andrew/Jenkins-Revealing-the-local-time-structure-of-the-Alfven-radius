@@ -51,49 +51,47 @@ xInRJ, yInRJ, zInRJ, Bmag = [], [], [], []
 printTester = 0
 
 fieldGenerator = field_models()
+signArray = [-1, 1]
 
-for phi0 in np.arange(0, 2*np.pi, 0.25*np.pi):
-    for r0 in np.arange(2, 30):
-        theta = 0.5*np.pi
-        r = r0
-        phi = phi0
-        step = 1000
-        x, y, z = sph_cart(r, theta, phi)
-        tempBmag = []
-        print('Radius = %5.2f and Phi = %5.2f started' % (r, phi*180/np.pi))
-        while r >= 1:
-            Br, Bt, Bp = fieldGenerator.Internal_Field(r, theta, phi, 'simple')
-            tempBmag.append(magntiudeVector(Br, Bt, Bp))
-            if printTester % 10 == 0:
-                xInRJ.append(x)
-                yInRJ.append(y)
-                zInRJ.append(z)
-                Bmag.append(magntiudeVector(Br, Bt, Bp))
-            xMove, yMove, zMove = unitVector(Br, Bt, Bp)
-            step = magntiudeVector(Br, Bt, Bp)/stats.median(tempBmag) * 100
-            r += -xMove / step
-            theta += -yMove / step
-            phi += -zMove / step
+for phi0 in np.arange(np.pi, np.pi+0.001, 0.25*np.pi):
+    for r0 in np.arange(6, 30, 2):
+        for sign in signArray:
+            theta = 0.5*np.pi
+            r = r0
+            phi = phi0
+            step = 1000
             x, y, z = sph_cart(r, theta, phi)
-            printTester += 1
-
+            print('Radius = %5.2f and Phi = %5.2f started' % (r, phi*180/np.pi))
+            while r >= 1:
+                Br, Bt, Bp = fieldGenerator.Internal_Field(r, theta, phi, 'simple')
+                if printTester % 1 == 0:
+                    xInRJ.append(x)
+                    yInRJ.append(y)
+                    zInRJ.append(z)
+                    Bmag.append(magntiudeVector(Br, Bt, Bp))
+                xMove, yMove, zMove = unitVector(Br, Bt, Bp)
+                step = np.log10(magntiudeVector(Br, Bt, Bp)) * 10
+                r += sign*xMove / step
+                theta += sign*yMove / step
+                phi += sign*zMove / step
+                x, y, z = sph_cart(r, theta, phi)
+                printTester += 1
 
 # theta = 0.5*np.pi
-# r = 10
+# r = 30
 # phi = np.pi
-# step = 1000
 # x, y, z = sph_cart(r, theta, phi)
 # print('theta= %5.2f and Phi = %5.2f' %(theta*180/np.pi, phi))
 # while r > 1:
 #     Br, Bt, Bp = fieldGenerator.Internal_Field(r, theta, phi, 'VIP4')
-#     if printTester % 10 == 0:
+#     if printTester % 1 == 0:
 #         xInRJ.append(x)
 #         yInRJ.append(y)
 #         zInRJ.append(z)
 #         Bmag.append(magntiudeVector(Br, Bt, Bp))
 #         print(r)
 #     xMove, yMove, zMove = unitVector(Br, Bt, Bp)
-#     step = magntiudeVector(Br, Bt, Bp)/stats.median(Bmag) * 100
+#     step = np.log10(magntiudeVector(Br, Bt, Bp)) * 10
 #     r += -xMove / step
 #     theta += -yMove / step
 #     phi += -zMove / step
