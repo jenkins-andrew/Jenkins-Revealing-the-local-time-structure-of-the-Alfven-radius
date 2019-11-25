@@ -1,6 +1,5 @@
 import numpy as np
 from Magnetic_field_models import field_models
-import statistics as stats
 
 
 def sph_cart(r, theta, phi):
@@ -46,46 +45,52 @@ def magntiudeVector(x0, x1, x2):
     vector = [x0, x1, x2]
     return np.sqrt((np.square(vector)).sum())
 
-def produceTraceArrays():
 
-    return
+def produceTraceArrays(modelType='VIP4'):
+    """
 
-xInRJ, yInRJ, zInRJ, Bmag = [], [], [], []
-printTester = 0
-
-fieldGenerator = field_models()
-signArray = [-1, 1]
-
-for phi0 in np.arange(np.pi, np.pi+0.001, 0.25*np.pi):
-    for r0 in np.arange(6, 30, 2):
-        for sign in signArray:
-            theta = 0.5*np.pi
-            r = r0
-            phi = phi0
-            step = 1000
-            tempxInRJ, tempyInRJ, tempzInRJ = [], [], []
-            x, y, z = sph_cart(r, theta, phi)
-            print('Radius = %5.2f and Phi = %5.2f started' % (r, phi*180/np.pi))
-            while r >= 1:
+    :param modelType:
+    :return:
+    """
+    printTester = 0
+    fieldGenerator = field_models()
+    signArray = [-1, 1]
+    xInRJ, yInRJ, zInRJ, Bmag = [], [], [], []
+    for phi0 in np.arange(0, 0 + 0.001, 0.25 * np.pi):
+        for r0 in np.arange(6, 30, 2):
+            for sign in signArray:
+                theta = 0.5 * np.pi
+                r = r0
+                phi = phi0
+                tempxInRJ, tempyInRJ, tempzInRJ, tempBmag = [], [], [], []
                 x, y, z = sph_cart(r, theta, phi)
-                Br, Bt, Bp = fieldGenerator.Internal_Field(r, theta, phi, 'simple')
-                if printTester % 1 == 0:
-                    tempxInRJ.append(x)
-                    tempyInRJ.append(y)
-                    tempzInRJ.append(z)
-                    Bmag.append(magntiudeVector(Br, Bt, Bp))
-                xMove, yMove, zMove = unitVector(Br, Bt, Bp)
-                step = np.log10(magntiudeVector(Br, Bt, Bp)) * 10
-                r += sign*xMove / step
-                theta += sign*yMove / step
-                phi += sign*zMove / step
-                printTester += 1
-            tempxInRJ = tempxInRJ[::sign]
-            tempyInRJ = tempyInRJ[::sign]
-            tempzInRJ = tempzInRJ[::sign]
-            xInRJ.extend(tempxInRJ)
-            yInRJ.extend(tempyInRJ)
-            zInRJ.extend(tempzInRJ)
+                print('Radius = %5.2f and Phi = %5.2f started' % (r, phi * 180 / np.pi))
+                while r >= 1:
+                    x, y, z = sph_cart(r, theta, phi)
+                    Br, Bt, Bp = fieldGenerator.Internal_Field(r, theta, phi, modelType)
+                    if printTester % 1 == 0:
+                        tempxInRJ.append(x)
+                        tempyInRJ.append(y)
+                        tempzInRJ.append(z)
+                        tempBmag.append(magntiudeVector(Br, Bt, Bp))
+                    xMove, yMove, zMove = unitVector(Br, Bt, Bp)
+                    step = np.log10(magntiudeVector(Br, Bt, Bp)) * 10
+                    r += sign * xMove / step
+                    theta += sign * yMove / step
+                    phi += sign * zMove / step
+                    printTester += 1
+                tempxInRJ = tempxInRJ[::sign]
+                tempyInRJ = tempyInRJ[::sign]
+                tempzInRJ = tempzInRJ[::sign]
+                tempBmag = tempBmag[::sign]
+                xInRJ.extend(tempxInRJ)
+                yInRJ.extend(tempyInRJ)
+                zInRJ.extend(tempzInRJ)
+                Bmag.extend(tempBmag)
+    return xInRJ, yInRJ, zInRJ, Bmag
+
+
+xInRJ, yInRJ, zInRJ, Bmag = produceTraceArrays()
 
 # theta = 0.5*np.pi
 # r = 30
