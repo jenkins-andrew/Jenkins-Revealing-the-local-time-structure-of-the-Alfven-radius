@@ -17,31 +17,40 @@ def sph_cart(r, theta, phi):
 
 
 def cart_sph(x, y, z):
+    """
+    From Chris' code
+    :param x:
+    :param y:
+    :param z:
+    :return:
+    """
     r = np.sqrt(x ** 2 + y ** 2 + z ** 2)
     theta = np.arctan2(np.sqrt(x ** 2 + y ** 2), z)
     phi = np.arctan2(y, x)
     return r, theta, phi
 
 
-def find_nearest(array, value):
+def unitVector(x0, x1, x2):
     """
-    From unutbu on stack overflow
-    :param array:
-    :param value:
+
+    :param x0:
+    :param x1:
+    :param x2:
     :return:
     """
-    array = np.asarray(array)
-    idx = (np.abs(array - value)).argmin()
-    return array[idx]
-
-
-def unitVector(x0, x1, x2):
     vector = [x0, x1, x2]
     v_hat = vector / np.sqrt((np.square(vector)).sum())
     return v_hat[0], v_hat[1], v_hat[2]
 
 
-def magntiudeVector(x0, x1, x2):
+def magnitudeVector(x0, x1, x2):
+    """
+
+    :param x0:
+    :param x1:
+    :param x2:
+    :return:
+    """
     vector = [x0, x1, x2]
     return np.sqrt((np.square(vector)).sum())
 
@@ -72,9 +81,9 @@ def produceTraceArrays(modelType='VIP4'):
                         tempxInRJ.append(x)
                         tempyInRJ.append(y)
                         tempzInRJ.append(z)
-                        tempBmag.append(magntiudeVector(Br, Bt, Bp))
+                        tempBmag.append(magnitudeVector(Br, Bt, Bp))
                     xMove, yMove, zMove = unitVector(Br, Bt, Bp)
-                    step = np.log10(magntiudeVector(Br, Bt, Bp)) * 10
+                    step = np.log10(magnitudeVector(Br, Bt, Bp)) * 10
                     r += sign * xMove / step
                     theta += sign * yMove / step
                     phi += sign * zMove / step
