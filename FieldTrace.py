@@ -64,9 +64,10 @@ def produceTraceArrays(modelType='VIP4'):
     printTester = 0
     fieldGenerator = field_models()
     signArray = [-1, 1]
-    xInRJ, yInRJ, zInRJ, Bmag = [], [], [], []
+
     for phi0 in np.arange(0, 0 + 0.001, 0.25 * np.pi):
         for r0 in np.arange(6, 30, 2):
+            xInRJ, yInRJ, zInRJ, Bmag = [], [], [], []
             for sign in signArray:
                 theta = 0.5 * np.pi
                 r = r0
@@ -96,10 +97,12 @@ def produceTraceArrays(modelType='VIP4'):
                 yInRJ.extend(tempyInRJ)
                 zInRJ.extend(tempzInRJ)
                 Bmag.extend(tempBmag)
-    return xInRJ, yInRJ, zInRJ, Bmag
+            np.savetxt('output/radius%0.2fphi%0.2f.txt' % (r0, phi0), np.c_[xInRJ, yInRJ, zInRJ, Bmag], delimiter='\t',
+                       header='x\ty\tz\tB')
+    return
 
 
-xInRJ, yInRJ, zInRJ, Bmag = produceTraceArrays()
+produceTraceArrays()
 
 # theta = 0.5*np.pi
 # r = 30
@@ -122,4 +125,4 @@ xInRJ, yInRJ, zInRJ, Bmag = produceTraceArrays()
 #     x, y, z = sph_cart(r, theta, phi)
 #     printTester += 1
 
-np.savetxt('plotmagfieldlines.txt', np.c_[xInRJ, yInRJ, zInRJ, Bmag], delimiter='\t', header='x\ty\tz\tB')
+
