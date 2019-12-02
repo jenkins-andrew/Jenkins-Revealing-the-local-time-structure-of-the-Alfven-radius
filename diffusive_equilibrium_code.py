@@ -187,7 +187,58 @@ def T0_2017(r, species=None):
     return T
 
 
+def averageNumberDensity(arrayIons):
+    ntotal = np.zeros(len(arrayIons))
+    for i in range(len(arrayIons)):
+        for j in range(len(arrayIons[0])):
+            ntotal[i] += arrayIons[i][j]
+    #ntotal = np.array(ntotal)
+    nAverage = ntotal/len(arrayIons[0])
+
+    return nAverage
+
+
 # =============================================================================
+
+# labels to use in plotting:
+colours = ['red', 'pink', 'maroon', 'blue', 'skyblue', 'violet', 'cyan', 'green']
+labels = ['S$^{+}$', 'S$^{++}$', 'S$^{+++}$', 'O$^{+}$', 'O$^{++}$', 'Na$^{+}$', 'Hot O$^{+}$', 'H$^{+}$']
+
+
+# copy a B field trace path here.
+
+field_trace_path = 'Magnetic_dipole_coordinates.csv'
+
+B = pd.read_csv(field_trace_path, names=['x', 'y', 'z'])
+B['rho'] = np.sqrt(B['x'] ** 2 + B['y'] ** 2)
+
+# start by getting x, y and z distance along field line from magnetosphere
+B['xfl'] = B['x'] - B['x'][0]
+B['yfl'] = B['y'] - B['y'][0]
+B['zfl'] = B['z'] - B['z'][0]
+
+# distance along field line from magnetosphere
+B['s'] = np.sqrt(B['xfl'] ** 2 + B['yfl'] ** 2 + B['zfl'] ** 2)
+
+# just a test step while constructing function
+s2 = B['s'][2]
+s1 = B['s'][1]
+s0 = B['s'][0]
+
+# L = np.array([15])
+# r = np.arange(15,0,-0.1)
+# S = np.arange(0,15,0.1)
+L = np.array([15])
+r = np.array(B['rho'])
+S = np.array(B['s'])
+
+# Now down to the good stuff...
+# We set up a while loop to step through each of the increments along the
+# field line
+# Our initial starting parameters
+
+pot0 = 0
+ni, n0 = [], []
 
 # fixed temperatures and mass to be used throughout calculation
 # Temperature of each species:
@@ -238,46 +289,6 @@ NE = NE * 1e6  # convert to m^-3
 
 # The charge number of each ion
 Z_no = [1, 2, 3, 1, 2, 1, 1, 1]
-
-
-# labels to use in plotting:
-colours = ['red', 'pink', 'maroon', 'blue', 'skyblue', 'violet', 'cyan', 'green']
-labels = ['S$^{+}$', 'S$^{++}$', 'S$^{+++}$', 'O$^{+}$', 'O$^{++}$', 'Na$^{+}$', 'Hot O$^{+}$', 'H$^{+}$']
-
-
-# copy a B field trace path here.
-field_trace_path = 'Magnetic_dipole_coordinates.csv'
-
-B = pd.read_csv(field_trace_path, names=['x', 'y', 'z'])
-B['rho'] = np.sqrt(B['x'] ** 2 + B['y'] ** 2)
-
-# start by getting x, y and z distance along field line from magnetosphere
-B['xfl'] = B['x'] - B['x'][0]
-B['yfl'] = B['y'] - B['y'][0]
-B['zfl'] = B['z'] - B['z'][0]
-
-# distance along field line from magnetosphere
-B['s'] = np.sqrt(B['xfl'] ** 2 + B['yfl'] ** 2 + B['zfl'] ** 2)
-
-# just a test step while constructing function
-s2 = B['s'][2]
-s1 = B['s'][1]
-s0 = B['s'][0]
-
-# L = np.array([15])
-# r = np.arange(15,0,-0.1)
-# S = np.arange(0,15,0.1)
-L = np.array([15])
-r = np.array(B['rho'])
-S = np.array(B['s'])
-
-# Now down to the good stuff...
-# We set up a while loop to step through each of the increments along the
-# field line
-# Our initial starting parameters
-
-pot0 = 0
-ni, n0 = [], []
 
 for i in range(len(r) - 1):
     nit, n0t = [], []
@@ -562,7 +573,11 @@ for i in range(len(ni)):
                + ',' + str(cor_t[i][3]) + ',' + str(cor_t[i][4]) + ',' + str(cor_t[i][5]) \
                + ',' + str(cor_t[i][6]) + ',' + str(cor_t[i][7]) + ',' + str(cor_e[i][0]) + '\n')
 file.close()
+nAverage = averageNumberDensity(ni)
+
+np.savetxt('test.txt', np.c_[nAverage], delimiter='\t', header='x\ty\tz\tB')
 #
 #
 #
 # n_ions = np.array([NS1,NS2,NS3,NO1,NO2,NNa1,NHO1,NH1])
+
