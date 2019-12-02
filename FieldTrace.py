@@ -97,8 +97,7 @@ def produceTraceArrays(modelType='VIP4'):
                 yInRJ.extend(tempyInRJ)
                 zInRJ.extend(tempzInRJ)
                 Bmag.extend(tempBmag)
-            np.savetxt('output/radius%0.2fphi%0.2f.txt' % (r0, phi0), np.c_[xInRJ, yInRJ, zInRJ, Bmag], delimiter='\t',
-                       header='x\ty\tz\tB')
+            np.savetxt('output/radius%0.2fphi%0.2f.csv' % (r0, phi0), np.c_[xInRJ, yInRJ, zInRJ, Bmag], delimiter=',')
     return
 
 
