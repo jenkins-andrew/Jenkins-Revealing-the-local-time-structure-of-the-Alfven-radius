@@ -187,15 +187,12 @@ def T0_2017(r, species=None):
     return T
 
 
-def averageNumberDensity(arrayIons):
+def TotalNumberDensity(arrayIons, arrayElectrons):
     ntotal = np.zeros(len(arrayIons))
     for i in range(len(arrayIons)):
         for j in range(len(arrayIons[0])):
-            ntotal[i] += arrayIons[i][j]
-    #ntotal = np.array(ntotal)
-    nAverage = ntotal/len(arrayIons[0])
-
-    return nAverage
+            ntotal[i] += arrayIons[i][j] + arrayElectrons[i][0]
+    return ntotal
 
 
 # =============================================================================
@@ -573,7 +570,7 @@ for i in range(len(ni)):
                + ',' + str(cor_t[i][3]) + ',' + str(cor_t[i][4]) + ',' + str(cor_t[i][5]) \
                + ',' + str(cor_t[i][6]) + ',' + str(cor_t[i][7]) + ',' + str(cor_e[i][0]) + '\n')
 file.close()
-nAverage = averageNumberDensity(ni)
+nAverage = TotalNumberDensity(ni, ne)
 
 np.savetxt('test.txt', np.c_[nAverage], delimiter='\t', header='x\ty\tz\tB')
 #
