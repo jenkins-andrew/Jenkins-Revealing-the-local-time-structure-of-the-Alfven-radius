@@ -296,8 +296,6 @@ for field_trace_path in glob.glob('output/*.csv'):
         n_ions = nit
         ni.append(nit)
         n0.append(n0t)
-    n0.append(n0[-1])  # Repeating the last value to have an extra point so the arrays match
-    ni.append(ni[-1])
     n0 = np.array(n0)
     ni = np.array(ni)
 
@@ -307,8 +305,6 @@ for field_trace_path in glob.glob('output/*.csv'):
         ne.append(ne_temp)
         ne0.append(ne0_temp)
         NE = ne_temp
-    ne0.append(ne0[-1])
-    ne.append(ne[-1])
     # =============================================================================
     #       PLOTTING NUMBER DENSITIES
     #
