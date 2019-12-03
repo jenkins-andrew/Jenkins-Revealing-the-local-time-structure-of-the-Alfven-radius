@@ -188,11 +188,35 @@ def T0_2017(r, species=None):
 
 
 def TotalNumberDensity(arrayIons, arrayElectrons):
+    """
+    Andrew Jenkins
+    :param arrayIons:
+    :param arrayElectrons:
+    :return:
+    """
     ntotal = np.zeros(len(arrayIons))
     for i in range(len(arrayIons)):
         for j in range(len(arrayIons[0])):
             ntotal[i] += arrayIons[i][j] + arrayElectrons[i][0]
     return ntotal
+
+
+def totalMassDensity(numberDensityIons, numberDensityElectrons, massArrayIons, massArrayElectrons):
+    """
+    Andrew Jenkins
+    :param numberDensityIons:
+    :param numberDensityElectrons:
+    :param massArrayIons:
+    :param massArrayElectrons:
+    :return:
+    """
+    M = np.zeros(len(numberDensityIons))
+    print('This is what I want: '+str(len(numberDensityIons)))
+    for i in range(len(numberDensityIons)):
+        for j in range(len(numberDensityIons[0])):
+            M[i] = numberDensityIons[i][j]*massArrayIons[j] + numberDensityElectrons[i][0]*massArrayElectrons
+    M = np.append(M, M[-1])
+    return M
 
 
 # =============================================================================
@@ -412,7 +436,7 @@ for field_trace_path in glob.glob('output/*.csv'):
 
         pot_s.append(pot1[cross])
         count += 1
-    print('This is the value' + str(len(ne_s)))
+
     # ============================================================================
     ##       PLOT POTENTIAL VS N FOR EACH STEP UP FIELD LINE
     ##       I used this to make a gif... its not really needed
@@ -569,10 +593,11 @@ for field_trace_path in glob.glob('output/*.csv'):
     #                + ',' + str(cor_t[i][6]) + ',' + str(cor_t[i][7]) + ',' + str(cor_e[i][0]) + '\n')
     # file.close()
     nAverage = TotalNumberDensity(ni, ne)
+    massDensity = totalMassDensity(ni, ne, m_ions, ME)
     print(len(nAverage))
     print(len(ni))
 
-    np.savetxt('output/postFieldLine/radius%0.0ftheta%0.0f.txt' % (int(np.amax(x)), int(np.arctan2(y[0], z[0]))), np.c_[x, y, z, B, nAverage], delimiter=',')
+    np.savetxt('output/postFieldLine/radius%0.0ftheta%0.0f.txt' % (int(np.amax(x)), int(np.arctan2(y[0], z[0]))), np.c_[x, y, z, B, massDensity], delimiter=',')
 #
 #
 #
