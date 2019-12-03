@@ -598,7 +598,7 @@ for field_trace_path in glob.glob('output/*.csv'):
     print(len(nAverage))
     print(len(ni))
 
-    np.savetxt('output/postFieldLine/radius%0.0ftheta%0.0f.txt' % (int(np.amax(x)), int(np.arctan2(y[0], z[0]))), np.c_[x, y, z, B, massDensity], delimiter=',')
+    np.savetxt('output/postFieldLine/radius%0.0ftheta%0.0f.csv' % (int(np.amax(x)), int(np.arctan2(y[0], z[0]))), np.c_[x, y, z, B, massDensity], delimiter=',')
 #
 #
 #
