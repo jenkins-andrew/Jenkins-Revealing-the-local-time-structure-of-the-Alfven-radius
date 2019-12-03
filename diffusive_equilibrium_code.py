@@ -296,6 +296,8 @@ for field_trace_path in glob.glob('output/*.csv'):
         n_ions = nit
         ni.append(nit)
         n0.append(n0t)
+    n0.append(n0[-1])  # Repeating the last value to have an extra point so the arrays match
+    ni.append(ni[-1])
     n0 = np.array(n0)
     ni = np.array(ni)
 
@@ -305,7 +307,8 @@ for field_trace_path in glob.glob('output/*.csv'):
         ne.append(ne_temp)
         ne0.append(ne0_temp)
         NE = ne_temp
-
+    ne0.append(ne0[-1])
+    ne.append(ne[-1])
     # =============================================================================
     #       PLOTTING NUMBER DENSITIES
     #
@@ -413,7 +416,7 @@ for field_trace_path in glob.glob('output/*.csv'):
 
         pot_s.append(pot1[cross])
         count += 1
-
+    print('This is the value' + str(len(ne_s)))
     # ============================================================================
     ##       PLOT POTENTIAL VS N FOR EACH STEP UP FIELD LINE
     ##       I used this to make a gif... its not really needed
@@ -573,7 +576,7 @@ for field_trace_path in glob.glob('output/*.csv'):
     print(len(nAverage))
     print(len(ni))
 
-    np.savetxt(field_trace_path, np.c_[x, y, z, B, nAverage], delimiter=',', header='x\ty\tz\tB\tN')
+    np.savetxt('output/postFieldLine/radius%0.0ftheta%0.0f.txt' % (int(np.amax(x)), int(np.arctan2(y[0], z[0]))), np.c_[x, y, z, B, nAverage], delimiter=',')
 #
 #
 #
