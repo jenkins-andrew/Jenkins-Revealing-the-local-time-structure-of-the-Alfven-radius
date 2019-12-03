@@ -15,7 +15,6 @@ isotropic plasma.
 """
 
 import numpy as np
-import pandas as pd
 import scipy.constants as con
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
@@ -207,28 +206,28 @@ labels = ['S$^{+}$', 'S$^{++}$', 'S$^{+++}$', 'O$^{+}$', 'O$^{++}$', 'Na$^{+}$',
 
 for field_trace_path in glob.glob('output/*.csv'):
 
-    B = pd.read_csv(field_trace_path, names=['x', 'y', 'z', 'mag'])
-    B['rho'] = np.sqrt(B['x'] ** 2 + B['y'] ** 2)
+    x, y, z, B = np.loadtxt(field_trace_path, delimiter=',', unpack=True)
+    rho = np.sqrt(x ** 2 + y ** 2)
 
     # start by getting x, y and z distance along field line from magnetosphere
-    B['xfl'] = B['x'] - B['x'][0]
-    B['yfl'] = B['y'] - B['y'][0]
-    B['zfl'] = B['z'] - B['z'][0]
+    xfl = x - x[0]
+    yfl = y - y[0]
+    zfl = z - z[0]
 
     # distance along field line from magnetosphere
-    B['s'] = np.sqrt(B['xfl'] ** 2 + B['yfl'] ** 2 + B['zfl'] ** 2)
+    s = np.sqrt(xfl ** 2 + yfl ** 2 + zfl ** 2)
 
     # just a test step while constructing function
-    s2 = B['s'][2]
-    s1 = B['s'][1]
-    s0 = B['s'][0]
+    s2 = s[2]
+    s1 = s[1]
+    s0 = s[0]
 
     # L = np.array([15])
     # r = np.arange(15,0,-0.1)
     # S = np.arange(0,15,0.1)
-    L = np.array([15])
-    r = np.array(B['rho'])
-    S = np.array(B['s'])
+    L = np.array([int(np.amax(x))])
+    r = np.array(rho)
+    S = np.array(s)
 
     # Now down to the good stuff...
     # We set up a while loop to step through each of the increments along the
@@ -559,7 +558,6 @@ for field_trace_path in glob.glob('output/*.csv'):
     # =============================================================================
 
     # Save density profiles in csv format
-    savepath = 'output/postfieldtrace/'+field_trace_path.name  # define your savepath here
     #
     # file = open(savepath, 'w+')
     # file.write('S,nS+,nS++,nS+++,nO+,nO++,nNa+,nHot+,nH+,ne-,cS+,cS++,cS+++,cO+,cO++,cNa+,cHot+,cH+,ce-\n')
@@ -572,8 +570,10 @@ for field_trace_path in glob.glob('output/*.csv'):
     #                + ',' + str(cor_t[i][6]) + ',' + str(cor_t[i][7]) + ',' + str(cor_e[i][0]) + '\n')
     # file.close()
     nAverage = TotalNumberDensity(ni, ne)
+    print(len(nAverage))
+    print(len(ni))
 
-    np.savetxt(savepath, np.c_[B['x'], B['y'], B['z'], B['mag'], nAverage], delimiter='\t', header='x\ty\tz\tB')
+    np.savetxt(field_trace_path, np.c_[x, y, z, B, nAverage], delimiter=',', header='x\ty\tz\tB\tN')
 #
 #
 #
