@@ -232,6 +232,7 @@ for field_trace_path in glob.glob('output/*.csv'):
 
     x, y, z, B = np.loadtxt(field_trace_path, delimiter=',', unpack=True)
     rho = np.sqrt(x ** 2 + y ** 2)
+    print(field_trace_path)
 
     # start by getting x, y and z distance along field line from magnetosphere
     xfl = x - x[0]
@@ -368,7 +369,7 @@ for field_trace_path in glob.glob('output/*.csv'):
     cor_s = []
     e_cor = []
     while count < len(S) - 1:
-        print(count)
+        # print(count)
 
         pot1 = np.arange(base - cover, base + cover, 0.1)
         cor_term = []
