@@ -74,7 +74,7 @@ def produceTraceArrays(modelType='VIP4'):
                 phi = phi0
                 tempxInRJ, tempyInRJ, tempzInRJ, tempBmag = [], [], [], []
                 x, y, z = sph_cart(r, theta, phi)
-                print('Radius = %5.2f and Phi = %5.2f started' % (r, phi * 180 / np.pi))
+                print('Radius = %5.2f and Phi = %1.2f started going %1.0f' % (r, phi * 180 / np.pi, sign))
                 while r >= 1:
                     x, y, z = sph_cart(r, theta, phi)
                     Br, Bt, Bp = fieldGenerator.Internal_Field(r, theta, phi, modelType)
@@ -97,7 +97,7 @@ def produceTraceArrays(modelType='VIP4'):
                 yInRJ.extend(tempyInRJ)
                 zInRJ.extend(tempzInRJ)
                 Bmag.extend(tempBmag)
-            np.savetxt('output/radius%0.2fphi%0.2f.csv' % (r0, phi0), np.c_[xInRJ, yInRJ, zInRJ, Bmag], delimiter=',')
+            np.savetxt('output/radius%0.2fphi%0.2f.txt' % (r0, phi0), np.c_[xInRJ, yInRJ, zInRJ, Bmag], delimiter=',')
     return
 
 
