@@ -211,7 +211,6 @@ def totalMassDensity(numberDensityIons, numberDensityElectrons, massArrayIons, m
     :return:
     """
     M = np.zeros(len(numberDensityIons))
-    print('This is what I want: '+str(len(numberDensityIons)))
     for i in range(len(numberDensityIons)):
         for j in range(len(numberDensityIons[0])):
             M[i] = numberDensityIons[i][j]*massArrayIons[j] + numberDensityElectrons[i][0]*massArrayElectrons
