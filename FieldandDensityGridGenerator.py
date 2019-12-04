@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import glob
 from scipy.interpolate import griddata
+from matplotlib import colors
 
 
 def alfvenVelocityFuncForArray(magneticFieldArray, totalMassDensityArray):
@@ -162,6 +163,20 @@ plt.ylabel('z $(R_J)$', fontsize=18)
 plt.xticks(size=18)
 plt.yticks(size=18)
 plt.xlim(minR)
+
+
+plt.figure()
+cmap = colors.ListedColormap(['#196F3D', '#1A5276'])
+boundaries = [0, 1]
+norm = colors.BoundaryNorm(boundaries, cmap.N, clip=True)
+heatmap = plt.contourf(xtest, ztest, AlfvenPointGrid, cmap=cmap)
+lines = plt.contour(xtest, ztest, AlfvenPointGrid, 1, colors='k')
+plt.xlabel('x $(R_J)$', fontsize=18)
+plt.ylabel('y $(R_J)$', fontsize=18)
+plt.xticks(size=18)
+plt.yticks(size=18)
+plt.xlim(minR)
+plt.tight_layout()
 
 # ax = plt.subplot(224)
 # alfvenmask = (alfvenVelocity > 0.95*radialVelocity) & (alfvenVelocity < 1.05*radialVelocity)
