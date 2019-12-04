@@ -54,7 +54,7 @@ for i in range(len(alfvenVelocity)):
         alfvenPointCheck.append(1)
 
 np.savetxt('temporaryFile.txt', np.c_[x, r, z, B, rho, alfvenVelocity, radialVelocity, alfvenPointCheck], delimiter='\t')
-x, y, z, B, rho, alfvenVelocity, radialVelocity, alfvenPointCheck = np.loadtxt('temporaryFile.txt', delimiter='\t', unpack=True)
+x, r, z, B, rho, alfvenVelocity, radialVelocity, alfvenPointCheck = np.loadtxt('temporaryFile.txt', delimiter='\t', unpack=True)
 
 maxR = 30
 minR = 6
@@ -80,6 +80,18 @@ RadialGrid[mask] = np.nan
 
 AlfvenPointGrid = griddata((x, z), alfvenPointCheck, (xtest, ztest))
 AlfvenPointGrid[mask] = np.nan
+
+plt.figure()
+plt.plot(r, alfvenVelocity/1000, 'k', label='Alfven')
+plt.plot(r, radialVelocity/1000, 'r', Label='Radial')
+plt.yscale('log')
+plt.ylim(1)
+plt.ylabel('Velocity (km/s)', fontsize=18)
+plt.xlabel('RJ', fontsize=18)
+plt.legend(fontsize=18)
+plt.xticks(size=18)
+plt.yticks(size=18)
+plt.tight_layout()
 
 plt.figure()
 heatmap = plt.contourf(xtest, ztest, BGrid, cmap=plt.cm.get_cmap('gist_rainbow'), alpha=0.4)
@@ -142,7 +154,7 @@ plt.xticks(size=18)
 plt.yticks(size=18)
 plt.xlim(minR)
 
-ax = plt.subplot(223)
+ax = plt.subplot(212)
 lines = plt.contour(xtest, ztest, AlfvenPointGrid, 1)
 plt.title('Alfven Radius', fontsize=18, wrap=True)
 plt.xlabel('x $(R_J)$', fontsize=18)
@@ -151,20 +163,20 @@ plt.xticks(size=18)
 plt.yticks(size=18)
 plt.xlim(minR)
 
-ax = plt.subplot(224)
-alfvenmask = (alfvenVelocity > 0.95*radialVelocity) & (alfvenVelocity < 1.05*radialVelocity)
-calculatedRadius = np.sqrt(x ** 2 + y ** 2)
-phiwrong = np.arctan2(x, y)
-phi = np.mod(phiwrong, 2*np.pi) * 180 / np.pi
-# fit = np.poly1d(np.polyfit(phi[alfvenmask], calculatedRadius[alfvenmask], 3))
-plt.scatter(phi[alfvenmask], calculatedRadius[alfvenmask], s=0.1, color='k')
-# fitrange = np.arange(0, 360, 1)
-# plt.plot(fit(fitrange))
-plt.title('Alfven Radius', fontsize=18, wrap=True)
-plt.xlabel('Angle (Degrees)', fontsize=18)
-plt.ylabel('Radius (R$_J)$', fontsize=18)
-plt.xticks(size=18)
-plt.yticks(size=18)
-plt.xlim(minR)
+# ax = plt.subplot(224)
+# alfvenmask = (alfvenVelocity > 0.95*radialVelocity) & (alfvenVelocity < 1.05*radialVelocity)
+# calculatedRadius = np.sqrt(x ** 2 + y ** 2)
+# phiwrong = np.arctan2(x, z)
+# phi = np.mod(phiwrong, 2*np.pi) * 180 / np.pi
+# # fit = np.poly1d(np.polyfit(phi[alfvenmask], calculatedRadius[alfvenmask], 3))
+# plt.scatter(phi[alfvenmask], calculatedRadius[alfvenmask], s=0.1, color='k')
+# # fitrange = np.arange(0, 360, 1)
+# # plt.plot(fit(fitrange))
+# plt.title('Alfven Radius', fontsize=18, wrap=True)
+# plt.xlabel('Angle (Degrees)', fontsize=18)
+# plt.ylabel('Radius (R$_J)$', fontsize=18)
+# plt.xticks(size=18)
+# plt.yticks(size=18)
+# plt.xlim(minR)
 plt.show()
 
