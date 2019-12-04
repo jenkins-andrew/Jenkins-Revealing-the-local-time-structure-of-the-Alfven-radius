@@ -228,7 +228,7 @@ labels = ['S$^{+}$', 'S$^{++}$', 'S$^{+++}$', 'O$^{+}$', 'O$^{++}$', 'Na$^{+}$',
 
 # copy a B field trace path here.
 
-for field_trace_path in glob.glob('output/*.csv'):
+for field_trace_path in glob.glob('output/*.txt'):
 
     x, y, z, B = np.loadtxt(field_trace_path, delimiter=',', unpack=True)
     rho = np.sqrt(x ** 2 + y ** 2)
@@ -250,7 +250,7 @@ for field_trace_path in glob.glob('output/*.csv'):
     # L = np.array([15])
     # r = np.arange(15,0,-0.1)
     # S = np.arange(0,15,0.1)
-    L = np.array([int(np.amax(x))])
+    L = np.array([np.around(np.amax(x))])
     r = np.array(rho)
     S = np.array(s)
 
@@ -532,19 +532,19 @@ for field_trace_path in glob.glob('output/*.csv'):
     # =============================================================================
     #       WE LOOK AT HOW THE CORRECTION TERM VARIES ACROSS THE FIELD LINE:
     #
-    cor_t = []
-    cor_e = []
-    for i in range(len(pot_s)):
-        t_cor = []
-        for j in range(len(ni[i])):
-            cor = correction(Z_no[j], T_ions[j], 0, pot_s[i])
-            t_cor.append(cor)
-        cor_e.append(correction(-1, TE, 0, pot_s[i]))
-        cor_t.append(t_cor)
-
-    cor_t = np.array(cor_t)[:, :, 0]
-    fig = plt.figure()
-    gs = GridSpec(3, 1)
+    # cor_t = []
+    # cor_e = []
+    # for i in range(len(pot_s)):
+    #     t_cor = []
+    #     for j in range(len(ni[i])):
+    #         cor = correction(Z_no[j], T_ions[j], 0, pot_s[i])
+    #         t_cor.append(cor)
+    #     cor_e.append(correction(-1, TE, 0, pot_s[i]))
+    #     cor_t.append(t_cor)
+    #
+    # cor_t = np.array(cor_t)[:, :, 0]
+    # fig = plt.figure()
+    # gs = GridSpec(3, 1)
     #
     # ax1 = fig.add_subplot(gs[0])
     # for i in range(len(Z_no)):
@@ -595,10 +595,8 @@ for field_trace_path in glob.glob('output/*.csv'):
     # file.close()
     nAverage = TotalNumberDensity(ni, ne)
     massDensity = totalMassDensity(ni, ne, m_ions, ME)
-    print(len(nAverage))
-    print(len(ni))
 
-    np.savetxt('output/postFieldLine/radius%0.0ftheta%0.0f.csv' % (int(np.amax(x)), int(np.arctan2(y[0], z[0]))), np.c_[x, y, z, B, massDensity], delimiter=',')
+    np.savetxt('output/postFieldLine/radius%0.0ftheta%0.0f.txt' % (round(np.amax(x)), int(np.arctan2(y[0], z[0]))), np.c_[x, y, z, B, massDensity], delimiter='\t')
 #
 #
 #
