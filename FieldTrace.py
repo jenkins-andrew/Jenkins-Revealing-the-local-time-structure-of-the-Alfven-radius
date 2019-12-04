@@ -66,7 +66,7 @@ def produceTraceArrays(modelType='VIP4'):
     signArray = [-1, 1]
 
     for phi0 in np.arange(0, 0 + 0.001, 0.25 * np.pi):
-        for r0 in np.arange(6, 30, 2):
+        for r0 in np.arange(50, 100, 2):
             xInRJ, yInRJ, zInRJ, Bmag = [], [], [], []
             for sign in signArray:
                 theta = 0.5 * np.pi

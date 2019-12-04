@@ -25,7 +25,7 @@ def radialScaleHeight(r):
 
 def radialVelocityFuncForArray(r, totalMassDensityArray):
 
-    vr = 500/(2 * totalMassDensityArray * radialScaleHeight(r) * np.pi * r * 71492e3 ** 2)
+    vr = 1000/(2 * totalMassDensityArray * radialScaleHeight(r) * np.pi * r * 71492e3 ** 2)
     return vr
 
 
@@ -56,7 +56,7 @@ for i in range(len(alfvenVelocity)):
 np.savetxt('temporaryFile.txt', np.c_[x, r, z, B, rho, alfvenVelocity, radialVelocity, alfvenPointCheck], delimiter='\t')
 x, r, z, B, rho, alfvenVelocity, radialVelocity, alfvenPointCheck = np.loadtxt('temporaryFile.txt', delimiter='\t', unpack=True)
 
-maxR = 30
+maxR = np.amax(x)
 minR = 6
 xtest = np.arange(-maxR, maxR+1, 0.5)
 ztest = xtest
@@ -81,47 +81,47 @@ RadialGrid[mask] = np.nan
 AlfvenPointGrid = griddata((x, z), alfvenPointCheck, (xtest, ztest))
 AlfvenPointGrid[mask] = np.nan
 
-plt.figure()
-plt.plot(r, alfvenVelocity/1000, 'k', label='Alfven')
-plt.plot(r, radialVelocity/1000, 'r', Label='Radial')
-plt.yscale('log')
-plt.ylim(1)
-plt.ylabel('Velocity (km/s)', fontsize=18)
-plt.xlabel('RJ', fontsize=18)
-plt.legend(fontsize=18)
-plt.xticks(size=18)
-plt.yticks(size=18)
-plt.tight_layout()
+# plt.figure()
+# plt.plot(r, alfvenVelocity/1000, 'k', label='Alfven')
+# plt.plot(r, radialVelocity/1000, 'r', Label='Radial')
+# plt.yscale('log')
+# plt.ylim(1)
+# plt.ylabel('Velocity (km/s)', fontsize=18)
+# plt.xlabel('RJ', fontsize=18)
+# plt.legend(fontsize=18)
+# plt.xticks(size=18)
+# plt.yticks(size=18)
+# plt.tight_layout()
 
-plt.figure()
-heatmap = plt.contourf(xtest, ztest, BGrid, cmap=plt.cm.get_cmap('gist_rainbow'), alpha=0.4)
-lines = plt.contour(xtest, ztest, BGrid, 5, colors='k')
-plt.clabel(lines, fontsize=18, inline=1, colors='k')
-clb = plt.colorbar(heatmap)
-clb.ax.set_title('B$_n$ (nT)', fontsize=18)
-plt.rcParams['xtick.labelsize'] = 18
-plt.rcParams['ytick.labelsize'] = 18
-plt.xlabel('x $(R_J)$', fontsize=18)
-plt.ylabel('z $(R_J)$', fontsize=18)
-plt.xticks(size=18)
-plt.yticks(size=18)
-plt.xlim(minR)
-plt.tight_layout()
-
-plt.figure()
-heatmap = plt.contourf(xtest, ztest, NGrid, cmap=plt.cm.get_cmap('gist_rainbow'), alpha=0.4)
-lines = plt.contour(xtest, ztest, NGrid, 5, colors='k')
-plt.clabel(lines, fontsize=18, inline=1, colors='k')
-clb = plt.colorbar(heatmap)
-clb.ax.set_title(r'$\rho$ kgm$^{-3}$', fontsize=18)
-plt.rcParams['xtick.labelsize'] = 18
-plt.rcParams['ytick.labelsize'] = 18
-plt.xlabel('x $(R_J)$', fontsize=18)
-plt.ylabel('z $(R_J)$', fontsize=18)
-plt.xlim(minR)
-plt.xticks(size=18)
-plt.yticks(size=18)
-plt.tight_layout()
+# plt.figure()
+# heatmap = plt.contourf(xtest, ztest, BGrid, cmap=plt.cm.get_cmap('gist_rainbow'), alpha=0.4)
+# lines = plt.contour(xtest, ztest, BGrid, 5, colors='k')
+# plt.clabel(lines, fontsize=18, inline=1, colors='k')
+# clb = plt.colorbar(heatmap)
+# clb.ax.set_title('B$_n$ (nT)', fontsize=18)
+# plt.rcParams['xtick.labelsize'] = 18
+# plt.rcParams['ytick.labelsize'] = 18
+# plt.xlabel('x $(R_J)$', fontsize=18)
+# plt.ylabel('z $(R_J)$', fontsize=18)
+# plt.xticks(size=18)
+# plt.yticks(size=18)
+# plt.xlim(minR)
+# plt.tight_layout()
+#
+# plt.figure()
+# heatmap = plt.contourf(xtest, ztest, NGrid, cmap=plt.cm.get_cmap('gist_rainbow'), alpha=0.4)
+# lines = plt.contour(xtest, ztest, NGrid, 5, colors='k')
+# plt.clabel(lines, fontsize=18, inline=1, colors='k')
+# clb = plt.colorbar(heatmap)
+# clb.ax.set_title(r'$\rho$ kgm$^{-3}$', fontsize=18)
+# plt.rcParams['xtick.labelsize'] = 18
+# plt.rcParams['ytick.labelsize'] = 18
+# plt.xlabel('x $(R_J)$', fontsize=18)
+# plt.ylabel('z $(R_J)$', fontsize=18)
+# plt.xlim(minR)
+# plt.xticks(size=18)
+# plt.yticks(size=18)
+# plt.tight_layout()
 
 plt.figure()
 plt.rcParams['xtick.labelsize'] = 18
@@ -136,7 +136,7 @@ clb = plt.colorbar(heatmap)
 clb.ax.set_title(r'(kms$^{-1}$)', fontsize=18)
 plt.title('Alfven V', fontsize=18, wrap=True)
 plt.xlabel('x $(R_J)$', fontsize=18)
-plt.ylabel('y $(R_J)$', fontsize=18)
+plt.ylabel('z $(R_J)$', fontsize=18)
 plt.xticks(size=18)
 plt.yticks(size=18)
 plt.xlim(minR)
@@ -149,7 +149,7 @@ clb = plt.colorbar(heatmap)
 clb.ax.set_title(r'(kms$^{-1}$)', fontsize=18)
 plt.title('Radial V', fontsize=18, wrap=True)
 plt.xlabel('x $(R_J)$', fontsize=18)
-plt.ylabel('y $(R_J)$', fontsize=18)
+plt.ylabel('z $(R_J)$', fontsize=18)
 plt.xticks(size=18)
 plt.yticks(size=18)
 plt.xlim(minR)
@@ -158,7 +158,7 @@ ax = plt.subplot(212)
 lines = plt.contour(xtest, ztest, AlfvenPointGrid, 1)
 plt.title('Alfven Radius', fontsize=18, wrap=True)
 plt.xlabel('x $(R_J)$', fontsize=18)
-plt.ylabel('y $(R_J)$', fontsize=18)
+plt.ylabel('z $(R_J)$', fontsize=18)
 plt.xticks(size=18)
 plt.yticks(size=18)
 plt.xlim(minR)
