@@ -355,88 +355,88 @@ for field_trace_path in glob.glob('output/*.txt'):
     # Now we need to determine an appropriate value for the ambipolar potential
     # We create two functions, f and g, for each step. We look for the intersect of
     # these points.
-
-    pot0 = 0
-    count = 0
-    base = 0
-    cover = 500
-    inc = 0.0001
-
-    ni_s = []
-    ne_s = []
-    ZN_s = []
-    pot_s = []
-    cor_s = []
-    e_cor = []
-    while count < len(S) - 1:
-        # print(count)
-
-        pot1 = np.arange(base - cover, base + cover, 0.1)
-        cor_term = []
-        for i in range(len(Z_no)):
-            cor_term.append(correction(Z_no[i], T_ions[i], pot0, pot1))
-
-        e_cor_term = correction(-1, TE, pot0, pot1)
-
-        cor_term = np.array(cor_term)
-        n_corrected = []
-        for i in range(len(cor_term)):
-            n_corrected.append(ni[count][i] * cor_term[i])
-        e_corrected = (ne[count] * e_cor_term)
-
-        ZN = []
-        for i in range(len(n_corrected)):
-            ZN.append(n_corrected[i] * Z_no[i])
-
-        f = e_corrected
-        g = sum(ZN)
-        diff = f - g
-
-        # test to see if there is a crossing point:
-        signs = np.sign(diff)
-        # if the first and last signs are the same, then there is no crossing point
-        # keep cycling through ambipolar potentials until you reach a crossing point
-        while signs[0] == signs[-1]:
-            if diff[0] > diff[-1]:
-                base += 200
-            else:
-                base -= 200
-
-            pot1 = np.arange(base - cover, base + cover, 0.1)
-            cor_term = []
-            for i in range(len(Z_no)):
-                cor_term.append(correction(Z_no[i], T_ions[i], pot0, pot1))
-
-            e_cor_term = correction(-1, TE, pot0, pot1)
-
-            cor_term = np.array(cor_term)
-            n_corrected = []
-            for i in range(len(cor_term)):
-                n_corrected.append(ni[count][i] * cor_term[i])
-            e_corrected = (ne[count] * e_cor_term)
-
-            ZN = []
-            for i in range(len(n_corrected)):
-                ZN.append(n_corrected[i] * Z_no[i])
-
-            f = e_corrected
-            g = sum(ZN)
-            diff = f - g
-
-            signs = np.sign(diff)
-
-        # determine the crossing point
-        cross = np.where(abs(diff) == min(abs(diff)))[0]
-        #    cross = np.where(signs[0] != signs)[0][0]
-
-        # calculate the electron and ion density for that potential, replace old variables
-        ne_s.append(e_corrected[cross])
-        ni_s.append([n_corrected[i][cross] for i in range(len(n_corrected))])
-        ZN_s.append([ZN[i][cross] for i in range(len(n_corrected))])
-        cor_s.append([cor_term[i][cross] for i in range(len(cor_term))])
-
-        pot_s.append(pot1[cross])
-        count += 1
+    #
+    # pot0 = 0
+    # count = 0
+    # base = 0
+    # cover = 500
+    # inc = 0.0001
+    #
+    # ni_s = []
+    # ne_s = []
+    # ZN_s = []
+    # pot_s = []
+    # cor_s = []
+    # e_cor = []
+    # while count < len(S) - 1:
+    #     # print(count)
+    #
+    #     pot1 = np.arange(base - cover, base + cover, 0.1)
+    #     cor_term = []
+    #     for i in range(len(Z_no)):
+    #         cor_term.append(correction(Z_no[i], T_ions[i], pot0, pot1))
+    #
+    #     e_cor_term = correction(-1, TE, pot0, pot1)
+    #
+    #     cor_term = np.array(cor_term)
+    #     n_corrected = []
+    #     for i in range(len(cor_term)):
+    #         n_corrected.append(ni[count][i] * cor_term[i])
+    #     e_corrected = (ne[count] * e_cor_term)
+    #
+    #     ZN = []
+    #     for i in range(len(n_corrected)):
+    #         ZN.append(n_corrected[i] * Z_no[i])
+    #
+    #     f = e_corrected
+    #     g = sum(ZN)
+    #     diff = f - g
+    #
+    #     # test to see if there is a crossing point:
+    #     signs = np.sign(diff)
+    #     # if the first and last signs are the same, then there is no crossing point
+    #     # keep cycling through ambipolar potentials until you reach a crossing point
+    #     while signs[0] == signs[-1]:
+    #         if diff[0] > diff[-1]:
+    #             base += 200
+    #         else:
+    #             base -= 200
+    #
+    #         pot1 = np.arange(base - cover, base + cover, 0.1)
+    #         cor_term = []
+    #         for i in range(len(Z_no)):
+    #             cor_term.append(correction(Z_no[i], T_ions[i], pot0, pot1))
+    #
+    #         e_cor_term = correction(-1, TE, pot0, pot1)
+    #
+    #         cor_term = np.array(cor_term)
+    #         n_corrected = []
+    #         for i in range(len(cor_term)):
+    #             n_corrected.append(ni[count][i] * cor_term[i])
+    #         e_corrected = (ne[count] * e_cor_term)
+    #
+    #         ZN = []
+    #         for i in range(len(n_corrected)):
+    #             ZN.append(n_corrected[i] * Z_no[i])
+    #
+    #         f = e_corrected
+    #         g = sum(ZN)
+    #         diff = f - g
+    #
+    #         signs = np.sign(diff)
+    #
+    #     # determine the crossing point
+    #     cross = np.where(abs(diff) == min(abs(diff)))[0]
+    #     #    cross = np.where(signs[0] != signs)[0][0]
+    #
+    #     # calculate the electron and ion density for that potential, replace old variables
+    #     ne_s.append(e_corrected[cross])
+    #     ni_s.append([n_corrected[i][cross] for i in range(len(n_corrected))])
+    #     ZN_s.append([ZN[i][cross] for i in range(len(n_corrected))])
+    #     cor_s.append([cor_term[i][cross] for i in range(len(cor_term))])
+    #
+    #     pot_s.append(pot1[cross])
+    #     count += 1
 
     # ============================================================================
     ##       PLOT POTENTIAL VS N FOR EACH STEP UP FIELD LINE
