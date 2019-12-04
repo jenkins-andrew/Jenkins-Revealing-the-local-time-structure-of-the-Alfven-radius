@@ -4,6 +4,31 @@ import matplotlib.pyplot as plt
 import glob
 from scipy.interpolate import griddata
 
+
+def alfvenVelocityFuncForArray(magneticFieldArray, totalMassArray):
+
+    Va = magneticFieldArray * 1e-9 / np.sqrt(1.25663706212e-6 * totalMassArray)
+
+    return Va
+
+
+def radialScaleHeight(r):
+    """
+    Finds the scale height at a radius
+    :param r: Radius in R_J
+    :return: Scale height in R_J
+    """
+    h = -0.116 + 2.14*np.log10(r/6) - 2.05*np.log10(r/6)**2 + 0.491*np.log10(r/6)**3 + 0.126*np.log10(r/6)**4
+    H = 10 ** h
+    return H
+
+
+def radialVelocityFuncForArray(r, totalMassArray):
+
+    vr = 500/(2 * totalMassArray * radialScaleHeight(r) * np.pi * r * 71492e3 ** 2)
+    return vr
+
+
 x, y, z, B, N = [], [], [], [], []
 
 for field_trace_path in glob.glob('output/postFieldLine/*.txt'):
@@ -18,6 +43,9 @@ for field_trace_path in glob.glob('output/postFieldLine/*.txt'):
 np.savetxt('temporaryFile.txt', np.c_[x, y, z, B, N], delimiter='\t')
 x, y, z, B, N = np.loadtxt('temporaryFile.txt', delimiter='\t', unpack=True)
 
+r = np.sqrt(x**2 + y**2 + z**2)
+
+
 maxR = 30
 minR = 6
 xtest = np.arange(-maxR, maxR+1, 0.5)
@@ -31,7 +59,7 @@ mask = (xtest < minR) | (np.sqrt(xtest ** 2 + ztest ** 2) > maxR)
 BGrid = griddata((x, z), B, (xtest, ztest))
 BGrid[mask] = np.nan
 
-NGrid = griddata((x, z), N*1e19, (xtest, ztest))
+NGrid = griddata((x, z), N, (xtest, ztest))
 NGrid[mask] = np.nan
 
 
@@ -55,7 +83,7 @@ heatmap = plt.contourf(xtest, ztest, NGrid, cmap=plt.cm.get_cmap('gist_rainbow')
 lines = plt.contour(xtest, ztest, NGrid, 5, colors='k')
 plt.clabel(lines, fontsize=18, inline=1, colors='k')
 clb = plt.colorbar(heatmap)
-clb.ax.set_title(r'$\rho$ 1e-19 kgm$^{-3}$', fontsize=18)
+clb.ax.set_title(r'$\rho$ kgm$^{-3}$', fontsize=18)
 plt.rcParams['xtick.labelsize'] = 18
 plt.rcParams['ytick.labelsize'] = 18
 plt.xlabel('x $(R_J)$', fontsize=18)
@@ -65,17 +93,5 @@ plt.xticks(size=18)
 plt.yticks(size=18)
 plt.tight_layout()
 
-# x, y, z, B, N = np.loadtxt('output/postFieldLine/radius6theta0.txt', delimiter='\t', unpack=True)
-# img = ax.scatter(x, y, z, c=B, cmap=plt.cm.get_cmap('gist_rainbow'))
-
-
-
-# max_range = np.array([x.max()-x.min(), y.max()-y.min(), z.max()-z.min()]).max() / 2.0
-#
-# mid_x = (x.max()+x.min()) * 0.5
-# mid_y = (y.max()+y.min()) * 0.5
-# mid_z = (z.max()+z.min()) * 0.5
-# ax.set_xlim(mid_x - max_range, mid_x + max_range)
-# ax.set_ylim(mid_y - max_range, mid_y + max_range)
-# ax.set_zlim(mid_z - max_range, mid_z + max_range)
 plt.show()
+
