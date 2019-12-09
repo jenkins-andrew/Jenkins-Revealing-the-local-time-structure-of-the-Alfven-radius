@@ -75,7 +75,7 @@ class field_models(object):
         a = 5.0  # inner current sheet boundary
         b = 50.0  # outer current sheet boundary
         D = 2.5  # current sheet half thickness
-        c = 225  # (mu_0*I_0)/2
+        c = 225  # (mu_0*I_0)/2, 2.25e-3??
         DtoR = np.pi / 180
         theta_CS = 9.6 * DtoR  # Current sheet tilt
         CS_pm = 158 * DtoR  # Current sheet prime meridian
@@ -460,6 +460,11 @@ Ulysses 17ev \n V1-17ev \n O6 \n O4 \n SHA \n \
             Btint += Bt[str(k)]
             Bpint += Bp[str(k)]
 
-        return Brint, Btint, Bpint  # returns the internal components, Br,Bt,Bp
+        # Add current sheet if statement
+
+        Bxint = Brint*np.sin(theta)*np.cos(phi) + Btint*np.cos(theta)*np.cos(phi) - Bpint*np.sin(phi)
+        Byint = Brint*np.sin(theta)*np.sin(phi) + Btint*np.cos(theta)*np.sin(phi) + Bpint*np.cos(phi)
+        Bzint = Brint*np.cos(theta) - Btint*np.sin(theta)
+        return Brint, Btint, Bpint, Bxint, Byint, Bzint  # returns the internal components, Br,Bt,Bp
 
         # ================================================
