@@ -5,9 +5,9 @@ from Magnetic_field_models import field_models
 def sph_cart(r, theta, phi):
     """
     From Chris' code
-    :param r:
-    :param theta:
-    :param phi:
+    :param r: in R_J
+    :param theta: in radians
+    :param phi: in radians
     :return:
     """
     x = r * np.sin(theta) * np.cos(phi)
@@ -19,10 +19,10 @@ def sph_cart(r, theta, phi):
 def cart_sph(x, y, z):
     """
     From Chris' code
-    :param x:
-    :param y:
-    :param z:
-    :return:
+    :param x: in R_J
+    :param y: in R_J
+    :param z: in R_J
+    :return: r, theta, phi in R_J and radians
     """
     r = np.sqrt(x ** 2 + y ** 2 + z ** 2)
     theta = np.arctan2(np.sqrt(x ** 2 + y ** 2), z)
@@ -32,11 +32,11 @@ def cart_sph(x, y, z):
 
 def unitVector(x0, x1, x2):
     """
-
+    Get the unit vector for a given vector of 3 components
     :param x0:
     :param x1:
     :param x2:
-    :return:
+    :return: unit vector in 3 components
     """
     vector = [x0, x1, x2]
     v_hat = vector / np.sqrt((np.square(vector)).sum())
@@ -45,11 +45,11 @@ def unitVector(x0, x1, x2):
 
 def magnitudeVector(x0, x1, x2):
     """
-
+    Get the magnitude of a vector with 3 components
     :param x0:
     :param x1:
     :param x2:
-    :return:
+    :return: a float for the magnitude of the vector
     """
     vector = [x0, x1, x2]
     return np.sqrt((np.square(vector)).sum())
@@ -57,22 +57,26 @@ def magnitudeVector(x0, x1, x2):
 
 def produceTraceArrays(modelType='VIP4'):
     """
-
-    :param modelType:
-    :return:
+    To do the field trace using a model over a range of phi and radii. Each phi and radius field trace is saved as a
+    separate text file with the radius and phi value saved in the name. Made as a function such that this could be
+    used as a class in the future.
+    :param modelType: Default VIP4
     """
     printTester = 0
     fieldGenerator = field_models()
-    signArray = [-1, 1]
+    signArray = [-1, 1]  # To swap the direction of travel along the field line as well as fix array ordering
 
     for phi0 in np.arange(0, 0 + 0.001, 0.25 * np.pi):
-        for r0 in np.arange(50, 100, 2):
+        for r0 in np.arange(6, 30, 2):
+            # Start a new field line trace
             xInRJ, yInRJ, zInRJ, Bmag = [], [], [], []
             for sign in signArray:
+                # Start a new direction along the field line
                 theta = 0.5 * np.pi
                 r = r0
                 phi = phi0
-                tempxInRJ, tempyInRJ, tempzInRJ, tempBmag = [], [], [], []
+                tempxInRJ, tempyInRJ, tempzInRJ, tempBmag = [], [], [], []  # So I can have two sets of arrays to
+                # combine later
                 x, y, z = sph_cart(r, theta, phi)
                 print('Radius = %5.2f and Phi = %1.2f started going %1.0f' % (r, phi * 180 / np.pi, sign))
                 while r >= 1:
@@ -89,6 +93,7 @@ def produceTraceArrays(modelType='VIP4'):
                     theta += sign * yMove / step
                     phi += sign * zMove / step
                     printTester += 1
+                # Flipping the arrays if they need to be before putting them together and saving the final trace array
                 tempxInRJ = tempxInRJ[::sign]
                 tempyInRJ = tempyInRJ[::sign]
                 tempzInRJ = tempzInRJ[::sign]
@@ -98,30 +103,7 @@ def produceTraceArrays(modelType='VIP4'):
                 zInRJ.extend(tempzInRJ)
                 Bmag.extend(tempBmag)
             np.savetxt('output/radius%0.0fphi%0.0f.txt' % (r0, phi0), np.c_[xInRJ, yInRJ, zInRJ, Bmag], delimiter=',')
-    return
+    pass
 
 
 produceTraceArrays()
-
-# theta = 0.5*np.pi
-# r = 30
-# phi = np.pi
-# x, y, z = sph_cart(r, theta, phi)
-# print('theta= %5.2f and Phi = %5.2f' %(theta*180/np.pi, phi))
-# while r > 1:
-#     Br, Bt, Bp = fieldGenerator.Internal_Field(r, theta, phi, 'VIP4')
-#     if printTester % 1 == 0:
-#         xInRJ.append(x)
-#         yInRJ.append(y)
-#         zInRJ.append(z)
-#         Bmag.append(magntiudeVector(Br, Bt, Bp))
-#         print(r)
-#     xMove, yMove, zMove = unitVector(Br, Bt, Bp)
-#     step = np.log10(magntiudeVector(Br, Bt, Bp)) * 10
-#     r += -xMove / step
-#     theta += -yMove / step
-#     phi += -zMove / step
-#     x, y, z = sph_cart(r, theta, phi)
-#     printTester += 1
-
-
