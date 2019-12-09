@@ -66,8 +66,8 @@ def produceTraceArrays(modelType='VIP4'):
     fieldGenerator = field_models()
     signArray = [-1, 1]  # To swap the direction of travel along the field line as well as fix array ordering
 
-    for phi0 in np.arange(0, 0 + 0.001, 0.25 * np.pi):
-        for r0 in np.arange(6, 30, 2):
+    for phi0 in np.arange(20*np.pi/180, 20*np.pi/180 + 0.001, 0.25 * np.pi):
+        for r0 in np.arange(30, 30+1, 2):
             # Start a new field line trace
             xInRJ, yInRJ, zInRJ, Bmag = [], [], [], []
             for sign in signArray:
@@ -80,18 +80,20 @@ def produceTraceArrays(modelType='VIP4'):
                 x, y, z = sph_cart(r, theta, phi)
                 print('Radius = %5.2f and Phi = %1.2f started going %1.0f' % (r, phi * 180 / np.pi, sign))
                 while r >= 1:
-                    x, y, z = sph_cart(r, theta, phi)
-                    Br, Bt, Bp = fieldGenerator.Internal_Field(r, theta, phi, modelType)
+                    Br, Bt, Bp, Bx, By, Bz = fieldGenerator.Internal_Field(r, theta, phi, modelType)
                     if printTester % 1 == 0:
                         tempxInRJ.append(x)
                         tempyInRJ.append(y)
                         tempzInRJ.append(z)
                         tempBmag.append(magnitudeVector(Br, Bt, Bp))
-                    xMove, yMove, zMove = unitVector(Br, Bt, Bp)
-                    step = np.log10(magnitudeVector(Br, Bt, Bp)) * 10
-                    r += sign * xMove / step
-                    theta += sign * yMove / step
-                    phi += sign * zMove / step
+                    # print(magnitudeVector(Br, Bt, Bp))
+                    # print(magnitudeVector(Bx, By, Bz))
+                    xMove, yMove, zMove = unitVector(Bx, By, Bz)
+                    step = np.log10(magnitudeVector(Bx, By, Bz)) * 100
+                    x += sign * xMove / step
+                    y += sign * yMove / step
+                    z += sign * zMove / step
+                    r, theta, phi = cart_sph(x, y, z)
                     printTester += 1
                 # Flipping the arrays if they need to be before putting them together and saving the final trace array
                 tempxInRJ = tempxInRJ[::sign]
@@ -102,7 +104,7 @@ def produceTraceArrays(modelType='VIP4'):
                 yInRJ.extend(tempyInRJ)
                 zInRJ.extend(tempzInRJ)
                 Bmag.extend(tempBmag)
-            np.savetxt('output/radius%0.0fphi%0.0f.txt' % (r0, phi0), np.c_[xInRJ, yInRJ, zInRJ, Bmag], delimiter=',')
+            np.savetxt('newoutput/radius%0.0fphi%0.0f.txt' % (r0, phi0), np.c_[xInRJ, yInRJ, zInRJ, Bmag], delimiter=',')
     pass
 
 
