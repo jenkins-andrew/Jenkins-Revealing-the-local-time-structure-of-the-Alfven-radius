@@ -19,8 +19,12 @@ def sph_cart(r, theta, phi):
     return x, y, z
 
 
-x, y, z, B = np.loadtxt('radius6to30phi2.09CurrentOn=False.txt', delimiter='\t', unpack=True)
-xc, yc, zc, Bc = np.loadtxt('radius6to30phi2CurrentOn=True.txt', delimiter='\t', unpack=True)
+x, y, z, B = np.loadtxt('newoutput/radius84.91to85phi2.09CurrentOn=False.txt', delimiter='\t', unpack=True)
+xc, yc, zc, Bc = np.loadtxt('newoutput/radius30to30phi2.09CurrentOn=True.txt', delimiter='\t', unpack=True)
+
+r = np.sqrt(xc**2+yc**2+zc**2)
+
+print(np.amax(r))
 
 fig = plt.figure()
 ax = plt.axes(projection="3d")
