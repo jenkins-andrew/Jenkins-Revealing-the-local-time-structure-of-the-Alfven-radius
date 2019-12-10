@@ -21,9 +21,9 @@ while True:
         break
 
 if (majorRunChoice == 1) | (majorRunChoice == 2):
-    rmin = float(input("Enter minimum radius\n"))
-    rmax = float(input("Enter maximum radius\n"))
-    pmin = float(input("Enter starting phi\n"))
-    pmax = float(input("Enter final phi\n"))
-    currentSheet = bool(input("Current sheet on?: True or False\n"))
-    FieldTrace.produceTraceArrays(rmin, rmax, pmin, pmax, currentSheet)
+    rmin = float(input("Enter minimum radius:\n"))
+    rmax = float(input("Enter maximum radius:\n"))
+    pmin = float(input("Enter starting phi in degrees:\n"))
+    pmax = float(input("Enter final phi in degrees:\n"))
+    currentSheet = bool(input("Current sheet on? True or False:\n"))
+    FieldTrace.produceTraceArrays(rmin, rmax, pmin*np.pi/180, pmax*np.pi/180, currentSheet)
