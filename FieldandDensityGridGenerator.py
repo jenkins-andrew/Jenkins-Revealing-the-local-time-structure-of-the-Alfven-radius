@@ -34,11 +34,11 @@ for field_trace_path in glob.glob('output*.txt'):
     alfvenVelocity = alfvenVelocityFuncForArray(B, rho)
     radialVelocity = radialVelocityFuncForArray(r, rho)
 
-    for i in range(len(alfvenVelocity)):
-        if alfvenVelocity[i] > radialVelocity[i]:
-            alfvenPointCheck.append(0)
-        else:
-            alfvenPointCheck.append(1)
+    # for i in range(len(alfvenVelocity)):
+    #     if alfvenVelocity[i] > radialVelocity[i]:
+    #         alfvenPointCheck.append(0)
+    #     else:
+    #         alfvenPointCheck.append(1)
 
-    np.savetxt('temporaryFile.txt', np.c_[x, y, z, B, rho, alfvenVelocity, radialVelocity, alfvenPointCheck], delimiter='\t')
+    np.savetxt('temporaryFile.txt', np.c_[x, y, z, B, rho, alfvenVelocity, radialVelocity], delimiter='\t')
 
