@@ -85,15 +85,14 @@ def produceTraceArrays(rmin, rmax, pmin=0, pmax=0, currentOn=False, modelType='V
                 print('Radius = %5.2f and Phi = %1.2f started going %1.0f' % (r, phi * 180 / np.pi, sign))
                 while r >= 1:
                     Br, Bt, Bp, Bx, By, Bz = fieldGenerator.Internal_Field(r, theta, phi, currentOn, modelType)
-                    if printTester % 1 == 0:
+                    if printTester % 10 == 0:
                         tempxInRJ.append(x)
                         tempyInRJ.append(y)
                         tempzInRJ.append(z)
                         tempBmag.append(magnitudeVector(Br, Bt, Bp))
-                    # print(magnitudeVector(Br, Bt, Bp))
-                    # print(magnitudeVector(Bx, By, Bz))
+                        print(r)
                     xMove, yMove, zMove = unitVector(Bx, By, Bz)
-                    step = np.log10(magnitudeVector(Bx, By, Bz)) * 10
+                    step = np.abs(np.log10(magnitudeVector(Bx, By, Bz))) * 100
                     x += sign * xMove / step
                     y += sign * yMove / step
                     z += sign * zMove / step
@@ -108,6 +107,6 @@ def produceTraceArrays(rmin, rmax, pmin=0, pmax=0, currentOn=False, modelType='V
                 yInRJ.extend(tempyInRJ)
                 zInRJ.extend(tempzInRJ)
                 Bmag.extend(tempBmag)
-        np.savetxt('newoutput/radius%0.0fto%0.0fphi%0.2fCurrentOn=%s.txt' % (rmin, rmax, phi0, currentOn),
+        np.savetxt('newoutput/radius%0.2fto%0.0fphi%0.2fCurrentOn=%s.txt' % (rmin, rmax, phi0, currentOn),
                    np.c_[xInRJ, yInRJ, zInRJ, Bmag], delimiter='\t')
     pass
