@@ -193,7 +193,7 @@ class field_models(object):
 
     # ================================================
 
-    def Internal_Field(self, r, theta, phi, model=None):
+    def Internal_Field(self, r, theta, phi, currentOn, model=None):
         '''
         DESCRIPTION:
              Jupiter internal field model.
@@ -460,7 +460,11 @@ Ulysses 17ev \n V1-17ev \n O6 \n O4 \n SHA \n \
             Btint += Bt[str(k)]
             Bpint += Bp[str(k)]
 
-        # Add current sheet if statement
+        if currentOn:
+            B = self.CAN_sheet(r, theta, phi)
+            Brint += B[0]
+            Btint += B[1]
+            Bpint += B[2]
 
         Bxint = Brint*np.sin(theta)*np.cos(phi) + Btint*np.cos(theta)*np.cos(phi) - Bpint*np.sin(phi)
         Byint = Brint*np.sin(theta)*np.sin(phi) + Btint*np.cos(theta)*np.sin(phi) + Bpint*np.cos(phi)
