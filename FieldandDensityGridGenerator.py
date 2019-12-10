@@ -26,28 +26,19 @@ def radialVelocityFuncForArray(r, totalMassDensityArray):
     return vr
 
 
-x, y, z, B, rho, alfvenPointCheck = [], [], [], [], [], []
+for field_trace_path in glob.glob('output*.txt'):
+    alfvenPointCheck = []
+    x, y, z, B, rho = np.loadtxt(field_trace_path, delimiter='\t', unpack=True)
 
-for field_trace_path in glob.glob('output/postFieldLine/*.txt'):
-    x0, y0, z0, B0, rho0 = np.loadtxt(field_trace_path, delimiter='\t', unpack=True)
-    x.extend(x0)
-    y.extend(y0)
-    z.extend(z0)
-    B.extend(B0)
-    rho.extend(rho0)
+    r = np.sqrt(x**2 + y**2 + z**2)
+    alfvenVelocity = alfvenVelocityFuncForArray(B, rho)
+    radialVelocity = radialVelocityFuncForArray(r, rho)
 
-np.savetxt('temporaryFile.txt', np.c_[x, y, z, B, rho], delimiter='\t')
-x, y, z, B, rho = np.loadtxt('temporaryFile.txt', delimiter='\t', unpack=True)
+    for i in range(len(alfvenVelocity)):
+        if alfvenVelocity[i] > radialVelocity[i]:
+            alfvenPointCheck.append(0)
+        else:
+            alfvenPointCheck.append(1)
 
-r = np.sqrt(x**2 + y**2 + z**2)
-alfvenVelocity = alfvenVelocityFuncForArray(B, rho)
-radialVelocity = radialVelocityFuncForArray(r, rho)
-
-for i in range(len(alfvenVelocity)):
-    if alfvenVelocity[i] > radialVelocity[i]:
-        alfvenPointCheck.append(0)
-    else:
-        alfvenPointCheck.append(1)
-
-np.savetxt('temporaryFile.txt', np.c_[x, r, z, B, rho, alfvenVelocity, radialVelocity, alfvenPointCheck], delimiter='\t')
+    np.savetxt('temporaryFile.txt', np.c_[x, y, z, B, rho, alfvenVelocity, radialVelocity, alfvenPointCheck], delimiter='\t')
 
