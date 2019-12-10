@@ -19,12 +19,13 @@ def sph_cart(r, theta, phi):
     return x, y, z
 
 
-x, y, z, B, rho, alfvenVelocity, radialVelocity, alfvenPointCheck = np.loadtxt('temporaryFile.txt', delimiter='\t', unpack=True)
+x, y, z, B = np.loadtxt('plotmagfieldlines.txt', delimiter='\t', unpack=True)
+xc, yc, zc, Bc = np.loadtxt('radius6to50phi0CurrentOn=True.txt', delimiter='\t', unpack=True)
 
 fig = plt.figure()
 ax = plt.axes(projection="3d")
-plt.plot(x, y, z, '-k')
-
+#plt.plot(x, y, z, '-k')
+plt.plot(xc, yc, zc, '--')
 # img = ax.scatter(x, y, z, c=B, cmap=plt.cm.get_cmap('gist_rainbow'))
 # clb = fig.colorbar(img)
 # clb.ax.set_title(r'B (nT)', fontsize=18)
