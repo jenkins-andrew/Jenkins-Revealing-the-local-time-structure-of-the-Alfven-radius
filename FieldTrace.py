@@ -66,11 +66,14 @@ def produceTraceArrays(currentOn=False, modelType='VIP4'):
     printTester = 0
     fieldGenerator = field_models()
     signArray = [-1, 1]  # To swap the direction of travel along the field line as well as fix array ordering
-
-    for phi0 in np.arange(0, 0 + 0.001, 0.25 * np.pi):
-        for r0 in np.arange(6, 50, 2):
+    rmin = 6
+    rmax = 50
+    pmin = 0
+    pmax = 0
+    xInRJ, yInRJ, zInRJ, Bmag = [], [], [], []
+    for phi0 in np.arange(pmin, pmax + 0.001, 0.25 * np.pi):
+        for r0 in np.arange(rmin, rmax + 0.001, 2):
             # Start a new field line trace
-            xInRJ, yInRJ, zInRJ, Bmag = [], [], [], []
             for sign in signArray:
                 # Start a new direction along the field line
                 theta = 0.5 * np.pi
@@ -90,7 +93,7 @@ def produceTraceArrays(currentOn=False, modelType='VIP4'):
                     # print(magnitudeVector(Br, Bt, Bp))
                     # print(magnitudeVector(Bx, By, Bz))
                     xMove, yMove, zMove = unitVector(Bx, By, Bz)
-                    step = np.log10(magnitudeVector(Bx, By, Bz)) * 100
+                    step = np.log10(magnitudeVector(Bx, By, Bz)) * 10
                     x += sign * xMove / step
                     y += sign * yMove / step
                     z += sign * zMove / step
@@ -105,7 +108,8 @@ def produceTraceArrays(currentOn=False, modelType='VIP4'):
                 yInRJ.extend(tempyInRJ)
                 zInRJ.extend(tempzInRJ)
                 Bmag.extend(tempBmag)
-            np.savetxt('newoutput/radius%0.0fphi%0.0fCurrentOn=%s.txt' % (r0, phi0, currentOn), np.c_[xInRJ, yInRJ, zInRJ, Bmag], delimiter=',')
+        np.savetxt('newoutput/radius%0.0fto%0.0fphi%0.0fCurrentOn=%s.txt' % (rmin, rmax, phi0, currentOn),
+                   np.c_[xInRJ, yInRJ, zInRJ, Bmag], delimiter=',')
     pass
 
 
