@@ -109,7 +109,7 @@ def produceTraceArrays(currentOn=False, modelType='VIP4'):
                 zInRJ.extend(tempzInRJ)
                 Bmag.extend(tempBmag)
         np.savetxt('newoutput/radius%0.0fto%0.0fphi%0.0fCurrentOn=%s.txt' % (rmin, rmax, phi0, currentOn),
-                   np.c_[xInRJ, yInRJ, zInRJ, Bmag], delimiter=',')
+                   np.c_[xInRJ, yInRJ, zInRJ, Bmag], delimiter='\t')
     pass
 
 
