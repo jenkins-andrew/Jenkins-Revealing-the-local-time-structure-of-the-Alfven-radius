@@ -55,19 +55,20 @@ def magnitudeVector(x0, x1, x2):
     return np.sqrt((np.square(vector)).sum())
 
 
-def produceTraceArrays(modelType='VIP4'):
+def produceTraceArrays(currentOn=False, modelType='VIP4'):
     """
     To do the field trace using a model over a range of phi and radii. Each phi and radius field trace is saved as a
     separate text file with the radius and phi value saved in the name. Made as a function such that this could be
     used as a class in the future.
     :param modelType: Default VIP4
+    :param currentOn: Default False
     """
     printTester = 0
     fieldGenerator = field_models()
     signArray = [-1, 1]  # To swap the direction of travel along the field line as well as fix array ordering
 
-    for phi0 in np.arange(20*np.pi/180, 20*np.pi/180 + 0.001, 0.25 * np.pi):
-        for r0 in np.arange(30, 30+1, 2):
+    for phi0 in np.arange(0, 0 + 0.001, 0.25 * np.pi):
+        for r0 in np.arange(6, 50, 2):
             # Start a new field line trace
             xInRJ, yInRJ, zInRJ, Bmag = [], [], [], []
             for sign in signArray:
@@ -80,7 +81,7 @@ def produceTraceArrays(modelType='VIP4'):
                 x, y, z = sph_cart(r, theta, phi)
                 print('Radius = %5.2f and Phi = %1.2f started going %1.0f' % (r, phi * 180 / np.pi, sign))
                 while r >= 1:
-                    Br, Bt, Bp, Bx, By, Bz = fieldGenerator.Internal_Field(r, theta, phi, modelType)
+                    Br, Bt, Bp, Bx, By, Bz = fieldGenerator.Internal_Field(r, theta, phi, currentOn, modelType)
                     if printTester % 1 == 0:
                         tempxInRJ.append(x)
                         tempyInRJ.append(y)
@@ -104,7 +105,7 @@ def produceTraceArrays(modelType='VIP4'):
                 yInRJ.extend(tempyInRJ)
                 zInRJ.extend(tempzInRJ)
                 Bmag.extend(tempBmag)
-            np.savetxt('newoutput/radius%0.0fphi%0.0f.txt' % (r0, phi0), np.c_[xInRJ, yInRJ, zInRJ, Bmag], delimiter=',')
+            np.savetxt('newoutput/radius%0.0fphi%0.0fCurrentOn=%s.txt' % (r0, phi0, currentOn), np.c_[xInRJ, yInRJ, zInRJ, Bmag], delimiter=',')
     pass
 
 
