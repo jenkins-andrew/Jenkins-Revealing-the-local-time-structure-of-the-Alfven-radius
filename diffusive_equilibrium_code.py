@@ -227,9 +227,9 @@ labels = ['S$^{+}$', 'S$^{++}$', 'S$^{+++}$', 'O$^{+}$', 'O$^{++}$', 'Na$^{+}$',
 
 # copy a B field trace path here.
 
-for field_trace_path in glob.glob('output/*.txt'):
+for field_trace_path in glob.glob('newoutput/*.txt'):
 
-    x, y, z, B = np.loadtxt(field_trace_path, delimiter=',', unpack=True)
+    x, y, z, B = np.loadtxt(field_trace_path, delimiter='\t', unpack=True)
     rho = np.sqrt(x ** 2 + y ** 2)
     print(field_trace_path)
 
@@ -595,7 +595,7 @@ for field_trace_path in glob.glob('output/*.txt'):
     nAverage = TotalNumberDensity(ni, ne)
     massDensity = totalMassDensity(ni, ne, m_ions, ME)
 
-    np.savetxt('output/postFieldLine/radius%0.0ftheta%0.0f.txt' % (round(np.amax(x)), int(np.arctan2(y[0], z[0]))), np.c_[x, y, z, B, massDensity], delimiter='\t')
+    np.savetxt(field_trace_path, np.c_[x, y, z, B, massDensity], delimiter='\t')
 #
 #
 #
