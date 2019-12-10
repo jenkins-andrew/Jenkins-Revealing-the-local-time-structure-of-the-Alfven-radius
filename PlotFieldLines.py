@@ -19,7 +19,7 @@ def sph_cart(r, theta, phi):
     return x, y, z
 
 
-x, y, z, B = np.loadtxt('plotmagfieldlines.txt', delimiter=',', unpack=True)
+x, y, z, B, rho, alfvenVelocity, radialVelocity, alfvenPointCheck = np.loadtxt('temporaryFile.txt', delimiter='\t', unpack=True)
 
 fig = plt.figure()
 ax = plt.axes(projection="3d")
