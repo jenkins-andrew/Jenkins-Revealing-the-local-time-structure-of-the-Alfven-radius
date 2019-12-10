@@ -4,7 +4,7 @@ The main method to allow the whole plotting and tracing to work
 
 import numpy as np
 import FieldTrace
-
+import diffusive_equilibrium_code
 majorRunChoice = 0
 
 while True:
@@ -27,3 +27,7 @@ if (majorRunChoice == 1) | (majorRunChoice == 2):
     pmax = float(input("Enter final phi in degrees:\n"))
     currentSheet = bool(input("Current sheet on? True or False:\n"))
     FieldTrace.produceTraceArrays(rmin, rmax, pmin*np.pi/180, pmax*np.pi/180, currentSheet)
+elif majorRunChoice == 2:
+    diffusive_equilibrium_code.runDiffusiveCode()
+else:
+    print("Not ready yet... Sorry")
