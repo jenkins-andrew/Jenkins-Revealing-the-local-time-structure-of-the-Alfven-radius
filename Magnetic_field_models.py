@@ -461,10 +461,10 @@ Ulysses 17ev \n V1-17ev \n O6 \n O4 \n SHA \n \
             Bpint += Bp[str(k)]
 
         if currentOn:
-            B = self.CAN_sheet(r, theta, phi)
-            Brint += B[0]
-            Btint += B[1]
-            Bpint += B[2]
+            Bcan = self.CAN_sheet(r, theta, phi)
+            Brint += Bcan[0]
+            Btint += Bcan[1]
+            Bpint += Bcan[2]
 
         Bxint = Brint*np.sin(theta)*np.cos(phi) + Btint*np.cos(theta)*np.cos(phi) - Bpint*np.sin(phi)
         Byint = Brint*np.sin(theta)*np.sin(phi) + Btint*np.cos(theta)*np.sin(phi) + Bpint*np.cos(phi)
