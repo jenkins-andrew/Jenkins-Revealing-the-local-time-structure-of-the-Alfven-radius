@@ -67,7 +67,7 @@ def produceTraceArrays(rmin, rmax, pmin=0, pmax=0, currentOn=False, modelType='V
     :param modelType: Default VIP4
     :param currentOn: Default False
     """
-    printTester = 0
+    printTester = 1
     fieldGenerator = field_models()
     signArray = [-1, 1]  # To swap the direction of travel along the field line as well as fix array ordering
     xInRJ, yInRJ, zInRJ, Bmag = [], [], [], []
@@ -90,7 +90,7 @@ def produceTraceArrays(rmin, rmax, pmin=0, pmax=0, currentOn=False, modelType='V
                         tempyInRJ.append(y)
                         tempzInRJ.append(z)
                         tempBmag.append(magnitudeVector(Br, Bt, Bp))
-                        print(r)
+                        print(xMove, yMove, zMove)
                     xMove, yMove, zMove = unitVector(Bx, By, Bz)
                     step = np.abs(np.log10(magnitudeVector(Bx, By, Bz))) * 100
                     x += sign * xMove / step
@@ -107,6 +107,6 @@ def produceTraceArrays(rmin, rmax, pmin=0, pmax=0, currentOn=False, modelType='V
                 yInRJ.extend(tempyInRJ)
                 zInRJ.extend(tempzInRJ)
                 Bmag.extend(tempBmag)
-        np.savetxt('newoutput/radius%0.2fto%0.0fphi%0.2fCurrentOn=%s.txt' % (rmin, rmax, phi0, currentOn),
+        np.savetxt('newoutput/radius%0.2fto%0.2fphi%0.2fCurrentOn=%s.txt' % (rmin, rmax, phi0, currentOn),
                    np.c_[xInRJ, yInRJ, zInRJ, Bmag], delimiter='\t')
     pass
