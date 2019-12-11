@@ -6,6 +6,7 @@ import numpy as np
 import FieldTrace
 import diffusive_equilibrium_code
 import PlotFieldLines
+import FieldandDensityGridGenerator
 
 majorRunChoice = 0
 
@@ -35,7 +36,7 @@ while True:
     try:
         majorRunChoice = int(input("(1) Generate field lines \n"
                                    "(2) Generate field lines and total mass density along the lines\n"
-                                   "(3) Just plot\n"))
+                                   "(3) Something else\n"))
     except ValueError:
         print("Not a valid input:")
         continue
@@ -55,18 +56,32 @@ if (majorRunChoice == 1) | (majorRunChoice == 2):
     elif (currentSheet == "Y") | (currentSheet == "y"):
         currentSheet = True
     FieldTrace.produceTraceArrays(rmin, rmax, pmin * np.pi / 180, pmax * np.pi / 180, currentSheet)
+
     if majorRunChoice == 1:
         plotChoice = plotChoiceInput()
         if plotChoice == 1:
             if pmax == pmin:
-                path = 'newoutput/radius%0.2fto%0.2fphi%0.2fCurrentOn=%s.txt' % (rmin, rmax, pmax*np.pi/180, currentSheet)
+                path = 'newoutput/radius%0.2fto%0.2fphi%0.2fCurrentOn=%s.txt' % (
+                    rmin, rmax, pmax * np.pi / 180, currentSheet)
                 PlotFieldLines.plotOnePhiSet(path)
             else:
                 for phi0 in np.arange(pmin, pmax + 0.001, 0.25 * np.pi):
-                    path = 'newoutput/radius%0.2fto%0.2fphi%0.2fCurrentOn=%s.txt' % (rmin, rmax, phi0*np.pi/180, currentSheet)
+                    path = 'newoutput/radius%0.2fto%0.2fphi%0.2fCurrentOn=%s.txt' % (
+                        rmin, rmax, phi0 * np.pi / 180, currentSheet)
                     PlotFieldLines.plotOnePhiSet(path)
 
-elif majorRunChoice == 2:
-    diffusive_equilibrium_code.runDiffusiveCode()
+    elif majorRunChoice == 2:
+        if pmax == pmin:
+            path = 'newoutput/radius%0.2fto%0.2fphi%0.2fCurrentOn=%s.txt' % (
+                rmin, rmax, pmax * np.pi / 180, currentSheet)
+            diffusive_equilibrium_code.runDiffusiveCode(path)
+            FieldandDensityGridGenerator.generateAlfvenAndRadial(path)
+        else:
+            for phi0 in np.arange(pmin, pmax + 0.001, 0.25 * np.pi):
+                path = 'newoutput/radius%0.2fto%0.2fphi%0.2fCurrentOn=%s.txt' % (
+                    rmin, rmax, phi0 * np.pi / 180, currentSheet)
+                diffusive_equilibrium_code.runDiffusiveCode(path)
+                FieldandDensityGridGenerator.generateAlfvenAndRadial(path)
+
 else:
     print("Not ready yet... Sorry")
