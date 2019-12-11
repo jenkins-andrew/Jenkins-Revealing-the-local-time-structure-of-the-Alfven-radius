@@ -82,6 +82,10 @@ if (majorRunChoice == 1) | (majorRunChoice == 2):
                     rmin, rmax, phi0 * np.pi / 180, currentSheet)
                 diffusive_equilibrium_code.runDiffusiveCode(path)
                 FieldandDensityGridGenerator.generateAlfvenAndRadial(path)
-
+        plotChoice = plotChoiceInput()
+        if plotChoice == 1:
+            path = 'newoutput/radius%0.2fto%0.2fphi%0.2fCurrentOn=%s.txt' % (
+                rmin, rmax, pmax * np.pi / 180, currentSheet)
+            PlotFieldLines.plotCorotation(path)
 else:
     print("Not ready yet... Sorry")
