@@ -63,8 +63,8 @@ def plotCorotation(path):
     x, r, z, B, rho, alfvenVelocity, radialVelocity = np.loadtxt(path, delimiter='\t', unpack=True)
     maxR = 30
     minR = 6
-    xtest = np.arange(-maxR, maxR + 1, 0.5)
-    ztest = np.arange(-12, 12 + 1, 0.5)
+    xtest = np.arange(-maxR, maxR + 0.5, 0.5)
+    ztest = np.arange(np.amin(z), np.amax(z) + 0.5, 0.5)
     xtest, ztest = np.meshgrid(xtest, ztest)
 
     corotationMask = (radialVelocity < alfvenVelocity)
@@ -143,6 +143,7 @@ def plotCorotation(path):
     plt.xticks(size=18)
     plt.yticks(size=18)
     plt.xlim(minR)
+    plt.ylim(np.amin(z[corotationMask]), np.amax(z[corotationMask]))
     plt.tight_layout()
 
     # plt.figure()
