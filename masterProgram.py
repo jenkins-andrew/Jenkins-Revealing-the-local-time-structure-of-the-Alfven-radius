@@ -12,9 +12,6 @@ import os
 majorRunChoice = 0
 
 
-# plotChoice = 0
-
-
 def plotChoiceInput():
     choice = 0
     while True:
