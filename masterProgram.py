@@ -25,9 +25,11 @@ if (majorRunChoice == 1) | (majorRunChoice == 2):
     rmax = float(input("Enter maximum radius:\n"))
     pmin = float(input("Enter starting phi in degrees:\n"))
     pmax = float(input("Enter final phi in degrees:\n"))
-    currentSheet = input("Current sheet on? True or False:\n")
-    if currentSheet == "False":
+    currentSheet = input("Current sheet on? Y or N:\n")
+    if (currentSheet == "N") | (currentSheet == "n"):
         currentSheet = False
+    elif (currentSheet == "Y") | (currentSheet == "y"):
+        currentSheet = True
     FieldTrace.produceTraceArrays(rmin, rmax, pmin*np.pi/180, pmax*np.pi/180, currentSheet)
 elif majorRunChoice == 2:
     diffusive_equilibrium_code.runDiffusiveCode()
