@@ -90,7 +90,7 @@ def produceTraceArrays(rmin, rmax, pmin=0, pmax=0, currentOn=False, modelType='V
                         tempyInRJ.append(y)
                         tempzInRJ.append(z)
                         tempBmag.append(magnitudeVector(Br, Bt, Bp))
-                        print(xMove, yMove, zMove)
+                        #print(xMove, yMove, zMove)
                     xMove, yMove, zMove = unitVector(Bx, By, Bz)
                     step = np.abs(np.log10(magnitudeVector(Bx, By, Bz))) * 100
                     x += sign * xMove / step
