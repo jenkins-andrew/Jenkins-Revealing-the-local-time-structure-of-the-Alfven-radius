@@ -7,6 +7,7 @@ import FieldTrace
 import diffusive_equilibrium_code
 import PlotFieldLines
 import FieldandDensityGridGenerator
+import os
 
 majorRunChoice = 0
 
@@ -36,7 +37,7 @@ while True:
     try:
         majorRunChoice = int(input("(1) Generate field lines \n"
                                    "(2) Generate field lines and total mass density along the lines\n"
-                                   "(3) Something else\n"))
+                                   "(3) Just print\n"))
     except ValueError:
         print("Not a valid input:")
         continue
@@ -88,4 +89,19 @@ if (majorRunChoice == 1) | (majorRunChoice == 2):
                 rmin, rmax, pmax * np.pi / 180, currentSheet)
             PlotFieldLines.plotCorotation(path)
 else:
-    print("Not ready yet... Sorry")
+    files = [f for f in os.listdir('newoutput/')]
+    print("What would you like to print?:")
+    for i in range(len(files)):
+        print("(%i) %s" % (i, files[i]))
+    fileNo = int(input("\n"))
+    path = "newoutput/"+files[fileNo]
+    print(path)
+    size = len(np.loadtxt(path)[0])
+
+    if size == 4:
+        PlotFieldLines.plotOnePhiSet(path)
+    elif size == 7:
+        PlotFieldLines.plotCorotation(path)
+    else:
+        print("Cannot currently print file.")
+
