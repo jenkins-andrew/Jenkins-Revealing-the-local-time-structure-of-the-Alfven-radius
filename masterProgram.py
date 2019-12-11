@@ -5,7 +5,31 @@ The main method to allow the whole plotting and tracing to work
 import numpy as np
 import FieldTrace
 import diffusive_equilibrium_code
+import PlotFieldLines
+
 majorRunChoice = 0
+
+
+# plotChoice = 0
+
+
+def plotChoiceInput():
+    choice = 0
+    while True:
+        try:
+            choice = int(input("\nWould you like to plot?: \n"
+                               "(1) Yes, plot the field lines\n"
+                               "(2) No \n"))
+        except ValueError:
+            print("Not a valid input:")
+            continue
+        if (choice > 2) | (choice < 1):
+            print("Not a valid input:")
+        else:
+            break
+
+    return choice
+
 
 while True:
     try:
@@ -30,7 +54,18 @@ if (majorRunChoice == 1) | (majorRunChoice == 2):
         currentSheet = False
     elif (currentSheet == "Y") | (currentSheet == "y"):
         currentSheet = True
-    FieldTrace.produceTraceArrays(rmin, rmax, pmin*np.pi/180, pmax*np.pi/180, currentSheet)
+    FieldTrace.produceTraceArrays(rmin, rmax, pmin * np.pi / 180, pmax * np.pi / 180, currentSheet)
+    if majorRunChoice == 1:
+        plotChoice = plotChoiceInput()
+        if plotChoice == 1:
+            if pmax == pmin:
+                path = 'newoutput/radius%0.2fto%0.2fphi%0.2fCurrentOn=%s.txt' % (rmin, rmax, pmax*np.pi/180, currentSheet)
+                PlotFieldLines.plotOnePhiSet(path)
+            else:
+                for phi0 in np.arange(pmin, pmax + 0.001, 0.25 * np.pi):
+                    path = 'newoutput/radius%0.2fto%0.2fphi%0.2fCurrentOn=%s.txt' % (rmin, rmax, phi0*np.pi/180, currentSheet)
+                    PlotFieldLines.plotOnePhiSet(path)
+
 elif majorRunChoice == 2:
     diffusive_equilibrium_code.runDiffusiveCode()
 else:
