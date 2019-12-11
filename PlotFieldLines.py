@@ -63,7 +63,7 @@ def plotCorotation(path):
     x, r, z, B, rho, alfvenVelocity, radialVelocity = np.loadtxt(path, delimiter='\t', unpack=True)
     maxR = 30
     minR = 6
-    xtest = np.arange(-maxR, maxR + 0.5, 0.5)
+    xtest = np.arange(minR, np.amax(x) + 0.5, 0.5)
     ztest = np.arange(np.amin(z), np.amax(z) + 0.5, 0.5)
     xtest, ztest = np.meshgrid(xtest, ztest)
 
@@ -134,8 +134,9 @@ def plotCorotation(path):
     plt.figure()
     heatmap = plt.contourf(xtest, ztest, NGrid, cmap=plt.cm.get_cmap('gist_rainbow'), locator=ticker.LogLocator(),
                            alpha=0.4)
-    lines = plt.contour(xtest, ztest, NGrid, 5, colors='k')
-    plt.clabel(lines, inline=1, colors='k')
+    plt.plot(x, z, 'k')
+    #lines = plt.contour(xtest, ztest, NGrid, 5, colors='k')
+    #plt.clabel(lines, inline=1, colors='k')
     clb = plt.colorbar(heatmap)
     # clb.ax.set_title(r'(kgm$^{-1}$)', fontsize=18)
     plt.xlabel('x $(R_J)$', fontsize=18)
@@ -143,7 +144,7 @@ def plotCorotation(path):
     plt.xticks(size=18)
     plt.yticks(size=18)
     plt.xlim(minR)
-    plt.ylim(np.amin(z[corotationMask]), np.amax(z[corotationMask]))
+    #plt.ylim(np.amin(z[corotationMask]), np.amax(z[corotationMask]))
     plt.tight_layout()
 
     # plt.figure()
