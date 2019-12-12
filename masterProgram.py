@@ -44,8 +44,8 @@ while True:
         break
 
 if (majorRunChoice == 1) | (majorRunChoice == 2):
-    rmin = float(input("Enter minimum radius:\n"))
-    rmax = float(input("Enter maximum radius:\n"))
+    rmin = float(input("Enter starting radius:\n"))
+    rmax = float(input("Enter final radius:\n"))
     pmin = float(input("Enter starting phi in degrees:\n"))
     pmax = float(input("Enter final phi in degrees:\n"))
     currentSheet = input("Current sheet on? Y or N:\n")
