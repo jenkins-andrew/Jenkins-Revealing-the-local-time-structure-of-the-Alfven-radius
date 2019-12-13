@@ -206,7 +206,7 @@ def radialVelocityFuncAtZ(r, z, species, massArray):
     :return: radial velocity in m/s
     """
     vr = 500/(2 * massDensityAtZFromEquator(r, z, species, massArray) *
-              radialScaleHeight(x) * np.pi * r * 71492e3 ** 2)
+              radialScaleHeight(r) * np.pi * r * 71492e3 ** 2)
     return vr
 
 
@@ -313,11 +313,11 @@ for r in np.arange(6, 100, 0.5):
 
 # Save outputs
 np.savetxt('alfvenCheck.txt', np.c_[xInRJ, yInRJ, equatorialMagField, numberDensity, alfvenVelocity, radialVelocity,
-                                    alfvenPointCheck], delimiter='\t', header='x\ty\tb\tp\tAlfven\tCorotation\tCheck')
+                                    alfvenPointCheck], delimiter='\t', header='x\ty\tb\tp\tAlfvenV\tRadialV\tCheck')
 # np.savetxt('scaleheighttest.txt', np.c_[radius, scaleHeight], delimiter='\t', header='r\tscaleHeight')
 # No longer needed
 
 np.savetxt('zPlasmaDensity.txt', np.c_[radiusForZDensity, zInRJ, plasmaZDensity, radialVelocityAtZ, alfvenVelocityAtZ],
-           delimiter='\t', header='r\tz\tplasmaZDensity')
+           delimiter='\t', header='r\tz\tplasmaZDensity\tRadialV\tAflvenV')
 
 # np.savetxt('alfvenradial.txt', np.c_[radius, alfvenVelocityATPi, radialVelocityAtPi], delimiter='\t', header='r\tscaleHeight')
