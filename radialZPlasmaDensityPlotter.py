@@ -5,7 +5,7 @@ from scipy.interpolate import griddata
 
 
 r, z, plasmaDensity, radialVelocityAtZ, alfvenVelocityAtZ = np.loadtxt('zPlasmaDensity.txt', delimiter='\t', unpack=True)
-xB, yB, zB, BB = np.loadtxt('radius6.00to100.00phi0.00CurrentOn=False.txt', delimiter='\t', unpack=True)
+xB, yB, zB, BB = np.loadtxt('newoutput/radius6.00to100.00phi0.00CurrentOn=False.txt', delimiter='\t', unpack=True)
 
 
 maxR = 100
