@@ -2,7 +2,6 @@ import numpy as np
 from Magnetic_field_models import field_models
 
 
-
 def equatorialMagneticField(r, phi):
     """
     Finds the equatorial magnetic field strength using Vogt et. al 2011 method
@@ -59,11 +58,11 @@ def equatorialTotalPlasmaNumberDensity(r, species):
 
 def averageAmu(r, species, massAmuArray):
     """
-
-    :param r:
-    :param species:
-    :param massAmuArray:
-    :return:
+    The reduced mass for the plasma
+    :param r: in RJ
+    :param species: List of species with parameters needed for equatorialTotalPlasmaNumberDensity()
+    :param massAmuArray: List of species with masses in amu
+    :return: Reduced mass in amu
     """
     sumofmasses = 0
     N = []
@@ -83,10 +82,10 @@ def averageAmu(r, species, massAmuArray):
 
 def totalMassDensity(r, species, massAmuArray):
     """
-
+    Total mass density of the plasma in kg/m^3
     :param r: radius in R_J
-    :param species:
-    :param massAmuArray: in AMU
+    :param species: List of species with parameters needed for equatorialTotalPlasmaNumberDensity()
+    :param massAmuArray: List of species with masses in amu
     :return: Mass Density in kg/m^3
     """
     M = 0
@@ -104,12 +103,12 @@ def totalMassDensity(r, species, massAmuArray):
 
 def alfvenVelocityAtRPhi(r, phi, species, massArray):
     """
-
-    :param r:
-    :param phi:
-    :param species:
-    :param massArray:
-    :return:
+    Alfven velocity at a given r and phi
+    :param r: radius in RJ
+    :param phi: in radians from sun, going anticlockwise
+    :param species: List of species with parameters needed for equatorialTotalPlasmaNumberDensity()
+    :param massArray: List of species with masses in amu
+    :return: Alfven velocity in m/s
     """
 
     Va = equatorialMagneticField(r, phi) * 1e-9 / np.sqrt(1.25663706212e-6 * totalMassDensity(r, species, massArray))
@@ -119,18 +118,19 @@ def alfvenVelocityAtRPhi(r, phi, species, massArray):
 
 def alfvenVelocityAtRThetaPhi(fieldModel, r, theta, phi, species, massArray, model='VIP4'):
     """
-
-    :param fieldModel:
-    :param r:
-    :param theta:
-    :param phi:
-    :param species:
-    :param massArray:
-    :param model:
-    :return:
+    Alfven velocity at a given r, theta and phi
+    :param fieldModel: an object to make the field model work
+    :param r: radius in RJ
+    :param theta: the angle from the pole in radians
+    :param phi: in radians from sun, going anticlockwise
+    :param species: List of species with parameters needed for equatorialTotalPlasmaNumberDensity()
+    :param massArray: List of species with masses in amu
+    :param model: The type of model being used to find the magnetic field at r, theta and phi
+    :return: Alfven velocity in m/s
     """
 
-    Va = averageMagFieldModel(fieldModel, r, theta, phi, model) * 1e-9 / np.sqrt(1.25663706212e-6 * totalMassDensity(r, species, massArray))
+    Va = averageMagFieldModel(fieldModel, r, theta, phi, model) * 1e-9 / np.sqrt(1.25663706212e-6 * totalMassDensity(
+        r, species, massArray))
 
     return Va
 
@@ -159,11 +159,11 @@ def radialScaleHeight(r):
 
 def densityAtZFromEquator(z, r, species):
     """
-
-    :param z:
-    :param r:
-    :param species:
-    :return:
+    Plasma density at height z from the equator
+    :param z: in RJ
+    :param r: in RJ
+    :param species: List of species with parameters needed for equatorialTotalPlasmaNumberDensity()
+    :return: plasma density in cm^-3
     """
 
     nZ = equatorialTotalPlasmaNumberDensity(r, species) * np.exp(-1 * (z / radialScaleHeight(r)) ** 2)
@@ -172,12 +172,12 @@ def densityAtZFromEquator(z, r, species):
 
 def massDensityAtZFromEquator(r, z, species, massArray):
     """
-
-    :param z:
-    :param r:
-    :param species:
-    :param massArray:
-    :return:
+    Mass density at height z from the equator
+    :param z: in RJ
+    :param r: in RJ
+    :param species: List of species with parameters needed for equatorialTotalPlasmaNumberDensity()
+    :param massArray: List of species with masses in amu
+    :return: mass in kg/m^3
     """
 
     mZ = totalMassDensity(r, species, massArray) * np.exp(-1 * (z / radialScaleHeight(r)) ** 2)
@@ -186,11 +186,11 @@ def massDensityAtZFromEquator(r, z, species, massArray):
 
 def radialVelocityFunc(r, species, massArray):
     """
-
-    :param r:
-    :param species:
-    :param massArray:
-    :return:
+    The radial velocity at distance r
+    :param r: radius in RJ
+    :param species: List of species with parameters needed for equatorialTotalPlasmaNumberDensity()
+    :param massArray: List of species with masses in amu
+    :return: radial velocity in m/s
     """
     vr = 500/(2 * totalMassDensity(r, species, massArray) *
               radialScaleHeight(r) * np.pi * r * 71492e3 ** 2)
@@ -199,24 +199,25 @@ def radialVelocityFunc(r, species, massArray):
 
 def radialVelocityFuncAtZ(r, z, species, massArray):
     """
-
-    :param r:
-    :param species:
-    :param massArray:
-    :return:
+    The radial velocity at height z
+    :param r: radius in RJ
+    :param species: List of species with parameters needed for equatorialTotalPlasmaNumberDensity()
+    :param massArray: List of species with masses in amu
+    :return: radial velocity in m/s
     """
+    x = np.sqrt(r**2 - z**2)  # Using trig to find distance along equator
     vr = 500/(2 * massDensityAtZFromEquator(r, z, species, massArray) *
-              radialScaleHeight(r) * np.pi * r * 71492e3 ** 2)
+              radialScaleHeight(x) * np.pi * r * 71492e3 ** 2)
     return vr
 
 
 def magnitudeVector(x0, x1, x2):
     """
-
+    Returns the magnitude of a vector with 3 components
     :param x0:
     :param x1:
     :param x2:
-    :return:
+    :return: The magnitude of the 3 components
     """
     vector = [x0, x1, x2]
     return np.sqrt((np.square(vector)).sum())
@@ -224,13 +225,13 @@ def magnitudeVector(x0, x1, x2):
 
 def averageMagFieldModel(fieldObject, r, theta, phi, model='VIP4'):
     """
-
-    :param fieldObject:
-    :param r:
-    :param theta:
-    :param phi:
-    :param model:
-    :return:
+    Finds the magnitude of the magnetic field at a position dictated by r, theta and phi
+    :param fieldObject: an object to make the field model work
+    :param r: radius in RJ
+    :param theta: the angle from the pole in radians
+    :param phi: in radians from sun, going anticlockwise
+    :param model: the type of model for the magnetic field
+    :return: the magnitude of the magnetic field in nT
     """
     br, bt, bp, bx, by, bz = fieldObject.Internal_Field(r, theta, phi, False, model)
     b = magnitudeVector(br, bt, bp)
@@ -243,15 +244,15 @@ yInRJ = []
 zInRJ = []
 equatorialMagField = []
 numberDensity = []
-radius = []
-alfvenVelocity = []
+# radius = []
 alfvenPointCheck = []
 plasmaZDensity = []
 radiusForZDensity = []
 radialVelocity = []
-radialVelocityAtPi = []
-alfvenVelocityATPi = []
+# radialVelocityAtPi = []
 radialVelocityAtZ = []
+alfvenVelocity = []
+# alfvenVelocityATPi = []
 alfvenVelocityAtZ = []
 
 # No longer have to be in the same order
@@ -279,11 +280,11 @@ speciesMass = {'e-': 0.00054858,
 fieldGenerator = field_models()
 # Calculate radius, scale height, x, y, equatorial magnetic field, Alfven and radial velocity
 # and number density by iterating over radius and angle
-for r in np.arange(6, 100+0.1, 0.5):
-    radius.append(r)
-    # scaleHeight.append(radialScaleHeight(r)) # No longer needed
-    radialVelocityAtPi.append(radialVelocityFunc(r, speciesList, speciesMass))
-    alfvenVelocityATPi.append(alfvenVelocityAtRPhi(r, 0, speciesMass, speciesMass))
+for r in np.arange(6, 100, 0.5):
+    # radius.append(r) # No longer needed
+    # scaleHeight.append(radialScaleHeight(r))
+    # radialVelocityAtPi.append(radialVelocityFunc(r, speciesList, speciesMass))
+    # alfvenVelocityATPi.append(alfvenVelocityAtRPhi(r, 0, speciesMass, speciesMass))
     for phi in np.arange(0, 2 * np.pi + 0.01, 0.05):
         xInRJ.append(r * np.cos(phi))
         yInRJ.append(r * np.sin(phi))
@@ -301,7 +302,7 @@ for i in range(len(alfvenVelocity)):
     else:
         alfvenPointCheck.append(1)
 
-for r in np.arange(6, 100+0.1, 0.5):
+for r in np.arange(6, 100, 0.5):
     for z in np.arange(-12, 12, 0.1):
         theta = np.arctan2(z, r)
         radiusForZDensity.append(r)
@@ -317,6 +318,7 @@ np.savetxt('alfvenCheck.txt', np.c_[xInRJ, yInRJ, equatorialMagField, numberDens
 # np.savetxt('scaleheighttest.txt', np.c_[radius, scaleHeight], delimiter='\t', header='r\tscaleHeight')
 # No longer needed
 
-np.savetxt('zPlasmaDensity.txt', np.c_[radiusForZDensity, zInRJ, plasmaZDensity, radialVelocityAtZ, alfvenVelocityAtZ], delimiter='\t', header='r\tz\tplasmaZDensity')
+np.savetxt('zPlasmaDensity.txt', np.c_[radiusForZDensity, zInRJ, plasmaZDensity, radialVelocityAtZ, alfvenVelocityAtZ],
+           delimiter='\t', header='r\tz\tplasmaZDensity')
 
-np.savetxt('alfvenradial.txt', np.c_[radius, alfvenVelocityATPi, radialVelocityAtPi], delimiter='\t', header='r\tscaleHeight')
+# np.savetxt('alfvenradial.txt', np.c_[radius, alfvenVelocityATPi, radialVelocityAtPi], delimiter='\t', header='r\tscaleHeight')
