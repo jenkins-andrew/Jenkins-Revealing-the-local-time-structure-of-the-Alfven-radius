@@ -279,12 +279,12 @@ speciesMass = {'e-': 0.00054858,
 fieldGenerator = field_models()
 # Calculate radius, scale height, x, y, equatorial magnetic field, Alfven and radial velocity
 # and number density by iterating over radius and angle
-for r in np.arange(6, 100, 0.5):
+for r in np.arange(6, 100+0.1, 0.5):
     radius.append(r)
     # scaleHeight.append(radialScaleHeight(r)) # No longer needed
     radialVelocityAtPi.append(radialVelocityFunc(r, speciesList, speciesMass))
     alfvenVelocityATPi.append(alfvenVelocityAtRPhi(r, 0, speciesMass, speciesMass))
-    for phi in np.arange(0, 2 * np.pi + 0.03, 0.05):
+    for phi in np.arange(0, 2 * np.pi + 0.01, 0.05):
         xInRJ.append(r * np.cos(phi))
         yInRJ.append(r * np.sin(phi))
         equatorialMagField.append(equatorialMagneticField(r, phi))
@@ -301,7 +301,7 @@ for i in range(len(alfvenVelocity)):
     else:
         alfvenPointCheck.append(1)
 
-for r in np.arange(6, 100, 0.5):
+for r in np.arange(6, 100+0.1, 0.5):
     for z in np.arange(-12, 12, 0.1):
         theta = np.arctan2(z, r)
         radiusForZDensity.append(r)
