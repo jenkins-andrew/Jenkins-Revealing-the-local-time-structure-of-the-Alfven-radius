@@ -30,6 +30,10 @@ def plotChoiceInput():
     return choice
 
 
+def pathString(rminIn, rmaxIn, pmaxIn, currentSheetIn):
+    return 'newoutput/radius%0.2fto%0.2fphi%0.2fCurrentOn=%s.txt' % (rminIn, rmaxIn, pmaxIn * np.pi / 180, currentSheetIn)
+
+
 while True:
     try:
         majorRunChoice = int(input("(1) Generate field lines \n"
@@ -59,31 +63,26 @@ if (majorRunChoice == 1) | (majorRunChoice == 2):
         plotChoice = plotChoiceInput()
         if plotChoice == 1:
             if pmax == pmin:
-                path = 'newoutput/radius%0.2fto%0.2fphi%0.2fCurrentOn=%s.txt' % (
-                    rmin, rmax, pmax * np.pi / 180, currentSheet)
+                path = pathString(rmin, rmax, pmax, currentSheet)
                 PlotFieldLines.plotOnePhiSet(path)
             else:
                 for phi0 in np.arange(pmin, pmax + 0.001, 0.25 * np.pi):
-                    path = 'newoutput/radius%0.2fto%0.2fphi%0.2fCurrentOn=%s.txt' % (
-                        rmin, rmax, phi0 * np.pi / 180, currentSheet)
+                    path = pathString(rmin, rmax, phi0, currentSheet)
                     PlotFieldLines.plotOnePhiSet(path)
 
     elif majorRunChoice == 2:
         if pmax == pmin:
-            path = 'newoutput/radius%0.2fto%0.2fphi%0.2fCurrentOn=%s.txt' % (
-                rmin, rmax, pmax * np.pi / 180, currentSheet)
+            path = pathString(rmin, rmax, pmax, currentSheet)
             diffusive_equilibrium_code.runDiffusiveCode(path)
             FieldandDensityGridGenerator.generateAlfvenAndRadial(path)
         else:
             for phi0 in np.arange(pmin, pmax + 0.001, 0.25 * np.pi):
-                path = 'newoutput/radius%0.2fto%0.2fphi%0.2fCurrentOn=%s.txt' % (
-                    rmin, rmax, phi0 * np.pi / 180, currentSheet)
+                path = pathString(rmin, rmax, phi0, currentSheet)
                 diffusive_equilibrium_code.runDiffusiveCode(path)
                 FieldandDensityGridGenerator.generateAlfvenAndRadial(path)
         plotChoice = plotChoiceInput()
         if plotChoice == 1:
-            path = 'newoutput/radius%0.2fto%0.2fphi%0.2fCurrentOn=%s.txt' % (
-                rmin, rmax, pmax * np.pi / 180, currentSheet)
+            path = pathString(rmin, rmax, pmax, currentSheet)
             PlotFieldLines.plotCorotation(path)
 else:
     files = [f for f in os.listdir('newoutput/')]
