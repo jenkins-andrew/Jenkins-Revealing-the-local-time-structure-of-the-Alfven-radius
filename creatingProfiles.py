@@ -205,7 +205,6 @@ def radialVelocityFuncAtZ(r, z, species, massArray):
     :param massArray: List of species with masses in amu
     :return: radial velocity in m/s
     """
-    x = np.sqrt(r**2 - z**2)  # Using trig to find distance along equator
     vr = 500/(2 * massDensityAtZFromEquator(r, z, species, massArray) *
               radialScaleHeight(x) * np.pi * r * 71492e3 ** 2)
     return vr
