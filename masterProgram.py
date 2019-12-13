@@ -13,6 +13,10 @@ majorRunChoice = 0
 
 
 def plotChoiceInput():
+    """
+    Asks the user if they would like to plot field lines and returns the result
+    :return: 1 = Plot, 2 = No plot
+    """
     choice = 0
     while True:
         try:
@@ -30,8 +34,17 @@ def plotChoiceInput():
     return choice
 
 
-def pathString(rminIn, rmaxIn, pmaxIn, currentSheetIn):
-    return 'newoutput/radius%0.2fto%0.2fphi%0.2fCurrentOn=%s.txt' % (rminIn, rmaxIn, pmaxIn * np.pi / 180, currentSheetIn)
+def pathString(rminIn, rmaxIn, pIn, currentSheetIn):
+    """
+    Returns a string to the path of the text files. This follows the format all txt files are saved as.
+    :param rminIn: Minimum radius
+    :param rmaxIn: Maximum radius
+    :param pIn: The phi value for the trace
+    :param currentSheetIn: If the current sheet is on or not
+    :return: The string in the form 'newoutput/radius%0.2fto%0.2fphi%0.2fCurrentOn=%s.txt'
+    """
+    return 'newoutput/radius%0.2fto%0.2fphi%0.2fCurrentOn=%s.txt' % (rminIn, rmaxIn, pIn * np.pi / 180,
+                                                                     currentSheetIn)
 
 
 while True:
@@ -57,9 +70,11 @@ if (majorRunChoice == 1) | (majorRunChoice == 2):
         currentSheet = False
     elif (currentSheet == "Y") | (currentSheet == "y"):
         currentSheet = True
+    # Creates a field line trace between rmin and rmax and pmin to pmax, with or without a current sheet
     FieldTrace.produceTraceArrays(rmin, rmax, pmin * np.pi / 180, pmax * np.pi / 180, currentSheet)
 
     if majorRunChoice == 1:
+        # Ask if the user wants to plot the field line trace
         plotChoice = plotChoiceInput()
         if plotChoice == 1:
             if pmax == pmin:
@@ -67,37 +82,44 @@ if (majorRunChoice == 1) | (majorRunChoice == 2):
                 PlotFieldLines.plotOnePhiSet(path)
             else:
                 for phi0 in np.arange(pmin, pmax + 0.001, 0.25 * np.pi):
+                    # Get a plot for each phi value
                     path = pathString(rmin, rmax, phi0, currentSheet)
                     PlotFieldLines.plotOnePhiSet(path)
 
     elif majorRunChoice == 2:
         if pmax == pmin:
             path = pathString(rmin, rmax, pmax, currentSheet)
+            # Also get the plasma mass density along the field lines
             diffusive_equilibrium_code.runDiffusiveCode(path)
+            # Find the Alfven and radial velocities along the field lines
             FieldandDensityGridGenerator.generateAlfvenAndRadial(path)
         else:
             for phi0 in np.arange(pmin, pmax + 0.001, 0.25 * np.pi):
                 path = pathString(rmin, rmax, phi0, currentSheet)
+                # Also get the plasma mass density along the field lines
                 diffusive_equilibrium_code.runDiffusiveCode(path)
+                # Find the Alfven and radial velocities along the field lines
                 FieldandDensityGridGenerator.generateAlfvenAndRadial(path)
         plotChoice = plotChoiceInput()
         if plotChoice == 1:
             path = pathString(rmin, rmax, pmax, currentSheet)
+            # Plot the field lines with the plasma that is said to be in corotation
             PlotFieldLines.plotCorotation(path)
 else:
     files = [f for f in os.listdir('newoutput/')]
     print("What would you like to print?:")
+    # List all the files in newoutput
     for i in range(len(files)):
         print("(%i) %s" % (i, files[i]))
     fileNo = int(input("\n"))
     path = "newoutput/"+files[fileNo]
     print(path)
     size = len(np.loadtxt(path)[0])
-
+    # Allows the user to select one of these files and then plot them. Checks what type of file it is and runs the
+    # correct plotting method on it
     if size == 4:
         PlotFieldLines.plotOnePhiSet(path)
     elif size == 7:
         PlotFieldLines.plotCorotation(path)
     else:
         print("Cannot currently print file.")
-
