@@ -70,8 +70,8 @@ def produceTraceArrays(rmin, rmax, pmin=0, pmax=0, currentOn=False, modelType='V
     printTester = 1
     fieldGenerator = field_models()
     signArray = [-1, 1]  # To swap the direction of travel along the field line as well as fix array ordering
-    xInRJ, yInRJ, zInRJ, Bmag = [], [], [], []
     for phi0 in np.arange(pmin, pmax + 0.001, 0.25 * np.pi):
+        xInRJ, yInRJ, zInRJ, Bmag = [], [], [], []
         for r0 in np.arange(rmin, rmax + 0.001, 2):
             # Start a new field line trace
             for sign in signArray:
