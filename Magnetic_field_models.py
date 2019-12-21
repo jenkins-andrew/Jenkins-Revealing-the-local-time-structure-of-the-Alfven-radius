@@ -75,10 +75,10 @@ class field_models(object):
         a = 5.0  # inner current sheet boundary
         b = 50.0  # outer current sheet boundary
         D = 2.5  # current sheet half thickness
-        c = 225  # (mu_0*I_0)/2, 2.25e-3??
+        c = 2.25e2  # (mu_0*I_0)/2, 2.25e-3??
         DtoR = np.pi / 180
         theta_CS = 9.6 * DtoR  # Current sheet tilt
-        CS_pm = 158 * DtoR  # Current sheet prime meridian
+        CS_pm = 202 * DtoR  # Current sheet prime meridian
 
         # shortened for easier reading
         ct = np.cos(theta_CS)
@@ -109,7 +109,7 @@ class field_models(object):
         else:
             F1 = np.sqrt((z_cs - D) ** 2 + rho_cs ** 2)
             F2 = np.sqrt((z_cs + D) ** 2 + rho_cs ** 2)
-            Brho = (F1 + F2 + 2 * D) / rho_cs
+            Brho = (F1 - F2 + 2 * D) / rho_cs
             if abs(z_cs) > D and z_cs < 0:  # inside region 2
                 Brho = (F1 - F2 - 2 * D) / rho_cs
             elif abs(z_cs) < D:  # inside region 3
@@ -144,8 +144,8 @@ class field_models(object):
         # converts cartesian to spherical
         B = [[], [], []]
         B[0] = sth * cph * B1 + sth * sph * B2 + cth * B3
-        B[1] = cth * cph * B1 + cth * sph * B2 - sth * B3
-        B[2] = -sph * B1 + cph * B2
+        B[1] = (cth * cph * B1 + cth * sph * B2 - sth * B3)
+        B[2] = (-sph * B1 + cph * B2)
 
         B = np.array(B) * c
 
@@ -460,11 +460,14 @@ Ulysses 17ev \n V1-17ev \n O6 \n O4 \n SHA \n \
             Btint += Bt[str(k)]
             Bpint += Bp[str(k)]
 
+        BcanArray = []
+
         if currentOn:
             Bcan = self.CAN_sheet(r, theta, phi)
             Brint += Bcan[0]
             Btint += Bcan[1]
             Bpint += Bcan[2]
+
 
         Bxint = Brint*np.sin(theta)*np.cos(phi) + Btint*np.cos(theta)*np.cos(phi) - Bpint*np.sin(phi)
         Byint = Brint*np.sin(theta)*np.sin(phi) + Btint*np.cos(theta)*np.sin(phi) + Bpint*np.cos(phi)
