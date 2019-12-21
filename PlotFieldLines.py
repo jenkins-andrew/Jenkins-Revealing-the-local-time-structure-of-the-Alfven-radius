@@ -24,12 +24,12 @@ def sph_cart(r, theta, phi):
 def plotOnePhiSet(path):
 
     x, y, z, B = np.loadtxt(path, delimiter='\t', unpack=True)
-    # xc, yc, zc, Bc = np.loadtxt('newoutput/radius30.00to30phi2.09CurrentOn=Y.txt', delimiter='\t', unpack=True)
+    #xc, yc, zc, Bc = np.loadtxt('newoutput/radius15.00to15.00phi5.10CurrentOn=False.txt', delimiter='\t', unpack=True)
 
     fig = plt.figure()
     ax = plt.axes(projection="3d")
     plt.plot(x, y, z, '-k')
-    #plt.plot(xc, yc, zc, '--')
+    # plt.plot(xc, yc, zc, '--')
     # img = ax.scatter(x, y, z, c=B, cmap=plt.cm.get_cmap('gist_rainbow'))
     # clb = fig.colorbar(img)
     # clb.ax.set_title(r'B (nT)', fontsize=18)
@@ -217,3 +217,5 @@ def plotCorotation(path):
     # plt.yticks(size=18)
     # plt.xlim(minR)
     plt.show()
+
+#plotOnePhiSet('newoutput/radius15.00to15.00phi5.10CurrentOn=True.txt')
