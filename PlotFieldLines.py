@@ -60,7 +60,7 @@ def plotOnePhiSet(path):
 
 
 def plotCorotation(path):
-    x, r, z, B, rho, alfvenVelocity, radialVelocity = np.loadtxt(path, delimiter='\t', unpack=True)
+    x, y, z, B, rho, alfvenVelocity, radialVelocity = np.loadtxt(path, delimiter='\t', unpack=True)
     maxR = 30
     minR = 6
     xtest = np.arange(minR, np.amax(x) + 0.5, 0.5)
