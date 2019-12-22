@@ -51,11 +51,12 @@ while True:
     try:
         majorRunChoice = int(input("(1) Generate field lines \n"
                                    "(2) Generate field lines and total mass density along the lines\n"
-                                   "(3) Just print\n"))
+                                   "(3) Just print\n"
+                                   "(4) Generate total mass density along pre-made field lines\n"))
     except ValueError:
         print("Not a valid input:")
         continue
-    if (majorRunChoice > 3) | (majorRunChoice < 1):
+    if (majorRunChoice > 4) | (majorRunChoice < 1):
         print("Not a valid input:")
     else:
         break
@@ -105,7 +106,7 @@ if (majorRunChoice == 1) | (majorRunChoice == 2):
             path = pathString(rmin, rmax, pmax, currentSheet)
             # Plot the field lines with the plasma that is said to be in corotation
             PlotFieldLines.plotCorotation(path)
-else:
+elif majorRunChoice == 3:
     files = [f for f in os.listdir('newoutput/')]
     print("What would you like to print?:")
     # List all the files in newoutput
@@ -123,3 +124,13 @@ else:
         PlotFieldLines.plotCorotation(path)
     else:
         print("Cannot currently print file.")
+elif majorRunChoice == 4:
+    files = [f for f in os.listdir('newoutput/')]
+    print("Which trace would you like to have lines found for??:")
+    # List all the files in newoutput
+    for i in range(len(files)):
+        print("(%i) %s" % (i, files[i]))
+    fileNo = int(input("\n"))
+    path = "newoutput/" + files[fileNo]
+    print(path)
+    FieldandDensityGridGenerator.generateAlfvenAndRadial(path)
