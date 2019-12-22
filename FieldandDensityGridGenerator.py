@@ -32,6 +32,26 @@ def cart_sph(x, y, z):
     return r, theta, phi
 
 
+def equatorialPlasmaNumberDensity(r, speciesValues=None):
+    """
+    Calculates the plasma density at the equator using the method from Bagenal 2011
+    :param r: The radius in R_J
+    :param speciesValues:
+    :return: The plasma number density at the equator in cm^-3
+    """
+    b2011 = 1987 * (r / 6) ** (-8.2) + 14 * (r / 6) ** (-3.2) + 0.05 * (r / 6) ** (-0.65)
+
+    try:
+        percentage, a, b, c = speciesValues
+        if r <= 15.2:
+            n = a * (r / 6) ** b
+        else:
+            n = (c * b2011)
+    except:
+        n = b2011
+    return n
+
+
 def alfvenVelocityFuncForArray(magneticFieldArray, totalMassDensityArray):
 
     Va = magneticFieldArray * 1e-9 / np.sqrt(1.25663706212e-6 * totalMassDensityArray)
@@ -50,6 +70,41 @@ def radialScaleHeight(r):
     return H
 
 
+def totalMassDensity(r, species, massAmuArray):
+    """
+    Total mass density of the plasma in kg/m^3
+    :param r: radius in R_J
+    :param species: List of species with parameters needed for equatorialTotalPlasmaNumberDensity()
+    :param massAmuArray: List of species with masses in amu
+    :return: Mass Density in kg/m^3
+    """
+    M = 0
+    for i in massAmuArray:
+        mass = massAmuArray[i]
+        try:
+            n = equatorialPlasmaNumberDensity(r, species[i])
+        except:
+            n = 0
+            print('Species do not match')
+        M += n*1e6 * mass*1.67e-27
+
+    return M
+
+
+def massDensityAtZFromEquator(r, z, species, massArray):
+    """
+    Mass density at height z from the equator
+    :param z: in RJ
+    :param r: in RJ
+    :param species: List of species with parameters needed for equatorialTotalPlasmaNumberDensity()
+    :param massArray: List of species with masses in amu
+    :return: mass in kg/m^3
+    """
+
+    mZ = totalMassDensity(r, species, massArray) * np.exp(-1 * (z / radialScaleHeight(r)) ** 2)
+    return mZ
+
+
 def radialVelocityFuncForArray(r, totalMassDensityArray):
 
     vr = 1000/(2 * totalMassDensityArray * radialScaleHeight(r) * np.pi * r * 71492e3 ** 2)
@@ -59,9 +114,14 @@ def radialVelocityFuncForArray(r, totalMassDensityArray):
 def generateAlfvenAndRadial(path):
     # for field_trace_path in glob.glob('output*.txt'):
     #     alfvenPointCheck = []
-    x, y, z, B, rho = np.loadtxt(path, delimiter='\t', unpack=True)
+    x, y, z, B = np.loadtxt(path, delimiter='\t', unpack=True)
 
     r, theta, phi = cart_sph(x, y, z)
+
+    equatorialdistance = np.sqrt(x**2+y**2)
+
+    rho = massDensityAtZFromEquator(equatorialdistance, z, speciesList, speciesMass)
+
     alfvenVelocity = alfvenVelocityFuncForArray(B, rho)
     radialVelocity = radialVelocityFuncForArray(r, rho)
     # for i in range(len(alfvenVelocity)):
