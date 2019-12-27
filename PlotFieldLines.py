@@ -63,8 +63,9 @@ def plotCorotation(path):
     x, y, z, B, rho, alfvenVelocity, radialVelocity = np.loadtxt(path, delimiter='\t', unpack=True)
     maxR = 30
     minR = 6
-    xtest = np.arange(minR, np.amax(x) + 0.5, 0.5)
-    ztest = np.arange(np.amin(z), np.amax(z) + 0.5, 0.5)
+    step = 0.25
+    xtest = np.arange(minR, np.amax(x) + step, step)
+    ztest = np.arange(np.amin(z), np.amax(z) + step, step)
     xtest, ztest = np.meshgrid(xtest, ztest)
 
     corotationMask = (radialVelocity < alfvenVelocity)
@@ -132,13 +133,15 @@ def plotCorotation(path):
     # plt.tight_layout()
 
     plt.figure()
+    plt.rcParams['xtick.labelsize'] = 18
+    plt.rcParams['ytick.labelsize'] = 18
     heatmap = plt.contourf(xtest, ztest, NGrid, cmap=plt.cm.get_cmap('gist_rainbow'), locator=ticker.LogLocator(),
                            alpha=0.4)
-    plt.plot(x, z, 'k')
+    plt.plot(x, z, '--k')
     #lines = plt.contour(xtest, ztest, NGrid, 5, colors='k')
     #plt.clabel(lines, inline=1, colors='k')
     clb = plt.colorbar(heatmap)
-    # clb.ax.set_title(r'(kgm$^{-1}$)', fontsize=18)
+    clb.ax.set_title(r'(kgm$^{-3}$)', fontsize=18)
     plt.xlabel('x $(R_J)$', fontsize=18)
     plt.ylabel('z $(R_J)$', fontsize=18)
     plt.xticks(size=18)
