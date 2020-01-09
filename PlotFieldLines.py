@@ -64,9 +64,12 @@ def plotCorotation(path):
     maxR = 30
     minR = 6
     step = 0.25
-    xtest = np.arange(minR, np.amax(x) + step, step)
+    radius = np.sqrt(x ** 2 + y ** 2)
+    xtest = np.arange(minR, np.amax(radius) + step, step)
     ztest = np.arange(np.amin(z), np.amax(z) + step, step)
     xtest, ztest = np.meshgrid(xtest, ztest)
+
+
 
     corotationMask = (radialVelocity < alfvenVelocity)
 
@@ -78,7 +81,7 @@ def plotCorotation(path):
     # BGrid = griddata((x, z), B, (xtest, ztest))
     # BGrid[mask] = np.nan
 
-    NGrid = griddata((x[corotationMask], z[corotationMask]), rho[corotationMask], (xtest, ztest))
+    NGrid = griddata((radius[corotationMask], z[corotationMask]), rho[corotationMask], (xtest, ztest))
     # NGrid[mask] = np.nan
 
     # AlfvenGrid = griddata((x, z), alfvenVelocity/1000, (xtest, ztest))
@@ -137,12 +140,12 @@ def plotCorotation(path):
     plt.rcParams['ytick.labelsize'] = 18
     heatmap = plt.contourf(xtest, ztest, NGrid, cmap=plt.cm.get_cmap('gist_rainbow'), locator=ticker.LogLocator(),
                            alpha=0.4)
-    plt.plot(x, z, '--k')
+    plt.plot(radius, z, '--k')
     #lines = plt.contour(xtest, ztest, NGrid, 5, colors='k')
     #plt.clabel(lines, inline=1, colors='k')
     clb = plt.colorbar(heatmap)
     clb.ax.set_title(r'(kgm$^{-3}$)', fontsize=18)
-    plt.xlabel('x $(R_J)$', fontsize=18)
+    plt.xlabel('Radius $(R_J)$', fontsize=18)
     plt.ylabel('z $(R_J)$', fontsize=18)
     plt.xticks(size=18)
     plt.yticks(size=18)
