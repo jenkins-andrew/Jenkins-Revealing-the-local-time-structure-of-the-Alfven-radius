@@ -40,15 +40,17 @@ def equatorialPlasmaNumberDensity(r, speciesValues=None):
     :return: The plasma number density at the equator in cm^-3
     """
     b2011 = 1987 * (r / 6) ** (-8.2) + 14 * (r / 6) ** (-3.2) + 0.05 * (r / 6) ** (-0.65)
-
+    n = []
     try:
         percentage, a, b, c = speciesValues
-        if r <= 15.2:
-            n = a * (r / 6) ** b
-        else:
-            n = (c * b2011)
+        for x in range(len(r)):
+            if r[x] <= 15.2:
+                n.append(a * (r[x] / 6) ** b)
+            else:
+                n.append(c * b2011[x])
     except:
         n = b2011
+    n = np.array(n)
     return n
 
 
@@ -102,6 +104,11 @@ def massDensityAtZFromEquator(r, z, species, massArray):
     """
 
     mZ = totalMassDensity(r, species, massArray) * np.exp(-1 * (z / radialScaleHeight(r)) ** 2)
+
+    # for i in range(len(mZ)):
+    #     if mZ[i] < 1e-100:
+    #         mZ[i] = np.NaN
+
     return mZ
 
 
@@ -121,6 +128,8 @@ def generateAlfvenAndRadial(path):
     equatorialdistance = np.sqrt(x**2+y**2)
 
     rho = massDensityAtZFromEquator(equatorialdistance, z, speciesList, speciesMass)
+
+    np.savetxt('path.txt', np.c_[x, y, z, B, rho], delimiter='\t')
 
     alfvenVelocity = alfvenVelocityFuncForArray(B, rho)
     radialVelocity = radialVelocityFuncForArray(r, rho)
