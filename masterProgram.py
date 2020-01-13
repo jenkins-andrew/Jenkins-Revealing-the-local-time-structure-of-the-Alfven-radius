@@ -135,3 +135,8 @@ elif majorRunChoice == 4:
     print("Which trace would you like to have lines found for??:")
     path = printChoiceListAndOption('newoutput/')
     FieldandDensityGridGenerator.generateAlfvenAndRadial(path)
+
+    plotChoice = plotChoiceInput()
+    if plotChoice == 1:
+        # Plot the field lines with the plasma that is said to be in corotation
+        PlotFieldLines.plotCorotation(path)
