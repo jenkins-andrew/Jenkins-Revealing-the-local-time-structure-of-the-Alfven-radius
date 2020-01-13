@@ -21,7 +21,7 @@ def plotChoiceInput():
     while True:
         try:
             choice = int(input("\nWould you like to plot?: \n"
-                               "(1) Yes, plot the field lines\n"
+                               "(1) Yes \n"
                                "(2) No \n"))
         except ValueError:
             print("Not a valid input:")
@@ -60,10 +60,11 @@ def printChoiceListAndOption(folder):
     print(path)
     return path
 
+
 while True:
     try:
         majorRunChoice = int(input("(1) Generate field lines \n"
-                                   "(2) Generate field lines and total mass density along the lines\n"
+                                   "(2) Generate field lines and total mass density along the lines (maybe wrong)\n"
                                    "(3) Just print\n"
                                    "(4) Generate total mass density along pre-made field lines\n"))
     except ValueError:
@@ -119,6 +120,7 @@ if (majorRunChoice == 1) | (majorRunChoice == 2):
             path = pathString(rmin, rmax, pmax, currentSheet)
             # Plot the field lines with the plasma that is said to be in corotation
             PlotFieldLines.plotCorotation(path)
+
 elif majorRunChoice == 3:
     print("What would you like to print?:")
     path = printChoiceListAndOption('newoutput/')
@@ -131,10 +133,16 @@ elif majorRunChoice == 3:
         PlotFieldLines.plotCorotation(path)
     else:
         print("Cannot currently print file.")
+
 elif majorRunChoice == 4:
     print("Which trace would you like to have lines found for??:")
     path = printChoiceListAndOption('newoutput/')
-    FieldandDensityGridGenerator.generateAlfvenAndRadial(path)
+    size = len(np.loadtxt(path)[0])
+    if size != 4:
+        print("\nCannot generate a total mass density for this file. May have already been done.")
+
+    else:
+        FieldandDensityGridGenerator.generateAlfvenAndRadial(path)
 
     plotChoice = plotChoiceInput()
     if plotChoice == 1:
