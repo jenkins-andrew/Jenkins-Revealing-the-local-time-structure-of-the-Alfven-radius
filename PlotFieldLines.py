@@ -5,6 +5,7 @@ import numpy as np
 from matplotlib import colors
 import matplotlib.pyplot as plt
 from matplotlib import ticker, cm
+import os
 
 
 def sph_cart(r, theta, phi):
@@ -19,6 +20,18 @@ def sph_cart(r, theta, phi):
     y = r * np.sin(theta) * np.sin(phi)
     z = r * np.cos(theta)
     return x, y, z
+
+
+def plotMultiplePhis(directory):
+
+    fig = plt.figure()
+    ax = plt.axes(projection="3d")
+    files = [f for f in os.listdir(directory)]
+    for i in range(len(files)):
+        path = directory + files[i]
+        x, y, z, B = np.loadtxt(path, delimiter='\t', unpack=True)
+        plt.plot(x, y, z, '-k')
+    plt.show()
 
 
 def plotOnePhiSet(path):
