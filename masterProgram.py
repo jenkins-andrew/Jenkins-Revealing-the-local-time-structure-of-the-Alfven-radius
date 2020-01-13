@@ -47,6 +47,19 @@ def pathString(rminIn, rmaxIn, pIn, currentSheetIn):
                                                                      currentSheetIn)
 
 
+def printChoiceListAndOption(folder):
+    """
+    # List all the files in newoutput
+    :return:
+    """
+    files = [f for f in os.listdir(folder)]
+    for i in range(len(files)):
+        print("(%i) %s" % (i, files[i]))
+    fileNo = int(input("\n"))
+    path = "newoutput/"+files[fileNo]
+    print(path)
+    return path
+
 while True:
     try:
         majorRunChoice = int(input("(1) Generate field lines \n"
@@ -107,14 +120,8 @@ if (majorRunChoice == 1) | (majorRunChoice == 2):
             # Plot the field lines with the plasma that is said to be in corotation
             PlotFieldLines.plotCorotation(path)
 elif majorRunChoice == 3:
-    files = [f for f in os.listdir('newoutput/')]
     print("What would you like to print?:")
-    # List all the files in newoutput
-    for i in range(len(files)):
-        print("(%i) %s" % (i, files[i]))
-    fileNo = int(input("\n"))
-    path = "newoutput/"+files[fileNo]
-    print(path)
+    path = printChoiceListAndOption('newoutput/')
     size = len(np.loadtxt(path)[0])
     # Allows the user to select one of these files and then plot them. Checks what type of file it is and runs the
     # correct plotting method on it
@@ -125,12 +132,6 @@ elif majorRunChoice == 3:
     else:
         print("Cannot currently print file.")
 elif majorRunChoice == 4:
-    files = [f for f in os.listdir('newoutput/')]
     print("Which trace would you like to have lines found for??:")
-    # List all the files in newoutput
-    for i in range(len(files)):
-        print("(%i) %s" % (i, files[i]))
-    fileNo = int(input("\n"))
-    path = "newoutput/" + files[fileNo]
-    print(path)
+    path = printChoiceListAndOption('newoutput/')
     FieldandDensityGridGenerator.generateAlfvenAndRadial(path)
