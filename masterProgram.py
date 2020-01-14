@@ -64,7 +64,7 @@ def printChoiceListAndOption(folder):
 while True:
     try:
         majorRunChoice = int(input("(1) Generate field lines \n"
-                                   "(2) Generate field lines and total mass density along the lines (maybe wrong)\n"
+                                   "(Under Repair) Generate field lines and total mass density along the lines\n"
                                    "(3) Just print\n"
                                    "(4) Generate total mass density along pre-made field lines\n"))
     except ValueError:
