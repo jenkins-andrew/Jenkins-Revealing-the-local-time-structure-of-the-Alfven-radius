@@ -107,14 +107,14 @@ if (majorRunChoice == 1) | (majorRunChoice == 2):
             # Also get the plasma mass density along the field lines
             diffusive_equilibrium_code.runDiffusiveCode(path)
             # Find the Alfven and radial velocities along the field lines
-            FieldandDensityGridGenerator.generateAlfvenAndRadial(path)
+            FieldandDensityGridGenerator.generateAlfvenAndRadialFromDefusive(path)
         else:
             for phi0 in np.arange(pmin, pmax + 0.001, 0.25 * np.pi):
                 path = pathString(rmin, rmax, phi0, currentSheet)
                 # Also get the plasma mass density along the field lines
                 diffusive_equilibrium_code.runDiffusiveCode(path)
                 # Find the Alfven and radial velocities along the field lines
-                FieldandDensityGridGenerator.generateAlfvenAndRadial(path)
+                FieldandDensityGridGenerator.generateAlfvenAndRadialFromDefusive(path)
         plotChoice = plotChoiceInput()
         if plotChoice == 1:
             path = pathString(rmin, rmax, pmax, currentSheet)
