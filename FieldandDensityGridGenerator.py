@@ -39,17 +39,19 @@ def equatorialPlasmaNumberDensity(r, speciesValues=None):
     :param speciesValues:
     :return: The plasma number density at the equator in cm^-3
     """
-    b2011 = 1987 * (r / 6) ** (-8.2) + 14 * (r / 6) ** (-3.2) + 0.05 * (r / 6) ** (-0.65)
+    b2011 = []
     n = []
     try:
         percentage, a, b, c = speciesValues
-        for x in range(len(r)):
-            if r[x] <= 15.2:
-                n.append(a * (r[x] / 6) ** b)
+        for i in range(len(r)):
+            b2011.append(1987 * (r[i] / 6) ** (-8.2) + 14 * (r[i] / 6) ** (-3.2) + 0.05 * (r[i] / 6) ** (-0.65))
+            if r[i] <= 15.2:
+                n.append(a * (r[i] / 6) ** b)
             else:
-                n.append(c * b2011[x])
+                n.append(c * b2011[i])
     except:
-        n = b2011
+        print("Exception found")
+        n = 1987 * (r / 6) ** (-8.2) + 14 * (r / 6) ** (-3.2) + 0.05 * (r / 6) ** (-0.65)
     n = np.array(n)
     return n
 
@@ -80,13 +82,13 @@ def totalMassDensity(r, species, massAmuArray):
     :param massAmuArray: List of species with masses in amu
     :return: Mass Density in kg/m^3
     """
-    M = 0
+    M = np.zeros(len(r))
     for i in massAmuArray:
         mass = massAmuArray[i]
         try:
             n = equatorialPlasmaNumberDensity(r, species[i])
         except:
-            n = 0
+            n = np.zeros(len(r))
             print('Species do not match')
         M += n*1e6 * mass*1.67e-27
 
@@ -102,13 +104,13 @@ def massDensityAtZFromEquator(r, z, species, massArray):
     :param massArray: List of species with masses in amu
     :return: mass in kg/m^3
     """
+    equatorialDensity = totalMassDensity(r, species, massArray)
 
-    mZ = totalMassDensity(r, species, massArray) * np.exp(-1 * (z / radialScaleHeight(r)) ** 2)
+    mZ = equatorialDensity * np.exp(-1 * (z / radialScaleHeight(r)) ** 2)
 
     # for i in range(len(mZ)):
     #     if mZ[i] < 1e-100:
     #         mZ[i] = np.NaN
-
     return mZ
 
 
