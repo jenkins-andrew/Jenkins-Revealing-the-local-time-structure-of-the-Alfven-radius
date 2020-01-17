@@ -97,11 +97,11 @@ def plotCorotation(path):
     NGrid = griddata((radius[corotationMask], z[corotationMask]), rho[corotationMask], (xtest, ztest))
     # NGrid[mask] = np.nan
 
-    # AlfvenGrid = griddata((x, z), alfvenVelocity/1000, (xtest, ztest))
+    # AlfvenGrid = griddata((x[mask], z[mask]), alfvenVelocity[mask]/1000, (xtest, ztest))
     # AlfvenGrid[mask] = np.nan
     #
-    # RadialGrid = griddata((x, z), radialVelocity/1000, (xtest, ztest))
-    # RadialGrid[mask] = np.nan
+    # RadialGrid = griddata((x[mask], z[mask]), radialVelocity[mask]/1000, (xtest, ztest))
+    #RadialGrid[mask] = np.nan
     #
     # AlfvenPointGrid = griddata((x, z), alfvenPointCheck, (xtest, ztest))
     # AlfvenPointGrid[mask] = np.nan
@@ -172,8 +172,8 @@ def plotCorotation(path):
     # plt.subplots_adjust(wspace=0.5, hspace=0.5)
     # plt.tight_layout()
     #
-    # ax = plt.subplot(221)
-    # heatmap = plt.contourf(xtest, ztest, AlfvenGrid, cmap=plt.cm.get_cmap('gist_rainbow'), alpha=0.4)
+    # ax = plt.subplot(211)
+    # heatmap = plt.contourf(xtest, ztest, AlfvenGrid, cmap=plt.cm.get_cmap('gist_rainbow'), locator=ticker.LogLocator(), alpha=0.4)
     # lines = plt.contour(xtest, ztest, AlfvenGrid, 1, colors='k')
     # clb = plt.colorbar(heatmap)
     # clb.ax.set_title(r'(kms$^{-1}$)', fontsize=18)
@@ -184,8 +184,8 @@ def plotCorotation(path):
     # plt.yticks(size=18)
     # plt.xlim(minR)
     #
-    # ax = plt.subplot(222)
-    # heatmap = plt.contourf(xtest, ztest, RadialGrid, cmap=plt.cm.get_cmap('gist_rainbow'), alpha=0.4)
+    # ax = plt.subplot(212)
+    # heatmap = plt.contourf(xtest, ztest, RadialGrid, cmap=plt.cm.get_cmap('gist_rainbow'), locator=ticker.LogLocator(), alpha=0.4)
     # lines = plt.contour(xtest, ztest, RadialGrid, 5, colors='k')
     # plt.clabel(lines, inline=1, colors='k')
     # clb = plt.colorbar(heatmap)
