@@ -109,8 +109,8 @@ def massDensityAtZFromEquator(r, z, species, massArray):
     mZ = equatorialDensity * np.exp(-1 * (z / radialScaleHeight(r)) ** 2)
 
     for i in range(len(mZ)):
-        if mZ[i] == 0:
-            mZ[i] = np.NaN
+        if mZ[i] < 1.67e-23:
+            mZ[i] = 1.67e-23
     return mZ
 
 
