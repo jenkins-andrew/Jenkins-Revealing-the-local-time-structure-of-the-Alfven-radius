@@ -91,8 +91,7 @@ def plotCorotation(path):
     mask = (rho > 10 ** (-24)) & (rho < 10 ** (-16))
 
     # Making the 3D grid for the magnetic field
-    # BGrid = griddata((x, z), B, (xtest, ztest))
-    # BGrid[mask] = np.nan
+    # BGrid = griddata((radius, z), B, (xtest, ztest))
 
     NGrid = griddata((radius[corotationMask], z[corotationMask]), rho[corotationMask], (xtest, ztest))
     # NGrid[mask] = np.nan
@@ -119,14 +118,14 @@ def plotCorotation(path):
     # plt.tight_layout()
     #
     # plt.figure()
-    # heatmap = plt.contourf(xtest, ztest, BGrid, cmap=plt.cm.get_cmap('gist_rainbow'), alpha=0.4)
+    # heatmap = plt.contourf(xtest, ztest, BGrid, cmap=plt.cm.get_cmap('gist_rainbow'), locator=ticker.LogLocator(), alpha=0.4)
     # lines = plt.contour(xtest, ztest, BGrid, 5, colors='k')
     # plt.clabel(lines, fontsize=18, inline=1, colors='k')
     # clb = plt.colorbar(heatmap)
     # clb.ax.set_title('B$_n$ (nT)', fontsize=18)
     # plt.rcParams['xtick.labelsize'] = 18
     # plt.rcParams['ytick.labelsize'] = 18
-    # plt.xlabel('x $(R_J)$', fontsize=18)
+    # plt.xlabel('r $(R_J)$', fontsize=18)
     # plt.ylabel('z $(R_J)$', fontsize=18)
     # plt.xticks(size=18)
     # plt.yticks(size=18)
@@ -166,11 +165,11 @@ def plotCorotation(path):
     #plt.ylim(np.amin(z[corotationMask]), np.amax(z[corotationMask]))
     plt.tight_layout()
 
-    # plt.figure()
-    # plt.rcParams['xtick.labelsize'] = 18
-    # plt.rcParams['ytick.labelsize'] = 18
-    # plt.subplots_adjust(wspace=0.5, hspace=0.5)
-    # plt.tight_layout()
+    plt.figure()
+    plt.rcParams['xtick.labelsize'] = 18
+    plt.rcParams['ytick.labelsize'] = 18
+    plt.subplots_adjust(wspace=0.5, hspace=0.5)
+    plt.tight_layout()
     #
     ax = plt.subplot(211)
     heatmap = plt.contourf(xtest, ztest, AlfvenGrid, cmap=plt.cm.get_cmap('gist_rainbow'), locator=ticker.LogLocator(), alpha=0.4)
@@ -178,7 +177,7 @@ def plotCorotation(path):
     clb = plt.colorbar(heatmap)
     clb.ax.set_title(r'(ms$^{-1}$)', fontsize=18)
     plt.title('Alfven V', fontsize=18, wrap=True)
-    plt.xlabel('x $(R_J)$', fontsize=18)
+    plt.xlabel('Radius $(R_J)$', fontsize=18)
     plt.ylabel('z $(R_J)$', fontsize=18)
     plt.xticks(size=18)
     plt.yticks(size=18)
@@ -191,7 +190,7 @@ def plotCorotation(path):
     clb = plt.colorbar(heatmap)
     clb.ax.set_title(r'(ms$^{-1}$)', fontsize=18)
     plt.title('Radial V', fontsize=18, wrap=True)
-    plt.xlabel('x $(R_J)$', fontsize=18)
+    plt.xlabel('Radius $(R_J)$', fontsize=18)
     plt.ylabel('z $(R_J)$', fontsize=18)
     plt.xticks(size=18)
     plt.yticks(size=18)
