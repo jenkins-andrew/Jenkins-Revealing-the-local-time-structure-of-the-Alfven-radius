@@ -22,6 +22,14 @@ def sph_cart(r, theta, phi):
     return x, y, z
 
 
+def combineTraces(path, skipNumber=1):
+    loaded = np.load(path)
+    output = []
+    for i in range(0, len(loaded), skipNumber):
+        output.extend(loaded[i])
+    np.savetxt('temp.txt', np.c_[output], delimiter='\t')
+
+
 def plotMultiplePhis(directory):
 
     fig = plt.figure()
@@ -73,7 +81,8 @@ def plotOnePhiSet(path):
 
 
 def plotCorotation(path):
-    x, y, z, B, rho, alfvenVelocity, radialVelocity = np.loadtxt(path, delimiter='\t', unpack=True)
+    combineTraces(path)
+    x, y, z, B, rho, alfvenVelocity, radialVelocity = np.loadtxt('temp.txt', delimiter='\t', unpack=True)
     maxR = 30
     minR = 6
     step = 0.25
@@ -81,8 +90,6 @@ def plotCorotation(path):
     xtest = np.arange(minR, np.amax(radius) + step, step)
     ztest = np.arange(np.amin(z), np.amax(z) + step, step)
     xtest, ztest = np.meshgrid(xtest, ztest)
-
-
 
     corotationMask = (radialVelocity < alfvenVelocity)
 
@@ -101,6 +108,10 @@ def plotCorotation(path):
     #
     RadialGrid = griddata((radius, z), radialVelocity, (xtest, ztest))
     #RadialGrid[mask] = np.nan
+
+    combineTraces(path, 2)
+    x2, y2, z2, B2, rho2, alfvenVelocity2, radialVelocity2 = np.loadtxt('temp.txt', delimiter='\t', unpack=True)
+    radius2 = np.sqrt(x2 ** 2 + y2 ** 2)
     #
     # AlfvenPointGrid = griddata((x, z), alfvenPointCheck, (xtest, ztest))
     # AlfvenPointGrid[mask] = np.nan
@@ -152,7 +163,7 @@ def plotCorotation(path):
     plt.rcParams['ytick.labelsize'] = 18
     heatmap = plt.contourf(xtest, ztest, NGrid, cmap=plt.cm.get_cmap('gist_rainbow'), locator=ticker.LogLocator(),
                            alpha=0.4)
-    plt.plot(radius, z, '--k')
+    plt.plot(radius2, z2, '--k')
     #lines = plt.contour(xtest, ztest, NGrid, 5, colors='k')
     #plt.clabel(lines, inline=1, colors='k')
     clb = plt.colorbar(heatmap)
