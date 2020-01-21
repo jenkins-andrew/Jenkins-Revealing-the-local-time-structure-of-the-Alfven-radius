@@ -23,7 +23,7 @@ def sph_cart(r, theta, phi):
 
 
 def combineTraces(path, skipNumber=1):
-    loaded = np.load(path)
+    loaded = np.load(path, allow_pickle=True)
     output = []
     for i in range(0, len(loaded), skipNumber):
         output.extend(loaded[i])
@@ -37,14 +37,15 @@ def plotMultiplePhis(directory):
     files = [f for f in os.listdir(directory)]
     for i in range(len(files)):
         path = directory + files[i]
-        x, y, z, B = np.loadtxt(path, delimiter='\t', unpack=True)
+        combineTraces(path)
+        x, y, z, B = np.loadtxt('temp.txt', delimiter='\t', unpack=True)
         plt.plot(x, y, z, '-k')
     plt.show()
 
 
 def plotOnePhiSet(path):
-
-    x, y, z, B = np.loadtxt(path, delimiter='\t', unpack=True)
+    combineTraces(path)
+    x, y, z, B = np.loadtxt('temp.txt', delimiter='\t', unpack=True)
     #xc, yc, zc, Bc = np.loadtxt('newoutput/radius15.00to15.00phi5.10CurrentOn=False.txt', delimiter='\t', unpack=True)
 
     fig = plt.figure()
