@@ -43,7 +43,7 @@ def pathString(rminIn, rmaxIn, pIn, currentSheetIn):
     :param currentSheetIn: If the current sheet is on or not
     :return: The string in the form 'newoutput/radius%0.2fto%0.2fphi%0.2fCurrentOn=%s.txt'
     """
-    return 'newoutput/radius%0.2fto%0.2fphi%0.2fCurrentOn=%s.txt' % (rminIn, rmaxIn, pIn * np.pi / 180,
+    return 'newoutput/radius%0.2fto%0.2fphi%0.2fCurrentOn=%s.npy' % (rminIn, rmaxIn, pIn * np.pi / 180,
                                                                      currentSheetIn)
 
 
@@ -124,7 +124,7 @@ if (majorRunChoice == 1) | (majorRunChoice == 2):
 elif majorRunChoice == 3:
     print("What would you like to print?:")
     path = printChoiceListAndOption('newoutput/')
-    size = len(np.loadtxt(path)[0])
+    size = len(np.load(path)[0][0])
     # Allows the user to select one of these files and then plot them. Checks what type of file it is and runs the
     # correct plotting method on it
     if size == 4:
@@ -137,7 +137,7 @@ elif majorRunChoice == 3:
 elif majorRunChoice == 4:
     print("Which trace would you like to have lines found for??:")
     path = printChoiceListAndOption('newoutput/')
-    size = len(np.loadtxt(path)[0])
+    size = len(np.load(path)[0][0])
     if size != 4:
         print("\nCannot generate a total mass density for this file. May have already been done.")
 
