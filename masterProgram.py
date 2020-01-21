@@ -66,11 +66,12 @@ while True:
         majorRunChoice = int(input("(1) Generate field lines \n"
                                    "(2) Generate field lines and total mass density\n"
                                    "(3) Just print\n"
-                                   "(4) Generate total mass density along pre-made field lines\n"))
+                                   "(4) Generate total mass density along pre-made field lines\n"
+                                   "(5) Generate txt file for one field line\n"))
     except ValueError:
         print("Not a valid input:")
         continue
-    if (majorRunChoice > 4) | (majorRunChoice < 1):
+    if (majorRunChoice > 5) | (majorRunChoice < 1):
         print("Not a valid input:")
     else:
         break
@@ -131,7 +132,7 @@ elif majorRunChoice == 3:
         print("Cannot currently print file.")
 
 elif majorRunChoice == 4:
-    print("Which trace would you like to have lines found for??:")
+    print("Which trace would you like to have lines found for?:")
     path = printChoiceListAndOption('newoutput/')
     size = len(np.load(path, allow_pickle=True)[0][0])
     if size != 4:
@@ -144,3 +145,17 @@ elif majorRunChoice == 4:
     if plotChoice == 1:
         # Plot the field lines with the plasma that is said to be in corotation
         PlotFieldLines.plotCorotation(path)
+elif majorRunChoice == 5:
+    print("Which file contains a trace you would like. They iterate radius at 2 RJ?:")
+    path = printChoiceListAndOption('newoutput/')
+    start = float(path[16:20])
+    end = float(path[22:27])
+    phi = float(path[30:34])
+    fieldLineNumber = int(input("What field line number would you like the information for? Note it must be between "
+                                "%0.2f and %0.2f RJ and be a multiple of 2.\n" % (start, end)))
+
+    arrayNumber = int((fieldLineNumber-start)/2)
+    print("Field trace starting at %0.2f for phi = %0.2f" % (fieldLineNumber, phi))
+    output = np.load(path, allow_pickle=True)[arrayNumber]
+
+    np.savetxt('fieldtrace%0.2fphi%0.2f.txt' % (fieldLineNumber, phi), np.c_[output], delimiter='\t')
