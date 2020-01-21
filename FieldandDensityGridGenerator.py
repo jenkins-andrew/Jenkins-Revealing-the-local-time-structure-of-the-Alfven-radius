@@ -123,23 +123,26 @@ def radialVelocityFuncForArray(r, species, massArray):
 def generateAlfvenAndRadial(path):
     # for field_trace_path in glob.glob('output*.txt'):
     #     alfvenPointCheck = []
-    x, y, z, B = np.loadtxt(path, delimiter='\t', unpack=True)
 
-    r, theta, phi = cart_sph(x, y, z)
+    loaded = np.load(path)
+    output = []
+    for i in range(len(loaded)):
+        np.savetxt('temp.txt', np.c_[loaded[i]], delimiter='\t')
 
-    equatorialdistance = np.sqrt(x**2+y**2)
+        x, y, z, B = np.loadtxt('temp.txt', delimiter='\t', unpack=True)
 
-    rho = massDensityAtZFromEquator(equatorialdistance, z, speciesList, speciesMass)
+        r, theta, phi = cart_sph(x, y, z)
 
-    alfvenVelocity = alfvenVelocityFuncForArray(B, rho)
-    radialVelocity = radialVelocityFuncForArray(r, speciesList, speciesMass)
-    # for i in range(len(alfvenVelocity)):
-    #     if alfvenVelocity[i] > radialVelocity[i]:
-    #         alfvenPointCheck.append(0)
-    #     else:
-    #         alfvenPointCheck.append(1)
+        equatorialdistance = np.sqrt(x**2+y**2)
 
-    np.savetxt(path, np.c_[x, y, z, B, rho, alfvenVelocity, radialVelocity], delimiter='\t')
+        rho = massDensityAtZFromEquator(equatorialdistance, z, speciesList, speciesMass)
+
+        alfvenVelocity = alfvenVelocityFuncForArray(B, rho)
+        radialVelocity = radialVelocityFuncForArray(r, speciesList, speciesMass)
+
+        output.append(np.c_[x, y, z, B, rho, alfvenVelocity, radialVelocity])
+
+    np.save(path, output)
 
 
 def generateAlfvenAndRadialFromDefusive(path):
