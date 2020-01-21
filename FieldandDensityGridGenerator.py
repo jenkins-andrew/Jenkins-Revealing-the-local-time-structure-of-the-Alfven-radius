@@ -114,9 +114,9 @@ def massDensityAtZFromEquator(r, z, species, massArray):
     return mZ
 
 
-def radialVelocityFuncForArray(r, totalMassDensityArray):
+def radialVelocityFuncForArray(r, species, massArray):
 
-    vr = 1000/(2 * totalMassDensityArray * radialScaleHeight(r) * np.pi * r * 71492e3 ** 2)
+    vr = 1000/(2 * totalMassDensity(r, species, massArray) * radialScaleHeight(r) * np.pi * r * 71492e3 ** 2)
     return vr
 
 
@@ -132,7 +132,7 @@ def generateAlfvenAndRadial(path):
     rho = massDensityAtZFromEquator(equatorialdistance, z, speciesList, speciesMass)
 
     alfvenVelocity = alfvenVelocityFuncForArray(B, rho)
-    radialVelocity = radialVelocityFuncForArray(r, rho)
+    radialVelocity = radialVelocityFuncForArray(r, speciesList, speciesMass)
     # for i in range(len(alfvenVelocity)):
     #     if alfvenVelocity[i] > radialVelocity[i]:
     #         alfvenPointCheck.append(0)
@@ -150,7 +150,7 @@ def generateAlfvenAndRadialFromDefusive(path):
     r, theta, phi = cart_sph(x, y, z)
 
     alfvenVelocity = alfvenVelocityFuncForArray(B, rho)
-    radialVelocity = radialVelocityFuncForArray(r, rho)
+    radialVelocity = radialVelocityFuncForArray(r, speciesList, speciesMass)
     # for i in range(len(alfvenVelocity)):
     #     if alfvenVelocity[i] > radialVelocity[i]:
     #         alfvenPointCheck.append(0)
