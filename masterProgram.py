@@ -64,7 +64,7 @@ def printChoiceListAndOption(folder):
 while True:
     try:
         majorRunChoice = int(input("(1) Generate field lines \n"
-                                   "(Under Repair) Generate field lines and total mass density along the lines\n"
+                                   "(2) Generate field lines and total mass density\n"
                                    "(3) Just print\n"
                                    "(4) Generate total mass density along pre-made field lines\n"))
     except ValueError:
@@ -104,17 +104,13 @@ if (majorRunChoice == 1) | (majorRunChoice == 2):
     elif majorRunChoice == 2:
         if pmax == pmin:
             path = pathString(rmin, rmax, pmax, currentSheet)
-            # Also get the plasma mass density along the field lines
-            diffusive_equilibrium_code.runDiffusiveCode(path)
             # Find the Alfven and radial velocities along the field lines
-            FieldandDensityGridGenerator.generateAlfvenAndRadialFromDefusive(path)
+            FieldandDensityGridGenerator.generateAlfvenAndRadial(path)
         else:
             for phi0 in np.arange(pmin, pmax + 0.001, 0.25 * np.pi):
                 path = pathString(rmin, rmax, phi0, currentSheet)
-                # Also get the plasma mass density along the field lines
-                diffusive_equilibrium_code.runDiffusiveCode(path)
                 # Find the Alfven and radial velocities along the field lines
-                FieldandDensityGridGenerator.generateAlfvenAndRadialFromDefusive(path)
+                FieldandDensityGridGenerator.generateAlfvenAndRadial(path)
         plotChoice = plotChoiceInput()
         if plotChoice == 1:
             path = pathString(rmin, rmax, pmax, currentSheet)
@@ -124,7 +120,7 @@ if (majorRunChoice == 1) | (majorRunChoice == 2):
 elif majorRunChoice == 3:
     print("What would you like to print?:")
     path = printChoiceListAndOption('newoutput/')
-    size = len(np.load(path)[0][0])
+    size = len(np.load(path, allow_pickle=True)[0][0])
     # Allows the user to select one of these files and then plot them. Checks what type of file it is and runs the
     # correct plotting method on it
     if size == 4:
@@ -137,7 +133,7 @@ elif majorRunChoice == 3:
 elif majorRunChoice == 4:
     print("Which trace would you like to have lines found for??:")
     path = printChoiceListAndOption('newoutput/')
-    size = len(np.load(path)[0][0])
+    size = len(np.load(path, allow_pickle=True)[0][0])
     if size != 4:
         print("\nCannot generate a total mass density for this file. May have already been done.")
 
