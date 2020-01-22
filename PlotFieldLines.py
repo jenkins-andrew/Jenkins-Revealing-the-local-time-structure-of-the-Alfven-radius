@@ -162,7 +162,7 @@ def plotCorotation(path):
     plt.figure()
     plt.rcParams['xtick.labelsize'] = 18
     plt.rcParams['ytick.labelsize'] = 18
-    heatmap = plt.contourf(xtest, ztest, NGrid, cmap=plt.cm.get_cmap('gist_rainbow'), locator=ticker.LogLocator(),
+    heatmap = plt.contourf(xtest, ztest, NGrid, cmap=plt.cm.get_cmap('gist_rainbow'), levels=10, locator=ticker.LogLocator(),
                            alpha=0.4)
     plt.plot(radius2, z2, '--k')
     #lines = plt.contour(xtest, ztest, NGrid, 5, colors='k')
@@ -185,7 +185,7 @@ def plotCorotation(path):
     #
     ax = plt.subplot(211)
     heatmap = plt.contourf(xtest, ztest, AlfvenGrid, cmap=plt.cm.get_cmap('gist_rainbow'), locator=ticker.LogLocator(), alpha=0.4)
-    lines = plt.contour(xtest, ztest, AlfvenGrid, 1, colors='k')
+    #lines = plt.contour(xtest, ztest, AlfvenGrid, 1, colors='k')
     clb = plt.colorbar(heatmap)
     clb.ax.set_title(r'(ms$^{-1}$)', fontsize=18)
     plt.title('Alfven V', fontsize=18, wrap=True)
@@ -196,9 +196,9 @@ def plotCorotation(path):
     plt.xlim(minR)
 
     ax = plt.subplot(212)
-    heatmap = plt.contourf(xtest, ztest, RadialGrid, cmap=plt.cm.get_cmap('gist_rainbow'), locator=ticker.LogLocator(), alpha=0.4)
-    lines = plt.contour(xtest, ztest, RadialGrid, 5, colors='k')
-    plt.clabel(lines, inline=1, colors='k')
+    heatmap = plt.contourf(xtest, ztest, RadialGrid, cmap=plt.cm.get_cmap('gist_rainbow'), levels=15, alpha=0.4)
+    #lines = plt.contour(xtest, ztest, RadialGrid, 5, colors='k')
+    #plt.clabel(lines, inline=1, colors='k')
     clb = plt.colorbar(heatmap)
     clb.ax.set_title(r'(ms$^{-1}$)', fontsize=18)
     plt.title('Radial V', fontsize=18, wrap=True)
