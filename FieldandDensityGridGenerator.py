@@ -124,7 +124,7 @@ def generateAlfvenAndRadial(path):
     # for field_trace_path in glob.glob('output*.txt'):
     #     alfvenPointCheck = []
 
-    loaded = np.load(path)
+    loaded = np.load(path, allow_pickle=True)
     output = []
     for i in range(len(loaded)):
         np.savetxt('temp.txt', np.c_[loaded[i]], delimiter='\t')
