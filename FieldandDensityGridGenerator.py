@@ -161,3 +161,30 @@ def generateAlfvenAndRadialFromDefusive(path):
     #         alfvenPointCheck.append(1)
 
     np.savetxt(path, np.c_[x, y, z, B, rho, alfvenVelocity, radialVelocity], delimiter='\t')
+
+
+def generateAlfvenTravelTimes(path):
+    loaded = np.load(path, allow_pickle=True)
+    lineNumber = []
+    travelTime = []
+    start = float(path[16:20])
+    end = float(path[22:27])
+    phi = float(path[30:34])
+    fieldLineStep = int((end - start) / len(loaded) + 1)
+
+    for i in range(len(loaded)):
+        np.savetxt('temp.txt', np.c_[loaded[i]], delimiter='\t')
+
+        lineNumber.append(i*fieldLineStep + start)
+
+        x, y, z, B, rho, alfven, radial = np.loadtxt('temp.txt', delimiter='\t', unpack=True)
+        r = np.sqrt(x ** 2 + y ** 2 + z ** 2)
+
+        time = 0
+        for j in range(len(r)-1):
+            deltaR = r[j+1] - r[j]
+            time += (1/alfven[j+1]) * deltaR
+        travelTime.append(time)
+
+    np.savetxt('alfvenTravelTimesfor%0.2fto%0.2fatPhi%0.2f.txt' % (start, end, phi), np.c_[lineNumber, travelTime],
+               delimiter='\t')
