@@ -99,18 +99,18 @@ def plotCorotation(path):
     mask = (rho > 10 ** (-24)) & (rho < 10 ** (-16))
 
     # Making the 3D grid for the magnetic field
-    # BGrid = griddata((radius, z), B, (xtest, ztest))
+    BGrid = griddata((radius, z), np.log10(B), (xtest, ztest))
 
-    NGrid = griddata((radius[corotationMask], z[corotationMask]), rho[corotationMask], (xtest, ztest))
+    NGrid = griddata((radius[corotationMask], z[corotationMask]), np.log10(rho[corotationMask]), (xtest, ztest))
     # NGrid[mask] = np.nan
 
-    AlfvenGrid = griddata((radius, z), alfvenVelocity, (xtest, ztest))
+    AlfvenGrid = griddata((radius, z), np.log10(alfvenVelocity), (xtest, ztest))
     # AlfvenGrid[mask] = np.nan
     #
-    RadialGrid = griddata((radius, z), radialVelocity, (xtest, ztest))
+    RadialGrid = griddata((radius, z), np.log10(radialVelocity), (xtest, ztest))
     #RadialGrid[mask] = np.nan
 
-    combineTraces(path, 2)
+    combineTraces(path, 3)
     x2, y2, z2, B2, rho2, alfvenVelocity2, radialVelocity2 = np.loadtxt('temp.txt', delimiter='\t', unpack=True)
     radius2 = np.sqrt(x2 ** 2 + y2 ** 2)
     #
@@ -129,20 +129,19 @@ def plotCorotation(path):
     # plt.yticks(size=18)
     # plt.tight_layout()
     #
-    # plt.figure()
-    # heatmap = plt.contourf(xtest, ztest, BGrid, cmap=plt.cm.get_cmap('gist_rainbow'), locator=ticker.LogLocator(), alpha=0.4)
-    # lines = plt.contour(xtest, ztest, BGrid, 5, colors='k')
-    # plt.clabel(lines, fontsize=18, inline=1, colors='k')
-    # clb = plt.colorbar(heatmap)
-    # clb.ax.set_title('B$_n$ (nT)', fontsize=18)
-    # plt.rcParams['xtick.labelsize'] = 18
-    # plt.rcParams['ytick.labelsize'] = 18
-    # plt.xlabel('r $(R_J)$', fontsize=18)
-    # plt.ylabel('z $(R_J)$', fontsize=18)
-    # plt.xticks(size=18)
-    # plt.yticks(size=18)
-    # plt.xlim(minR)
-    # plt.tight_layout()
+    plt.figure()
+    plt.rcParams['xtick.labelsize'] = 18
+    plt.rcParams['ytick.labelsize'] = 18
+    heatmap = plt.contourf(xtest, ztest, BGrid, cmap=plt.cm.get_cmap('gist_rainbow'), levels=15, alpha=0.4)
+    clb = plt.colorbar(heatmap)
+    clb.ax.set_title('B$_n$ $\log$(nT)', fontsize=18)
+    plt.plot(radius2, z2, '--k')
+    plt.xlabel('r $(R_J)$', fontsize=18)
+    plt.ylabel('z $(R_J)$', fontsize=18)
+    plt.xticks(size=18)
+    plt.yticks(size=18)
+    plt.xlim(minR)
+    plt.tight_layout()
     # #
     # plt.figure()
     # heatmap = plt.contourf(xtest, ztest, NGrid, cmap=plt.cm.get_cmap('gist_rainbow'), alpha=0.4)
@@ -162,13 +161,13 @@ def plotCorotation(path):
     plt.figure()
     plt.rcParams['xtick.labelsize'] = 18
     plt.rcParams['ytick.labelsize'] = 18
-    heatmap = plt.contourf(xtest, ztest, NGrid, cmap=plt.cm.get_cmap('gist_rainbow'), levels=10, locator=ticker.LogLocator(),
+    heatmap = plt.contourf(xtest, ztest, NGrid, cmap=plt.cm.get_cmap('gist_rainbow'), levels=20,
                            alpha=0.4)
     plt.plot(radius2, z2, '--k')
     #lines = plt.contour(xtest, ztest, NGrid, 5, colors='k')
     #plt.clabel(lines, inline=1, colors='k')
     clb = plt.colorbar(heatmap)
-    clb.ax.set_title(r'(kgm$^{-3}$)', fontsize=18)
+    clb.ax.set_title(r'$\log$(kgm$^{-3}$)', fontsize=18)
     plt.xlabel('Radius $(R_J)$', fontsize=18)
     plt.ylabel('z $(R_J)$', fontsize=18)
     plt.xticks(size=18)
@@ -180,14 +179,14 @@ def plotCorotation(path):
     plt.figure()
     plt.rcParams['xtick.labelsize'] = 18
     plt.rcParams['ytick.labelsize'] = 18
-    plt.subplots_adjust(wspace=0.5, hspace=0.5)
-    plt.tight_layout()
+    plt.subplots_adjust(wspace=0.5, hspace=0.5, right=1, left=0.15)
+
     #
     ax = plt.subplot(211)
-    heatmap = plt.contourf(xtest, ztest, AlfvenGrid, cmap=plt.cm.get_cmap('gist_rainbow'), locator=ticker.LogLocator(), alpha=0.4)
+    heatmap = plt.contourf(xtest, ztest, AlfvenGrid, cmap=plt.cm.get_cmap('gist_rainbow'), levels=15, alpha=0.4)
     #lines = plt.contour(xtest, ztest, AlfvenGrid, 1, colors='k')
     clb = plt.colorbar(heatmap)
-    clb.ax.set_title(r'(ms$^{-1}$)', fontsize=18)
+    clb.ax.set_title(r'$\log$(ms$^{-1}$)', fontsize=18)
     plt.title('Alfven V', fontsize=18, wrap=True)
     plt.xlabel('Radius $(R_J)$', fontsize=18)
     plt.ylabel('z $(R_J)$', fontsize=18)
@@ -200,14 +199,14 @@ def plotCorotation(path):
     #lines = plt.contour(xtest, ztest, RadialGrid, 5, colors='k')
     #plt.clabel(lines, inline=1, colors='k')
     clb = plt.colorbar(heatmap)
-    clb.ax.set_title(r'(ms$^{-1}$)', fontsize=18)
+    clb.ax.set_title(r'$\log$(ms$^{-1}$)', fontsize=18)
     plt.title('Radial V', fontsize=18, wrap=True)
     plt.xlabel('Radius $(R_J)$', fontsize=18)
     plt.ylabel('z $(R_J)$', fontsize=18)
     plt.xticks(size=18)
     plt.yticks(size=18)
     plt.xlim(minR)
-
+    plt.tight_layout()
     # ax = plt.subplot(212)
     # lines = plt.contour(xtest, ztest, AlfvenPointGrid, 1)
     # plt.title('Alfven Radius', fontsize=18, wrap=True)
