@@ -151,8 +151,9 @@ elif majorRunChoice == 5:
     start = float(path[16:20])
     end = float(path[22:27])
     phi = float(path[30:34])
+    output = np.load(path, allow_pickle=True)
     fieldLineNumber = int(input("What field line number would you like the information for? Note it must be between "
-                                "%0.2f and %0.2f RJ and be a multiple of 2.\n" % (start, end)))
+                                "%0.2f and %0.2f RJ and be a multiple of %d.\n" % (start, end, int((end-start)/len(output)+1))))
 
     arrayNumber = int((fieldLineNumber-start)/2)
     print("Field trace starting at %0.2f for phi = %0.2f" % (fieldLineNumber, phi))
