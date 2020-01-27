@@ -67,11 +67,12 @@ while True:
                                    "(2) Generate field lines and total mass density\n"
                                    "(3) Just print\n"
                                    "(4) Generate total mass density along pre-made field lines\n"
-                                   "(5) Generate txt file for one field line\n"))
+                                   "(5) Generate txt file for one field line\n"
+                                   "(6) Calculate Alfven travel times\n"))
     except ValueError:
         print("Not a valid input:")
         continue
-    if (majorRunChoice > 5) | (majorRunChoice < 1):
+    if (majorRunChoice > 6) | (majorRunChoice < 1):
         print("Not a valid input:")
     else:
         break
@@ -146,17 +147,25 @@ elif majorRunChoice == 4:
         # Plot the field lines with the plasma that is said to be in corotation
         PlotFieldLines.plotCorotation(path)
 elif majorRunChoice == 5:
-    print("Which file contains a trace you would like. They iterate radius at 2 RJ?:")
+    print("Which file contains a trace you would like?:")
     path = printChoiceListAndOption('newoutput/')
     start = float(path[16:20])
     end = float(path[22:27])
     phi = float(path[30:34])
     output = np.load(path, allow_pickle=True)
-    fieldLineNumber = int(input("What field line number would you like the information for? Note it must be between "
-                                "%0.2f and %0.2f RJ and be a multiple of %d.\n" % (start, end, int((end-start)/len(output)+1))))
+    fieldLineStep = int((end - start) / len(output) + 1)
 
-    arrayNumber = int((fieldLineNumber-start)/2)
+    fieldLineNumber = int(input("What field line number would you like the information for? Note it must be between "
+                                "%0.2f and %0.2f RJ and be a multiple of %d.\n" % (start, end, fieldLineStep)))
+
+    arrayNumber = int((fieldLineNumber-start) / fieldLineStep)
     print("Field trace starting at %0.2f for phi = %0.2f" % (fieldLineNumber, phi))
     output = np.load(path, allow_pickle=True)[arrayNumber]
 
     np.savetxt('fieldtrace%0.2fphi%0.2f.txt' % (fieldLineNumber, phi), np.c_[output], delimiter='\t')
+
+elif majorRunChoice == 6:
+    print("Which file would you like to find Alfven travel times for:")
+    path = printChoiceListAndOption('newoutput/')
+
+    FieldandDensityGridGenerator.generateAlfvenTravelTimes(path)
