@@ -114,3 +114,56 @@ def produceTraceArrays(rmin, rmax, pmin=0, pmax=0, currentOn=False, modelType='V
             output.append(np.c_[xInRJ, yInRJ, zInRJ, Bmag])
         np.save('newoutput/radius%0.2fto%0.2fphi%0.2fCurrentOn=%s' % (rmin, rmax, phi0, currentOn), output)
     pass
+
+
+def produceHalfTraceArrays(rmin, rmax, pmin=0, pmax=0, currentOn=False, modelType='VIP4'):
+    """
+    To do the field trace using a model over a range of phi and radii. Each phi and radius field trace is saved as a
+    separate text file with the radius and phi value saved in the name. Made as a function such that this could be
+    used as a class in the future.
+    :param rmin:
+    :param rmax:
+    :param pmin:
+    :param pmax:
+    :param modelType: Default VIP4
+    :param currentOn: Default False
+    """
+
+    printTester = 1
+    fieldGenerator = field_models()
+    for phi0 in np.arange(pmin, pmax + 0.001, 45 * np.pi/180):
+        output = []
+        for r0 in np.arange(rmin, rmax + 0.001, 2):
+            xInRJ, yInRJ, zInRJ, Bmag = [], [], [], []
+            # Start a new field line trace
+            theta = 0.5 * np.pi
+            r = r0
+            phi = phi0
+            tempxInRJ, tempyInRJ, tempzInRJ, tempBmag = [], [], [], []  # So I can have two sets of arrays to
+            # combine later
+            x, y, z = sph_cart(r, theta, phi)
+            print('Radius = %5.2f and Phi = %1.2f' % (r, phi * 180 / np.pi))
+            while r >= 1:
+                Br, Bt, Bp, Bx, By, Bz = fieldGenerator.Internal_Field(r, theta, phi, currentOn, modelType)
+                if printTester % 10 == 0:
+                    tempxInRJ.append(x)
+                    tempyInRJ.append(y)
+                    tempzInRJ.append(z)
+                    tempBmag.append(magnitudeVector(Br, Bt, Bp))
+                    # print(r)
+                xMove, yMove, zMove = unitVector(Bx, By, Bz)
+                step = np.abs(np.log10(magnitudeVector(Bx, By, Bz))) * 10
+                if step < 100:
+                    step = 100
+                x += -1 * xMove / step
+                y += -1 * yMove / step
+                z += -1 * zMove / step
+                r, theta, phi = cart_sph(x, y, z)
+                printTester += 1
+                xInRJ.extend(tempxInRJ)
+                yInRJ.extend(tempyInRJ)
+                zInRJ.extend(tempzInRJ)
+                Bmag.extend(tempBmag)
+            output.append(np.c_[xInRJ, yInRJ, zInRJ, Bmag])
+        np.save('newoutput/radius%0.2fto%0.2fphi%0.2fCurrentOn=%s' % (rmin, rmax, phi0, currentOn), output)
+    pass
