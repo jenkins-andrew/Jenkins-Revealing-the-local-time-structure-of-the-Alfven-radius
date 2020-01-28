@@ -165,5 +165,5 @@ def produceHalfTraceArrays(rmin, rmax, pmin=0, pmax=0, currentOn=False, modelTyp
                 zInRJ.extend(tempzInRJ)
                 Bmag.extend(tempBmag)
             output.append(np.c_[xInRJ, yInRJ, zInRJ, Bmag])
-        np.save('newoutput/radius%0.2fto%0.2fphi%0.2fCurrentOn=%s' % (rmin, rmax, phi0, currentOn), output)
+        np.save('newoutput/HalfTraceRadius%0.2fto%0.2fphi%0.2fCurrentOn=%s' % (rmin, rmax, phi0, currentOn), output)
     pass
