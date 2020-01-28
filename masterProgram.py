@@ -109,7 +109,7 @@ if (majorRunChoice == 1) | (majorRunChoice == 2):
             # Find the Alfven and radial velocities along the field lines
             FieldandDensityGridGenerator.generateAlfvenAndRadial(path)
         else:
-            for phi0 in np.arange(pmin, pmax + 0.001, 0.25 * np.pi):
+            for phi0 in np.arange(pmin, pmax + 0.001, 45 * np.pi/180):
                 path = pathString(rmin, rmax, phi0, currentSheet)
                 # Find the Alfven and radial velocities along the field lines
                 FieldandDensityGridGenerator.generateAlfvenAndRadial(path)
