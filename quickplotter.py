@@ -9,9 +9,9 @@ for i in range(len(files)):
     path = "travelTimes/" + files[i]
     r, t = np.loadtxt(path, delimiter='\t', unpack=True)
     phi = float(path[48:52])
-    phi = phi * 180/np.pi
+    phi = round(phi * 180/np.pi)
 
-    plt.plot(r, t, label='Phi = %0.2f' % phi)
+    plt.plot(r, t, label='Phi = %d' % phi)
 
 plt.legend(fontsize=18)
 plt.xticks(size=18)
