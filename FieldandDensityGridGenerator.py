@@ -186,5 +186,5 @@ def generateAlfvenTravelTimes(path):
             time += (1/alfven[j+1]) * deltaR * 71492e3
         travelTime.append(time)
 
-    np.savetxt('alfvenTravelTimesfor%0.2fto%0.2fatPhi%0.2f.txt' % (start, end, phi), np.c_[lineNumber, travelTime],
+    np.savetxt('travelTimes/alfvenTravelTimesfor%0.2fto%0.2fatPhi%0.2f.txt' % (start, end, phi), np.c_[lineNumber, travelTime],
                delimiter='\t')
