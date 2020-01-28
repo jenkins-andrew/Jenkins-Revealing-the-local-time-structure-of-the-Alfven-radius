@@ -56,7 +56,7 @@ def printChoiceListAndOption(folder):
     for i in range(len(files)):
         print("(%i) %s" % (i, files[i]))
     fileNo = int(input("\n"))
-    path = "newoutput/"+files[fileNo]
+    path = folder+files[fileNo]
     print(path)
     return path
 
