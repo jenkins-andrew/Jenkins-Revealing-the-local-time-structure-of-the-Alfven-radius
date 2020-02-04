@@ -167,6 +167,7 @@ def generateAlfvenTravelTimes(path):
     loaded = np.load(path, allow_pickle=True)
     lineNumber = []
     travelTime = []
+    fractionalTimeSpendInPlasmaSheet = []
     start = float(path[16:20])
     end = float(path[22:27])
     phi = float(path[30:34])
@@ -181,10 +182,15 @@ def generateAlfvenTravelTimes(path):
         r = np.sqrt(x ** 2 + y ** 2 + z ** 2)
 
         time = 0
+        timeInPlasmaSheet = 0
         for j in range(len(r)-1):
             deltaR = np.abs(r[j+1] - r[j])
-            time += (1/alfven[j+1]) * deltaR * 71492e3
+            timeToAdd = (1/alfven[j+1]) * deltaR * 71492e3
+            time += timeToAdd
+            if np.abs(z[j]) < 4:
+                timeInPlasmaSheet += timeToAdd
         travelTime.append(time)
+        fractionalTimeSpendInPlasmaSheet.append(timeInPlasmaSheet/time)
 
-    np.savetxt('travelTimes/alfvenTravelTimesfor%0.2fto%0.2fatPhi%0.2f.txt' % (start, end, phi), np.c_[lineNumber, travelTime],
-               delimiter='\t')
+    np.savetxt('travelTimes/alfvenTravelTimesfor%0.2fto%0.2fatPhi%0.2f.txt' % (start, end, phi),
+               np.c_[lineNumber, travelTime, fractionalTimeSpendInPlasmaSheet], delimiter='\t')
