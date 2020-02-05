@@ -130,6 +130,10 @@ def averageMagFieldModel(fieldObject, r, theta, phi, model='VIP4', currentOn=Tru
 radius = []
 magneticFieldDipole = []
 magneticFieldNotDipole = []
+magneticFieldUlysses17ev = []
+magneticFieldNotV117ev = []
+magneticFieldO4 = []
+magneticFieldNotSHA = []
 radialVelocity500 = []
 alfvenVelocityATPi = []
 radialVelocity1300 = []
@@ -168,6 +172,10 @@ for r in np.arange(6, 100, 0.5):
     alfvenVelocityATPi.append(alfvenVelocityAtRThetaPhi(fieldGenerator, r, 0.5*np.pi, 120, speciesMass, speciesMass, 'VIP4')/1000)
     magneticFieldDipole.append(averageMagFieldModel(fieldGenerator, r, 0.5*np.pi, 120, 'simple', False))
     magneticFieldNotDipole.append(averageMagFieldModel(fieldGenerator, r, 0.5 * np.pi, 120, 'VIP4'))
+    magneticFieldUlysses17ev.append(averageMagFieldModel(fieldGenerator, r, 0.5 * np.pi, 120, 'Ulysses 17ev'))
+    magneticFieldNotV117ev.append(averageMagFieldModel(fieldGenerator, r, 0.5 * np.pi, 120, 'V1-17ev'))
+    magneticFieldO4.append(averageMagFieldModel(fieldGenerator, r, 0.5 * np.pi, 120, 'O4'))
+    magneticFieldNotSHA.append(averageMagFieldModel(fieldGenerator, r, 0.5 * np.pi, 120, 'SHA'))
 
 plt.figure()
 
@@ -187,6 +195,10 @@ plt.tight_layout()
 plt.figure()
 plt.plot(radius, magneticFieldDipole, label='Dipole')
 plt.plot(radius, magneticFieldNotDipole, label='VIP4')
+plt.plot(radius, magneticFieldUlysses17ev, label='Ulysses 17ev')
+plt.plot(radius, magneticFieldNotV117ev, label='V1-17ev')
+plt.plot(radius, magneticFieldO4, label='O4')
+plt.plot(radius, magneticFieldNotSHA, label='SHA')
 plt.legend(fontsize=18)
 plt.xticks(size=18)
 plt.yticks(size=18)
