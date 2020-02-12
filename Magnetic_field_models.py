@@ -464,9 +464,10 @@ Ulysses 17ev \n V1-17ev \n O6 \n O4 \n SHA \n \
 
         if currentOn:
             Bcan = self.CAN_sheet(r, theta, phi)
-            Brint += Bcan[0]
-            Btint += Bcan[1]
-            Bpint += Bcan[2]
+
+            Brint = np.add(Bcan[0], Brint)
+            Btint = np.add(Bcan[1], Btint)
+            Bpint = np.add(Bcan[2], Bpint)
 
 
         Bxint = Brint*np.sin(theta)*np.cos(phi) + Btint*np.cos(theta)*np.cos(phi) - Bpint*np.sin(phi)
