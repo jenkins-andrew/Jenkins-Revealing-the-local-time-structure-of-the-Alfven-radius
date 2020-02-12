@@ -31,6 +31,7 @@ def equatorialPlasmaNumberDensity(r, speciesValues=None):
             n = (c * b2011)
     except:
         n = b2011
+        print('Species do not match')
     return n
 
 
@@ -69,7 +70,7 @@ def totalMassDensity(r, species, massAmuArray):
     return M
 
 
-def alfvenVelocityAtRThetaPhi(fieldModel, r, theta, phi, species, massArray, model='VIP4'):
+def alfvenVelocityAtRThetaPhi(fieldModel, r, theta, phi, species, massArray, model='VIP4', currentOn=True):
     """
     Alfven velocity at a given r, theta and phi
     :param fieldModel: an object to make the field model work
@@ -82,7 +83,7 @@ def alfvenVelocityAtRThetaPhi(fieldModel, r, theta, phi, species, massArray, mod
     :return: Alfven velocity in m/s
     """
 
-    Va = averageMagFieldModel(fieldModel, r, theta, phi, model, False) * 1e-9 / np.sqrt(1.25663706212e-6 *
+    Va = averageMagFieldModel(fieldModel, r, theta, phi, model, currentOn) * 1e-9 / np.sqrt(1.25663706212e-6 *
                                                                                  totalMassDensity(r, species, massArray))
 
     return Va
@@ -162,6 +163,24 @@ def currentSheetComponents(fieldObject, r, theta, phi):
     return bcr, bct, bcp, b, bcx, bcy, bcz
 
 
+def equatorialMagneticField(r, phi):
+    """
+    Finds the equatorial magnetic field strength using Vogt et. al 2011 method
+    :param r: The radius in R_J
+    :param phi: The angle in radians, 0 at the Sun, anti-clockwise
+    :return: The equatorial magnetic field in nT
+    """
+    B = 1.030e6 * r ** (-3.756 - 0.12 * np.cos(phi - 3.562)) + \
+        (3.797 - 4.612 * np.cos(phi - 0.825) + 0.606 * np.cos(2 * (phi - 0.473)) +
+         0.847 * np.cos(3 * (phi - 0.913))) * np.exp((-1 * r) / 150)
+    return B
+
+
+def equatorialAlfvenVelocity(r, phi, species, massArray):
+    Va = equatorialMagneticField(r, phi) * 1e-9 / np.sqrt(1.25663706212e-6 * totalMassDensity(r, species, massArray))
+
+    return Va
+
 # Create a series of arrays to hold values
 
 radius = []
@@ -178,6 +197,8 @@ radialVelocity280 = []
 
 bcrarray, bctarray, bcparray, bcxarray, bcyarray, bczarray, bcarray = [], [], [], [], [], [], []
 brarray, btarray, bparray, bxarray, byarray, bzarray, barray = [], [], [], [], [], [], []
+
+alfvenVelocity120, alfvenVelocity210, alfvenVelocity300, alfvenVelocity30 = [], [], [], []
 
 # No longer have to be in the same order
 speciesList = {'e-': [1, 2451, -6.27, 4.21],
@@ -207,36 +228,43 @@ phi = 120
 # and number density by iterating over radius and angle
 for r in np.arange(6, 100, 0.5):
     radius.append(r)  # No longer needed
-    radialVelocity500.append(radialVelocityFrankPaterson(r, speciesMass, speciesMass, 500)/1000)
-    radialVelocity280.append(radialVelocityFrankPaterson(r, speciesMass, speciesMass, 280)/1000)
-    radialVelocity1300.append(radialVelocityFrankPaterson(r, speciesMass, speciesMass, 1300)/1000)
-    alfvenVelocityATPi.append(alfvenVelocityAtRThetaPhi(fieldGenerator, r, 0.5*np.pi, phi, speciesMass, speciesMass, 'VIP4')/1000)
+    radialVelocity500.append(radialVelocityFrankPaterson(r, speciesList, speciesMass, 500)/1000)
+    radialVelocity280.append(radialVelocityFrankPaterson(r, speciesList, speciesMass, 280)/1000)
+    radialVelocity1300.append(radialVelocityFrankPaterson(r, speciesList, speciesMass, 1300)/1000)
+    alfvenVelocityATPi.append(alfvenVelocityAtRThetaPhi(fieldGenerator, r, 0.5*np.pi, phi, speciesList, speciesMass, 'VIP4', True)/1000)
+    alfvenVelocity30.append(equatorialAlfvenVelocity(r, 30, speciesList, speciesMass)/1000)
+    alfvenVelocity120.append(equatorialAlfvenVelocity(r, 120, speciesList, speciesMass)/1000)
+    alfvenVelocity210.append(equatorialAlfvenVelocity(r, 210, speciesList, speciesMass)/1000)
+    alfvenVelocity300.append(equatorialAlfvenVelocity(r, 300, speciesList, speciesMass)/1000)
     # magneticFieldDipole.append(averageMagFieldModel(fieldGenerator, r, 0.5*np.pi, phi, 'simple', False))
     # magneticFieldNotDipole.append(averageMagFieldModel(fieldGenerator, r, 0.5 * np.pi, phi, 'VIP4', False))
-    bcarray.append(currentSheetComponents(fieldGenerator, r, 0.5*np.pi, phi)[3])
-    bcxarray.append(currentSheetComponents(fieldGenerator, r, 0.5*np.pi, phi)[4])
-    bcyarray.append(currentSheetComponents(fieldGenerator, r, 0.5*np.pi, phi)[5])
-    bczarray.append(currentSheetComponents(fieldGenerator, r, 0.5*np.pi, phi)[6])
-    barray.append(MagFieldComponents(fieldGenerator, r, 0.5*np.pi, phi, 'VIP4', True)[3])
-    bxarray.append(MagFieldComponents(fieldGenerator, r, 0.5*np.pi, phi, 'VIP4', False)[4])
-    byarray.append(MagFieldComponents(fieldGenerator, r, 0.5*np.pi, phi, 'VIP4', False)[5])
-    bzarray.append(MagFieldComponents(fieldGenerator, r, 0.5*np.pi, phi, 'VIP4', False)[6])
-    bcrarray.append(currentSheetComponents(fieldGenerator, r, 0.5*np.pi, phi)[0])
-    bctarray.append(currentSheetComponents(fieldGenerator, r, 0.5*np.pi, phi)[1])
-    bcparray.append(currentSheetComponents(fieldGenerator, r, 0.5*np.pi, phi)[2])
-
-xcombined = np.add(bcxarray, bxarray)
-ycombined = np.add(bcyarray, byarray)
-zcombined = np.add(bczarray, bzarray)
-bcalculated = np.sqrt(xcombined**2+ycombined**2+zcombined**2)
-
-np.savetxt('magfieldcompoents.txt', np.c_[radius, bcxarray, bcyarray, bczarray, bxarray, byarray, bzarray, xcombined, ycombined, zcombined, bcalculated, barray], delimiter='\t')
+#     bcarray.append(currentSheetComponents(fieldGenerator, r, 0.5*np.pi, phi)[3])
+#     bcxarray.append(currentSheetComponents(fieldGenerator, r, 0.5*np.pi, phi)[4])
+#     bcyarray.append(currentSheetComponents(fieldGenerator, r, 0.5*np.pi, phi)[5])
+#     bczarray.append(currentSheetComponents(fieldGenerator, r, 0.5*np.pi, phi)[6])
+#     barray.append(MagFieldComponents(fieldGenerator, r, 0.5*np.pi, phi, 'VIP4', True)[3])
+#     bxarray.append(MagFieldComponents(fieldGenerator, r, 0.5*np.pi, phi, 'VIP4', False)[4])
+#     byarray.append(MagFieldComponents(fieldGenerator, r, 0.5*np.pi, phi, 'VIP4', False)[5])
+#     bzarray.append(MagFieldComponents(fieldGenerator, r, 0.5*np.pi, phi, 'VIP4', False)[6])
+#     bcrarray.append(currentSheetComponents(fieldGenerator, r, 0.5*np.pi, phi)[0])
+#     bctarray.append(currentSheetComponents(fieldGenerator, r, 0.5*np.pi, phi)[1])
+#     bcparray.append(currentSheetComponents(fieldGenerator, r, 0.5*np.pi, phi)[2])
+#
+# xcombined = np.add(bcxarray, bxarray)
+# ycombined = np.add(bcyarray, byarray)
+# zcombined = np.add(bczarray, bzarray)
+# bcalculated = np.sqrt(xcombined**2+ycombined**2+zcombined**2)
+#
+# np.savetxt('magfieldcompoents.txt', np.c_[radius, bcxarray, bcyarray, bczarray, bxarray, byarray, bzarray, xcombined, ycombined, zcombined, bcalculated, barray], delimiter='\t')
 
 plt.figure()
 plt.plot(radius, radialVelocity500, linestyle='-', label='Radial Velocity Mdot = 500 kgm/s')
 plt.plot(radius, radialVelocity280, linestyle='-.', label='Radial Velocity Mdot = 280 kgm/s')
 plt.plot(radius, radialVelocity1300, linestyle='--', label='Radial Velocity Mdot = 1300 kgm/s')
-plt.plot(radius, alfvenVelocityATPi, linestyle=':', label='Alfven Velocity')
+plt.plot(radius, alfvenVelocity30, linestyle=':', label=r'Alfven Velocity at $\phi$=30', linewidth=4)
+plt.plot(radius, alfvenVelocity120, linestyle=':', label=r'Alfven Velocity at $\phi$=120', linewidth=4)
+plt.plot(radius, alfvenVelocity210, linestyle=':', label=r'Alfven Velocity at $\phi$=210', linewidth=4)
+plt.plot(radius, alfvenVelocity300, linestyle=':', label=r'Alfven Velocity at $\phi$=300', linewidth=4)
 plt.legend(fontsize=18)
 plt.xticks(size=18)
 plt.yticks(size=18)
@@ -244,15 +272,5 @@ plt.xlabel('Radius $(R_J)$', fontsize=18)
 plt.ylabel('Velocity (km/s)', fontsize=18)
 plt.yscale('log')
 plt.ylim(1e0, 1e3)
-plt.tight_layout()
-
-plt.figure()
-plt.tick_params(right=True, which='both', labelsize=18)
-plt.plot(radius, bcrarray, label='cR')
-plt.plot(radius, bctarray, label='cT')
-plt.plot(radius, bcparray, label='cP')
-plt.xlabel('Radius RJ', size=18)
-plt.ylabel('Magnitude (nT)', size=18)
-plt.legend(fontsize=18)
 plt.tight_layout()
 plt.show()
