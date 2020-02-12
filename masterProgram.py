@@ -65,7 +65,7 @@ while True:
     try:
         majorRunChoice = int(input("(1) Generate field lines \n"
                                    "(2) Generate field lines and total mass density\n"
-                                   "(3) Just print\n"
+                                   "(3) Plot the field lines or plasma sheet with field lines (file dependent)\n"
                                    "(4) Generate total mass density along pre-made field lines\n"
                                    "(5) Generate txt file for one field line\n"
                                    "(6) Calculate Alfven travel times\n"))
