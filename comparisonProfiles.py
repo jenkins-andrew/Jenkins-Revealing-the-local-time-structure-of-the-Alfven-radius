@@ -82,7 +82,7 @@ def alfvenVelocityAtRThetaPhi(fieldModel, r, theta, phi, species, massArray, mod
     :return: Alfven velocity in m/s
     """
 
-    Va = averageMagFieldModel(fieldModel, r, theta, phi, model) * 1e-9 / np.sqrt(1.25663706212e-6 *
+    Va = averageMagFieldModel(fieldModel, r, theta, phi, model, False) * 1e-9 / np.sqrt(1.25663706212e-6 *
                                                                                  totalMassDensity(r, species, massArray))
 
     return Va
@@ -125,6 +125,43 @@ def averageMagFieldModel(fieldObject, r, theta, phi, model='VIP4', currentOn=Tru
     return b
 
 
+def MagFieldComponents(fieldObject, r, theta, phi, model='VIP4', currentOn=True):
+    """
+    Finds the magnitude of the magnetic field at a position dictated by r, theta and phi
+    :param fieldObject: an object to make the field model work
+    :param r: radius in RJ
+    :param theta: the angle from the pole in radians
+    :param phi: in radians from sun, going anticlockwise
+    :param model: the type of model for the magnetic field
+    :return: the magnitude of the magnetic field in nT
+    """
+    br, bt, bp, bx, by, bz = fieldObject.Internal_Field(r, theta, phi, currentOn, model)
+    b = magnitudeVector(br, bt, bp)
+    return br, bt, bp, b, bx, by, bz
+
+
+def currentSheetComponents(fieldObject, r, theta, phi):
+    """
+    Finds the magnitude of the magnetic field at a position dictated by r, theta and phi
+    :param fieldObject: an object to make the field model work
+    :param r: radius in RJ
+    :param theta: the angle from the pole in radians
+    :param phi: in radians from sun, going anticlockwise
+    :param model: the type of model for the magnetic field
+    :return: the magnitude of the magnetic field in nT
+    """
+
+    bcanSheet = fieldObject.CAN_sheet(r, theta, phi)
+    bcr = bcanSheet[0]
+    bct = bcanSheet[1]
+    bcp = bcanSheet[2]
+    bcx = bcr * np.sin(theta) * np.cos(phi) + bct * np.cos(theta) * np.cos(phi) - bcp * np.sin(phi)
+    bcy = bcr * np.sin(theta) * np.sin(phi) + bct * np.cos(theta) * np.sin(phi) + bcp * np.cos(phi)
+    bcz = bcr * np.cos(theta) - bct * np.sin(theta)
+    b = magnitudeVector(bcr, bct, bcp)
+    return bcr, bct, bcp, b, bcx, bcy, bcz
+
+
 # Create a series of arrays to hold values
 
 radius = []
@@ -138,6 +175,9 @@ radialVelocity500 = []
 alfvenVelocityATPi = []
 radialVelocity1300 = []
 radialVelocity280 = []
+
+bcrarray, bctarray, bcparray, bcxarray, bcyarray, bczarray, bcarray = [], [], [], [], [], [], []
+brarray, btarray, bparray, bxarray, byarray, bzarray, barray = [], [], [], [], [], [], []
 
 # No longer have to be in the same order
 speciesList = {'e-': [1, 2451, -6.27, 4.21],
@@ -162,6 +202,7 @@ speciesMass = {'e-': 0.00054858,
                }
 
 fieldGenerator = field_models()
+phi = 120
 # Calculate radius, scale height, x, y, equatorial magnetic field, Alfven and radial velocity
 # and number density by iterating over radius and angle
 for r in np.arange(6, 100, 0.5):
@@ -169,16 +210,29 @@ for r in np.arange(6, 100, 0.5):
     radialVelocity500.append(radialVelocityFrankPaterson(r, speciesMass, speciesMass, 500)/1000)
     radialVelocity280.append(radialVelocityFrankPaterson(r, speciesMass, speciesMass, 280)/1000)
     radialVelocity1300.append(radialVelocityFrankPaterson(r, speciesMass, speciesMass, 1300)/1000)
-    alfvenVelocityATPi.append(alfvenVelocityAtRThetaPhi(fieldGenerator, r, 0.5*np.pi, 120, speciesMass, speciesMass, 'VIP4')/1000)
-    magneticFieldDipole.append(averageMagFieldModel(fieldGenerator, r, 0.5*np.pi, 120, 'simple', False))
-    magneticFieldNotDipole.append(averageMagFieldModel(fieldGenerator, r, 0.5 * np.pi, 120, 'VIP4'))
-    magneticFieldUlysses17ev.append(averageMagFieldModel(fieldGenerator, r, 0.5 * np.pi, 120, 'Ulysses 17ev'))
-    magneticFieldNotV117ev.append(averageMagFieldModel(fieldGenerator, r, 0.5 * np.pi, 120, 'V1-17ev'))
-    magneticFieldO4.append(averageMagFieldModel(fieldGenerator, r, 0.5 * np.pi, 120, 'O4'))
-    magneticFieldNotSHA.append(averageMagFieldModel(fieldGenerator, r, 0.5 * np.pi, 120, 'SHA'))
+    alfvenVelocityATPi.append(alfvenVelocityAtRThetaPhi(fieldGenerator, r, 0.5*np.pi, phi, speciesMass, speciesMass, 'VIP4')/1000)
+    # magneticFieldDipole.append(averageMagFieldModel(fieldGenerator, r, 0.5*np.pi, phi, 'simple', False))
+    # magneticFieldNotDipole.append(averageMagFieldModel(fieldGenerator, r, 0.5 * np.pi, phi, 'VIP4', False))
+    bcarray.append(currentSheetComponents(fieldGenerator, r, 0.5*np.pi, phi)[3])
+    bcxarray.append(currentSheetComponents(fieldGenerator, r, 0.5*np.pi, phi)[4])
+    bcyarray.append(currentSheetComponents(fieldGenerator, r, 0.5*np.pi, phi)[5])
+    bczarray.append(currentSheetComponents(fieldGenerator, r, 0.5*np.pi, phi)[6])
+    barray.append(MagFieldComponents(fieldGenerator, r, 0.5*np.pi, phi, 'VIP4', True)[3])
+    bxarray.append(MagFieldComponents(fieldGenerator, r, 0.5*np.pi, phi, 'VIP4', False)[4])
+    byarray.append(MagFieldComponents(fieldGenerator, r, 0.5*np.pi, phi, 'VIP4', False)[5])
+    bzarray.append(MagFieldComponents(fieldGenerator, r, 0.5*np.pi, phi, 'VIP4', False)[6])
+    bcrarray.append(currentSheetComponents(fieldGenerator, r, 0.5*np.pi, phi)[0])
+    bctarray.append(currentSheetComponents(fieldGenerator, r, 0.5*np.pi, phi)[1])
+    bcparray.append(currentSheetComponents(fieldGenerator, r, 0.5*np.pi, phi)[2])
+
+xcombined = np.add(bcxarray, bxarray)
+ycombined = np.add(bcyarray, byarray)
+zcombined = np.add(bczarray, bzarray)
+bcalculated = np.sqrt(xcombined**2+ycombined**2+zcombined**2)
+
+np.savetxt('magfieldcompoents.txt', np.c_[radius, bcxarray, bcyarray, bczarray, bxarray, byarray, bzarray, xcombined, ycombined, zcombined, bcalculated, barray], delimiter='\t')
 
 plt.figure()
-
 plt.plot(radius, radialVelocity500, linestyle='-', label='Radial Velocity Mdot = 500 kgm/s')
 plt.plot(radius, radialVelocity280, linestyle='-.', label='Radial Velocity Mdot = 280 kgm/s')
 plt.plot(radius, radialVelocity1300, linestyle='--', label='Radial Velocity Mdot = 1300 kgm/s')
@@ -193,18 +247,12 @@ plt.ylim(1e0, 1e3)
 plt.tight_layout()
 
 plt.figure()
-plt.plot(radius, magneticFieldDipole, label='Dipole')
-plt.plot(radius, magneticFieldNotDipole, label='VIP4')
-plt.plot(radius, magneticFieldUlysses17ev, label='Ulysses 17ev')
-plt.plot(radius, magneticFieldNotV117ev, label='V1-17ev')
-plt.plot(radius, magneticFieldO4, label='O4')
-plt.plot(radius, magneticFieldNotSHA, label='SHA')
+plt.tick_params(right=True, which='both', labelsize=18)
+plt.plot(radius, bcrarray, label='cR')
+plt.plot(radius, bctarray, label='cT')
+plt.plot(radius, bcparray, label='cP')
+plt.xlabel('Radius RJ', size=18)
+plt.ylabel('Magnitude (nT)', size=18)
 plt.legend(fontsize=18)
-plt.xticks(size=18)
-plt.yticks(size=18)
-plt.xlabel('Radius $(R_J)$', fontsize=18)
-plt.ylabel('Magnitude (nT)', fontsize=18)
-plt.yscale('log')
 plt.tight_layout()
 plt.show()
-
