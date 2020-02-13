@@ -93,6 +93,7 @@ def plotCorotation(path):
     xtest, ztest = np.meshgrid(xtest, ztest)
 
     corotationMask = (radialVelocity < alfvenVelocity)
+    corotationBackwardsMask = (radialVelocity > alfvenVelocity)
 
     # Masking a circle of radius minR R_J
     # mask = (xtest < minR) | (np.sqrt(xtest ** 2 + ztest ** 2) > maxR)
@@ -102,6 +103,7 @@ def plotCorotation(path):
     BGrid = griddata((radius, z), np.log10(B), (xtest, ztest))
 
     NGrid = griddata((radius[corotationMask], z[corotationMask]), np.log10(rho[corotationMask]), (xtest, ztest))
+    notNGrid = griddata((radius[corotationBackwardsMask], z[corotationBackwardsMask]), np.log10(rho[corotationBackwardsMask]), (xtest, ztest))
     # NGrid[mask] = np.nan
 
     AlfvenGrid = griddata((radius, z), np.log10(alfvenVelocity), (xtest, ztest))
@@ -163,6 +165,7 @@ def plotCorotation(path):
     plt.rcParams['ytick.labelsize'] = 18
     heatmap = plt.contourf(xtest, ztest, NGrid, cmap=plt.cm.get_cmap('gist_rainbow'), levels=20,
                            alpha=0.4)
+    plt.contourf(xtest, ztest, notNGrid, colors='white')
     plt.plot(radius2, z2, '--k')
     #lines = plt.contour(xtest, ztest, NGrid, 5, colors='k')
     #plt.clabel(lines, inline=1, colors='k')
