@@ -192,7 +192,7 @@ def radialVelocityFunc(r, species, massArray):
     :param massArray: List of species with masses in amu
     :return: radial velocity in m/s
     """
-    vr = 500/(2 * totalMassDensity(r, species, massArray) *
+    vr = 1000/(2 * totalMassDensity(r, species, massArray) *
               radialScaleHeight(r) * np.pi * r * 71492e3 ** 2)
     return vr
 
