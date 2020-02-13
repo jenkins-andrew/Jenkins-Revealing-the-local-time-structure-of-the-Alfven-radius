@@ -31,6 +31,7 @@ def equatorialPlasmaNumberDensity(r, speciesValues=None):
         else:
             n = (c * b2011)
     except:
+        print("Species do not match at number density step")
         n = b2011
     return n
 
