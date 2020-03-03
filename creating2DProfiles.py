@@ -136,6 +136,12 @@ def alfvenVelocityAtRThetaPhi(fieldModel, r, theta, phi, species, massArray, mod
     return Va
 
 
+def alfvenVelocityFunc(magfieldArray, densityArray):
+    Va = magfieldArray * 1e-9 / np.sqrt(1.25663706212e-6 * densityArray)
+
+    return Va
+
+
 def corotationVelocityFunc(x, y):
     """
     Calculate the corotational velocity at x and y
@@ -233,7 +239,7 @@ def averageMagFieldModel(fieldObject, r, theta, phi, model='VIP4'):
     :param model: the type of model for the magnetic field
     :return: the magnitude of the magnetic field in nT
     """
-    br, bt, bp, bx, by, bz = fieldObject.Internal_Field(r, theta, phi, False, model)
+    br, bt, bp, bx, by, bz = fieldObject.Internal_Field(r, theta, phi, True, model)
     b = magnitudeVector(br, bt, bp)
     return b
 
@@ -289,10 +295,14 @@ for r in np.arange(6, 100, 0.5):
         xInRJ.append(r * np.cos(phi))
         yInRJ.append(r * np.sin(phi))
         equatorialMagField.append(equatorialMagneticField(r, phi))
-        numberDensity.append(equatorialTotalPlasmaNumberDensity(r, speciesList))
+        numberDensity.append(totalMassDensity(r, speciesList, speciesMass))
         radialVelocity.append(radialVelocityFunc(r, speciesList, speciesMass))
-        alfvenVelocity.append(alfvenVelocityAtRThetaPhi(fieldGenerator, r, 0.5*np.pi, phi, speciesList, speciesMass))
+        # alfvenVelocity.append(alfvenVelocityAtRThetaPhi(fieldGenerator, r, 0.5*np.pi, phi, speciesList, speciesMass))
 
+equatorialMagField = np.array(equatorialMagField)
+numberDensity = np.array(numberDensity)
+
+alfvenVelocity.extend(alfvenVelocityFunc(equatorialMagField, numberDensity))
 
 # Check if Alfven velocity is greater than radial, if so set a binary choice to 0
 # will be used to create a plot later
