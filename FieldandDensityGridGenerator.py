@@ -138,7 +138,7 @@ def generateAlfvenAndRadial(path):
         rho = massDensityAtZFromEquator(equatorialdistance, z, speciesList, speciesMass)
 
         alfvenVelocity = alfvenVelocityFuncForArray(B, rho)
-        radialVelocity = radialVelocityFuncForArray(r, speciesList, speciesMass)
+        radialVelocity = radialVelocityFuncForArray(equatorialdistance, speciesList, speciesMass)
 
         output.append(np.c_[x, y, z, B, rho, alfvenVelocity, radialVelocity])
 
@@ -168,9 +168,11 @@ def generateAlfvenTravelTimes(path):
     lineNumber = []
     travelTime = []
     fractionalTimeSpendInPlasmaSheet = []
-    start = float(path[16:20])
-    end = float(path[22:27])
-    phi = float(path[30:34])
+    newstr = ''.join((ch if ch in '0123456789.' else ' ') for ch in path)
+    pathstring = [i for i in newstr.split()]
+    start = float(pathstring[0])
+    end = float(pathstring[1])
+    phi = float(pathstring[2])
     fieldLineStep = int((end - start) / len(loaded) + 1)
 
     for i in range(len(loaded)):
