@@ -95,6 +95,13 @@ def plotCorotation(path):
     corotationMask = (radialVelocity < alfvenVelocity)
     corotationBackwardsMask = (radialVelocity > alfvenVelocity)
 
+    alfvenPointCheck = []
+    for i in range(len(alfvenVelocity)):
+        if alfvenVelocity[i] > radialVelocity[i]:
+            alfvenPointCheck.append(0)
+        else:
+            alfvenPointCheck.append(1)
+
     # Masking a circle of radius minR R_J
     # mask = (xtest < minR) | (np.sqrt(xtest ** 2 + ztest ** 2) > maxR)
     mask = (rho > 10 ** (-24)) & (rho < 10 ** (-16))
@@ -112,12 +119,12 @@ def plotCorotation(path):
     RadialGrid = griddata((radius, z), np.log10(radialVelocity), (xtest, ztest))
     #RadialGrid[mask] = np.nan
 
+    # AlfvenPointGrid = griddata((radius, z), alfvenPointCheck, (xtest, ztest))
+    # AlfvenPointGrid[mask] = np.nan
     combineTraces(path, 3)
     x2, y2, z2, B2, rho2, alfvenVelocity2, radialVelocity2 = np.loadtxt('temp.txt', delimiter='\t', unpack=True)
     radius2 = np.sqrt(x2 ** 2 + y2 ** 2)
     #
-    # AlfvenPointGrid = griddata((x, z), alfvenPointCheck, (xtest, ztest))
-    # AlfvenPointGrid[mask] = np.nan
 
     # plt.figure()
     # plt.plot(r, alfvenVelocity/1000, 'k', label='Alfven')
@@ -165,7 +172,7 @@ def plotCorotation(path):
     plt.rcParams['ytick.labelsize'] = 18
     heatmap = plt.contourf(xtest, ztest, NGrid, cmap=plt.cm.get_cmap('gist_rainbow'), levels=20,
                            alpha=0.4)
-    plt.contourf(xtest, ztest, notNGrid, colors='white')
+    plt.contourf(xtest, ztest, notNGrid, colors='white', alpha=0.8)
     plt.plot(radius2, z2, '--k')
     #lines = plt.contour(xtest, ztest, NGrid, 5, colors='k')
     #plt.clabel(lines, inline=1, colors='k')
@@ -185,7 +192,7 @@ def plotCorotation(path):
     plt.subplots_adjust(wspace=0.5, hspace=0.5, right=1, left=0.15)
 
     #
-    ax = plt.subplot(211)
+    ax = plt.subplot(121)
     heatmap = plt.contourf(xtest, ztest, AlfvenGrid, cmap=plt.cm.get_cmap('gist_rainbow'), levels=15, alpha=0.4)
     #lines = plt.contour(xtest, ztest, AlfvenGrid, 1, colors='k')
     clb = plt.colorbar(heatmap)
@@ -198,7 +205,7 @@ def plotCorotation(path):
     plt.yticks(size=18)
     plt.xlim(minR)
 
-    ax = plt.subplot(212)
+    ax = plt.subplot(122)
     heatmap = plt.contourf(xtest, ztest, RadialGrid, cmap=plt.cm.get_cmap('gist_rainbow'), levels=15, alpha=0.4)
     #lines = plt.contour(xtest, ztest, RadialGrid, 5, colors='k')
     #plt.clabel(lines, inline=1, colors='k')
@@ -212,15 +219,16 @@ def plotCorotation(path):
     plt.yticks(size=18)
     plt.xlim(minR)
     plt.tight_layout()
-    # ax = plt.subplot(212)
-    # lines = plt.contour(xtest, ztest, AlfvenPointGrid, 1)
+
+    # plt.figure()
+    # heatmap = plt.contourf(xtest, ztest, AlfvenPointGrid)
     # plt.title('Alfven Radius', fontsize=18, wrap=True)
     # plt.xlabel('x $(R_J)$', fontsize=18)
     # plt.ylabel('z $(R_J)$', fontsize=18)
     # plt.xticks(size=18)
     # plt.yticks(size=18)
     # plt.xlim(minR)
-    #
+
     #
     # plt.figure()
     # cmap = colors.ListedColormap(['#196F3D', '#1A5276'])
