@@ -13,7 +13,7 @@ x, y, b, p, alfvenVelocity, corotation, corotationcheck = np.loadtxt('alfvenChec
 # Creating grid
 maxR = 100
 minR = 6
-xtest = np.arange(-maxR, maxR+1, 0.5)
+xtest = np.arange(-maxR, maxR+0.5, 0.5)
 ytest = xtest
 xtest, ytest = np.meshgrid(xtest, ytest)
 
@@ -21,11 +21,11 @@ xtest, ytest = np.meshgrid(xtest, ytest)
 mask = (np.sqrt(xtest ** 2 + ytest ** 2) < minR) | (np.sqrt(xtest ** 2 + ytest ** 2) > maxR)
 
 # Making the 3D grid for the magnetic field
-BGrid = griddata((x, y), b, (xtest, ytest))
+BGrid = griddata((x, y), np.log(b), (xtest, ytest))
 BGrid[mask] = np.nan
 
 # Making the 3D grid for the plasma density
-PGrid = griddata((x, y), p, (xtest, ytest))
+PGrid = griddata((x, y), np.log(p), (xtest, ytest))
 PGrid[mask] = np.nan
 
 # Making the 3D grid for the Alfven Velocity
@@ -41,21 +41,21 @@ CheckGrid = griddata((x, y), corotationcheck, (xtest, ytest))
 CheckGrid[mask] = np.nan
 
 # Plotting
-# plt.figure()
-# heatmap = plt.contourf(xtest, ytest, BGrid, cmap=plt.cm.get_cmap('gist_rainbow'), alpha=0.4)
+plt.figure()
+heatmap = plt.contourf(xtest, ytest, BGrid, cmap=plt.cm.get_cmap('gist_rainbow'), levels=20, alpha=0.4)
 # lines = plt.contour(xtest, ytest, BGrid, 5, colors='k')
 # plt.clabel(lines, fontsize=18, inline=1, colors='k')
-# clb = plt.colorbar(heatmap)
-# clb.ax.set_title('B$_n$ (nT)', fontsize=18)
-# plt.rcParams['xtick.labelsize'] = 18
-# plt.rcParams['ytick.labelsize'] = 18
-# plt.xlabel('x $(R_J)$', fontsize=18)
-# plt.ylabel('y $(R_J)$', fontsize=18)
-# #plt.axis(xlim=(np.amin(xtest), np.amax(xtest)), ylim=(np.amin(ytest), np.amax(ytest)))
-# plt.xticks(size=18)
-# plt.yticks(size=18)
-# plt.tight_layout()
-# plt.text(10, -70, r'$\rightarrow$ To the Sun')
+clb = plt.colorbar(heatmap)
+clb.ax.set_title('B$_n$ (nT)', fontsize=18)
+plt.rcParams['xtick.labelsize'] = 18
+plt.rcParams['ytick.labelsize'] = 18
+plt.xlabel('x $(R_J)$', fontsize=18)
+plt.ylabel('y $(R_J)$', fontsize=18)
+#plt.axis(xlim=(np.amin(xtest), np.amax(xtest)), ylim=(np.amin(ytest), np.amax(ytest)))
+plt.xticks(size=18)
+plt.yticks(size=18)
+plt.tight_layout()
+plt.text(10, -70, r'$\leftarrow$ To the Sun')
 
 # plt.figure()
 # heatmap = plt.contourf(xtest, ytest, PGrid, cmap=plt.cm.get_cmap('gist_rainbow'), alpha=0.4)
@@ -70,7 +70,6 @@ CheckGrid[mask] = np.nan
 # plt.ylabel('y $(R_J)$', fontsize=18)
 # plt.xticks(size=18)
 # plt.yticks(size=18)
-# plt.text(10, -70, r'$\rightarrow$ To the Sun')
 # plt.tight_layout()
 
 # plt.figure()
@@ -109,11 +108,11 @@ plt.rcParams['xtick.labelsize'] = 18
 plt.rcParams['ytick.labelsize'] = 18
 plt.subplots_adjust(wspace=0.5, hspace=0.5)
 plt.tight_layout()
-ax = plt.subplot(221)
+ax1 = plt.subplot(221)
 heatmap = plt.contourf(xtest, ytest, AVGrid, cmap=plt.cm.get_cmap('gist_rainbow'), alpha=0.4)
 lines = plt.contour(xtest, ytest, CheckGrid, 1, colors='k')
 Jupiter = plt.Circle((0, 0), radius=1, color='k')
-ax.add_artist(Jupiter)
+ax1.add_artist(Jupiter)
 clb = plt.colorbar(heatmap)
 clb.ax.set_title(r'(kms$^{-1}$)', fontsize=18)
 plt.title('Alfven V', fontsize=18, wrap=True)
@@ -160,6 +159,7 @@ plt.xlabel('Angle (Degrees)', fontsize=18)
 plt.ylabel('Radius (R$_J)$', fontsize=18)
 plt.xticks(size=18)
 plt.yticks(size=18)
+plt.xlim(0, 360)
 
 # plt.figure()
 # plt.plot(radius, alfven/1000, 'k', label='Alfven')
