@@ -98,7 +98,7 @@ if (majorRunChoice == 1) | (majorRunChoice == 2):
                 path = pathString(rmin, rmax, pmax, currentSheet)
                 PlotFieldLines.plotOnePhiSet(path)
             else:
-                for phi0 in np.arange(pmin, pmax + 0.001, 45 * np.pi/180):
+                for phi0 in np.arange(pmin, pmax + 0.001, 45):
                     # Get a plot for each phi value
                     path = pathString(rmin, rmax, phi0, currentSheet)
                     PlotFieldLines.plotOnePhiSet(path)
@@ -109,7 +109,7 @@ if (majorRunChoice == 1) | (majorRunChoice == 2):
             # Find the Alfven and radial velocities along the field lines
             FieldandDensityGridGenerator.generateAlfvenAndRadial(path)
         else:
-            for phi0 in np.arange(pmin, pmax + 0.001, 45 * np.pi/180):
+            for phi0 in np.arange(pmin, pmax + 0.001, 45):
                 path = pathString(rmin, rmax, phi0, currentSheet)
                 # Find the Alfven and radial velocities along the field lines
                 FieldandDensityGridGenerator.generateAlfvenAndRadial(path)
