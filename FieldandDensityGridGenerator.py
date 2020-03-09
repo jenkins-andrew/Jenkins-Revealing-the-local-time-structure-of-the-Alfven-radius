@@ -166,33 +166,35 @@ def generateAlfvenAndRadialFromDefusive(path):
 def generateAlfvenTravelTimes(path):
     loaded = np.load(path, allow_pickle=True)
     lineNumber = []
-    travelTime = []
-    fractionalTimeSpendInPlasmaSheet = []
+    travelTime = [[], []]
+    fractionalTimeSpendInPlasmaSheet = [[], []]
     newstr = ''.join((ch if ch in '0123456789.' else ' ') for ch in path)
     pathstring = [i for i in newstr.split()]
     start = float(pathstring[0])
     end = float(pathstring[1])
     phi = float(pathstring[2])
-    fieldLineStep = int((end - start) / len(loaded) + 1)
+    hemisphereArray = ['Northern', 'Southern']
 
     for i in range(len(loaded)):
         np.savetxt('temp.txt', np.c_[loaded[i]], delimiter='\t')
 
-        lineNumber.append(i*fieldLineStep + start)
-
         x, y, z, B, rho, alfven, radial = np.loadtxt('temp.txt', delimiter='\t', unpack=True)
         r = np.sqrt(x ** 2 + y ** 2 + z ** 2)
-
-        time = 0
-        timeInPlasmaSheet = 0
-        for j in range(len(r)-1):
-            deltaR = np.abs(r[j+1] - r[j])
-            timeToAdd = (1/alfven[j+1]) * deltaR * 71492e3
-            time += timeToAdd
-            if np.abs(z[j]) < 4:
-                timeInPlasmaSheet += timeToAdd
-        travelTime.append(time)
-        fractionalTimeSpendInPlasmaSheet.append(timeInPlasmaSheet/time)
-
+        indexOfMin = np.where(B == np.amin(B))
+        indexOfMin = int(indexOfMin[0])
+        lineNumber.append(r[indexOfMin])
+        rangeArray = [0, indexOfMin, indexOfMin, len(r)-1]
+        for k in range(2):
+            time = 0
+            timeInPlasmaSheet = 0
+            for j in range(rangeArray[0+k*2], rangeArray[1+k*2]):
+                deltaR = np.abs(r[j+1] - r[j])
+                timeToAdd = (1/alfven[j+1]) * deltaR * 71492e3
+                time += timeToAdd
+                if np.abs(z[j]) < 4:
+                    timeInPlasmaSheet += timeToAdd
+            travelTime[k].append(time)
+            fractionalTimeSpendInPlasmaSheet[k].append(timeInPlasmaSheet/time)
     np.savetxt('travelTimes/alfvenTravelTimesfor%0.2fto%0.2fatPhi%0.2f.txt' % (start, end, phi),
-               np.c_[lineNumber, travelTime, fractionalTimeSpendInPlasmaSheet], delimiter='\t')
+                       np.c_[lineNumber, travelTime[0], fractionalTimeSpendInPlasmaSheet[0], travelTime[1], fractionalTimeSpendInPlasmaSheet[1]], delimiter='\t')
+
