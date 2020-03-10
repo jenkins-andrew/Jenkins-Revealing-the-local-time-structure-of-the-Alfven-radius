@@ -180,8 +180,8 @@ def generateAlfvenTravelTimes(path):
 
         x, y, z, B, rho, alfven, radial = np.loadtxt('temp.txt', delimiter='\t', unpack=True)
         r = np.sqrt(x ** 2 + y ** 2 + z ** 2)
-        indexOfMin = np.where(B == np.amin(B))
-        indexOfMin = int(indexOfMin[0])
+        B = B.tolist()
+        indexOfMin = B.index(np.amin(B))
         lineNumber.append(r[indexOfMin])
         rangeArray = [0, indexOfMin, indexOfMin, len(r)-1]
         for k in range(2):
