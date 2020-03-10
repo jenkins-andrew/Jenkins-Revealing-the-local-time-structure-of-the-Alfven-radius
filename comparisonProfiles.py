@@ -223,7 +223,7 @@ speciesMass = {'e-': 0.00054858,
                }
 
 fieldGenerator = field_models()
-phi = 120
+phi = 112
 # Calculate radius, scale height, x, y, equatorial magnetic field, Alfven and radial velocity
 # and number density by iterating over radius and angle
 for r in np.arange(6, 100, 0.5):
@@ -258,13 +258,14 @@ for r in np.arange(6, 100, 0.5):
 # np.savetxt('magfieldcompoents.txt', np.c_[radius, bcxarray, bcyarray, bczarray, bxarray, byarray, bzarray, xcombined, ycombined, zcombined, bcalculated, barray], delimiter='\t')
 
 plt.figure()
-# plt.plot(radius, radialVelocity500, linestyle='-', label='Radial Velocity Mdot = 500 kgm/s')
-# plt.plot(radius, radialVelocity280, linestyle='-.', label='Radial Velocity Mdot = 280 kgm/s')
-plt.plot(radius, radialVelocity1300, label='Radial Velocity Mdot = 1000 kgm/s')
-plt.plot(radius, alfvenVelocity210, linestyle=':', label=r'Alfven Velocity at $\phi$=210', linewidth=4)
-plt.plot(radius, alfvenVelocity300, linestyle=':', label=r'Alfven Velocity at $\phi$=0', linewidth=4)
-plt.plot(radius, alfvenVelocity30, linestyle=':', label=r'Alfven Velocity at $\phi$=30', linewidth=4)
-plt.plot(radius, alfvenVelocity120, linestyle=':', label=r'Alfven Velocity at $\phi$=120', linewidth=4)
+plt.plot(radius, radialVelocity500, linestyle='-', label='Radial Velocity Mdot = 500 kgm/s')
+plt.plot(radius, radialVelocity280, linestyle='-.', label='Radial Velocity Mdot = 280 kgm/s')
+plt.plot(radius, radialVelocity1300, linestyle='--', label='Radial Velocity Mdot = 1000 kgm/s')
+plt.plot(radius, alfvenVelocityATPi, linestyle=':', label=r'Alfven Velocity')
+# plt.plot(radius, alfvenVelocity210, linestyle=':', label=r'Alfven Velocity at $\phi$=210', linewidth=4)
+# plt.plot(radius, alfvenVelocity300, linestyle=':', label=r'Alfven Velocity at $\phi$=0', linewidth=4)
+# plt.plot(radius, alfvenVelocity30, linestyle=':', label=r'Alfven Velocity at $\phi$=30', linewidth=4)
+# plt.plot(radius, alfvenVelocity120, linestyle=':', label=r'Alfven Velocity at $\phi$=120', linewidth=4)
 plt.legend(fontsize=18)
 plt.xticks(size=18)
 plt.yticks(size=18)
