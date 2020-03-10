@@ -165,7 +165,9 @@ elif majorRunChoice == 5:
     np.savetxt('fieldtrace%0.2fphi%0.2f.txt' % (fieldLineNumber, phi), np.c_[output], delimiter='\t')
 
 elif majorRunChoice == 6:
-    print("Which file would you like to find Alfven travel times for:")
-    path = printChoiceListAndOption('newoutput/')
-
-    FieldandDensityGridGenerator.generateAlfvenTravelTimes(path)
+    folder = input("Which folder of files would you like to find Alfven travel times for?\n")
+    files = [f for f in os.listdir(folder+'/')]
+    print("Finding Alfven travel times for files in folder: %s" % folder)
+    for i in range(len(files)):
+        path = folder + '/' + files[i]
+        FieldandDensityGridGenerator.generateAlfvenTravelTimes(path)
