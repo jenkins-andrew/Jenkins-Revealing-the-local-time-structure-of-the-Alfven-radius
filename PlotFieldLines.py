@@ -141,7 +141,7 @@ def plotCorotation(path):
     plt.figure()
     plt.rcParams['xtick.labelsize'] = 18
     plt.rcParams['ytick.labelsize'] = 18
-    heatmap = plt.contourf(xtest, ztest, BGrid, cmap=plt.cm.get_cmap('gist_rainbow'), levels=15, alpha=0.4)
+    heatmap = plt.contourf(xtest, ztest, BGrid, cmap=plt.cm.get_cmap('gist_rainbow'), levels=30, alpha=0.4)
     clb = plt.colorbar(heatmap)
     clb.ax.set_title('B$_n$ $\log$(nT)', fontsize=18)
     plt.plot(radius2, z2, '--k')
