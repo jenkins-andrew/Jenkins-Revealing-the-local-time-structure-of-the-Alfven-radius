@@ -1,8 +1,23 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.interpolate import griddata
+from matplotlib.ticker import (AutoMinorLocator)
 from matplotlib import ticker, cm
 from matplotlib import colors
+
+
+def sph_cart(r, phi):
+    """
+    From Chris' code
+    :param r: in R_J
+    :param theta: in radians
+    :param phi: in radians
+    :return:
+    """
+    x = r * np.cos(phi)
+    y = r * np.sin(phi)
+    return x, y
+
 
 # Loading the data
 x, y, b, p, alfvenVelocity, corotation, corotationcheck = np.loadtxt('alfvenCheck.txt', delimiter='\t', unpack=True)
@@ -12,8 +27,9 @@ x, y, b, p, alfvenVelocity, corotation, corotationcheck = np.loadtxt('alfvenChec
 
 # Creating grid
 maxR = 100
-minR = 6
-xtest = np.arange(-maxR, maxR+0.5, 0.5)
+minR = 20
+step = 0.2
+xtest = np.arange(-maxR, maxR+step, step)
 ytest = xtest
 xtest, ytest = np.meshgrid(xtest, ytest)
 
@@ -21,11 +37,11 @@ xtest, ytest = np.meshgrid(xtest, ytest)
 mask = (np.sqrt(xtest ** 2 + ytest ** 2) < minR) | (np.sqrt(xtest ** 2 + ytest ** 2) > maxR)
 
 # Making the 3D grid for the magnetic field
-BGrid = griddata((x, y), np.log(b), (xtest, ytest))
+BGrid = griddata((x, y), np.log10(np.abs(b)), (xtest, ytest))
 BGrid[mask] = np.nan
 
 # Making the 3D grid for the plasma density
-PGrid = griddata((x, y), np.log(p), (xtest, ytest))
+PGrid = griddata((x, y), np.log10(p), (xtest, ytest))
 PGrid[mask] = np.nan
 
 # Making the 3D grid for the Alfven Velocity
@@ -40,9 +56,15 @@ VGrid[mask] = np.nan
 CheckGrid = griddata((x, y), corotationcheck, (xtest, ytest))
 CheckGrid[mask] = np.nan
 
+#
+# r = [point for point in range(6, 100)]
+# r = np.array(r)
+# x1, y1 = sph_cart(r, 0.5*np.pi)
+
 # Plotting
 plt.figure()
-heatmap = plt.contourf(xtest, ytest, BGrid, cmap=plt.cm.get_cmap('gist_rainbow'), levels=20, alpha=0.4)
+heatmap = plt.contourf(xtest, ytest, BGrid, cmap=plt.cm.get_cmap('gist_rainbow'), levels=40, alpha=0.4)
+# plt.plot(x1, y1)
 # lines = plt.contour(xtest, ytest, BGrid, 5, colors='k')
 # plt.clabel(lines, fontsize=18, inline=1, colors='k')
 clb = plt.colorbar(heatmap)
@@ -52,10 +74,13 @@ plt.rcParams['ytick.labelsize'] = 18
 plt.xlabel('x $(R_J)$', fontsize=18)
 plt.ylabel('y $(R_J)$', fontsize=18)
 #plt.axis(xlim=(np.amin(xtest), np.amax(xtest)), ylim=(np.amin(ytest), np.amax(ytest)))
-plt.xticks(size=18)
+plt.xticks(np.arange(np.amin(xtest), np.amax(xtest)+1, 20), size=18)
+plt.tick_params(bottom=True, which='both', labelsize=18)
+# ax.xaxis.set_minor_locator(AutoMinorLocator())
+# plt.grid(which='minor', axis='both', visible=True)
 plt.yticks(size=18)
 plt.tight_layout()
-plt.text(10, -70, r'$\leftarrow$ To the Sun')
+plt.text(10, -70, r'$\leftarrow$ To the Sun', size=18)
 
 # plt.figure()
 # heatmap = plt.contourf(xtest, ytest, PGrid, cmap=plt.cm.get_cmap('gist_rainbow'), alpha=0.4)
@@ -110,7 +135,7 @@ plt.subplots_adjust(wspace=0.5, hspace=0.5)
 plt.tight_layout()
 ax1 = plt.subplot(221)
 heatmap = plt.contourf(xtest, ytest, AVGrid, cmap=plt.cm.get_cmap('gist_rainbow'), alpha=0.4)
-lines = plt.contour(xtest, ytest, CheckGrid, 1, colors='k')
+lines = plt.contour(xtest, ytest, CheckGrid, 1, colors='k', linewidth=4)
 Jupiter = plt.Circle((0, 0), radius=1, color='k')
 ax1.add_artist(Jupiter)
 clb = plt.colorbar(heatmap)
@@ -120,6 +145,7 @@ plt.xlabel('x $(R_J)$', fontsize=18)
 plt.ylabel('y $(R_J)$', fontsize=18)
 plt.xticks(size=18)
 plt.yticks(size=18)
+ax1.xaxis.set_minor_locator(AutoMinorLocator())
 
 ax = plt.subplot(222)
 heatmap = plt.contourf(xtest, ytest, VGrid, cmap=plt.cm.get_cmap('gist_rainbow'), alpha=0.4)
@@ -134,9 +160,10 @@ plt.xlabel('x $(R_J)$', fontsize=18)
 plt.ylabel('y $(R_J)$', fontsize=18)
 plt.xticks(size=18)
 plt.yticks(size=18)
+ax.xaxis.set_minor_locator(AutoMinorLocator())
 
 ax = plt.subplot(223)
-lines = plt.contour(xtest, ytest, CheckGrid, 1, colors='k')
+lines = plt.contour(xtest, ytest, CheckGrid, 1, colors='k', linewidth=4)
 Jupiter = plt.Circle((0, 0), radius=1, color='k')
 ax.add_artist(Jupiter)
 plt.title('Alfven Radius', fontsize=18, wrap=True)
@@ -144,19 +171,30 @@ plt.xlabel('x $(R_J)$', fontsize=18)
 plt.ylabel('y $(R_J)$', fontsize=18)
 plt.xticks(size=18)
 plt.yticks(size=18)
+ax.xaxis.set_minor_locator(AutoMinorLocator())
 
 ax = plt.subplot(224)
-alfvenmask = (alfvenVelocity > 0.99*corotation) & (alfvenVelocity < 1.01*corotation)
+alfvenmask = (alfvenVelocity > 0.95*corotation) & (alfvenVelocity < 1.05*corotation)
 calculatedRadius = np.sqrt(x ** 2 + y ** 2)
 phiwrong = np.arctan2(x, y)
 phi = np.mod(phiwrong, 2*np.pi) * 180 / np.pi
 # fit = np.poly1d(np.polyfit(phi[alfvenmask], calculatedRadius[alfvenmask], 3))
-plt.scatter(phi[alfvenmask], calculatedRadius[alfvenmask], s=0.1, color='k')
+plt.scatter(phi[alfvenmask], calculatedRadius[alfvenmask], s=0.5, color='k')
 # fitrange = np.arange(0, 360, 1)
 # plt.plot(fit(fitrange))
+y = [r for r in range(30, 101)]
+dawn = [90] * len(y)
+noon = [180] * len(y)
+dusk = [270] * len(y)
+plt.plot(dawn, y, linestyle='-', color='grey', alpha=0.4)
+plt.plot(noon, y, linestyle='-', color='grey', alpha=0.4)
+plt.plot(dusk, y, linestyle='-', color='grey', alpha=0.4)
 plt.title('Alfven Radius', fontsize=18, wrap=True)
 plt.xlabel('Angle (Degrees)', fontsize=18)
 plt.ylabel('Radius (R$_J)$', fontsize=18)
+plt.tick_params(bottom=True, which='both', labelsize=18)
+ax.xaxis.set_minor_locator(AutoMinorLocator())
+ax.yaxis.set_minor_locator(AutoMinorLocator())
 plt.xticks(size=18)
 plt.yticks(size=18)
 plt.xlim(0, 360)
