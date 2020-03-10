@@ -149,9 +149,11 @@ elif majorRunChoice == 4:
 elif majorRunChoice == 5:
     print("Which file contains a trace you would like?:")
     path = printChoiceListAndOption('newoutput/')
-    start = float(path[16:20])
-    end = float(path[22:27])
-    phi = float(path[30:34])
+    newstr = ''.join((ch if ch in '0123456789.' else ' ') for ch in path)
+    pathstring = [i for i in newstr.split()]
+    start = float(pathstring[0])
+    end = float(pathstring[1])
+    phi = float(pathstring[2])
     output = np.load(path, allow_pickle=True)
     fieldLineStep = int((end - start) / len(output) + 1)
 
@@ -160,9 +162,9 @@ elif majorRunChoice == 5:
 
     arrayNumber = int((fieldLineNumber-start) / fieldLineStep)
     print("Field trace starting at %0.2f for phi = %0.2f" % (fieldLineNumber, phi))
-    output = np.load(path, allow_pickle=True)[arrayNumber]
-
-    np.savetxt('fieldtrace%0.2fphi%0.2f.txt' % (fieldLineNumber, phi), np.c_[output], delimiter='\t')
+    output = np.load(path, allow_pickle=True)
+    print(arrayNumber, path)
+    np.savetxt('fieldtrace%0.2fphi%0.2f.txt' % (fieldLineNumber, phi), np.c_[output[arrayNumber]], delimiter='\t')
 
 elif majorRunChoice == 6:
     folder = input("Which folder of files would you like to find Alfven travel times for?\n")
