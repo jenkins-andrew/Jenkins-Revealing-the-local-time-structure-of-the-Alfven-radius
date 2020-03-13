@@ -125,9 +125,12 @@ elif majorRunChoice == 3:
     size = len(np.load(path, allow_pickle=True)[0][0])
     # Allows the user to select one of these files and then plot them. Checks what type of file it is and runs the
     # correct plotting method on it
-    if size == 4:
+    printtype = int(input("What type of print?\n"
+                          "1) Field Lines\n"
+                          "2) Plasma Sheet\n"))
+    if printtype == 1:
         PlotFieldLines.plotOnePhiSet(path)
-    elif size == 7:
+    elif printtype == 2:
         PlotFieldLines.plotCorotation(path)
     else:
         print("Cannot currently print file.")
