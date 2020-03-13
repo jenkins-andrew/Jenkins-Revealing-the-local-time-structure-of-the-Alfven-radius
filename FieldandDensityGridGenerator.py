@@ -168,12 +168,12 @@ def generateAlfvenTravelTimes(path):
     lineNumber = []
     travelTime = [[], []]
     fractionalTimeSpendInPlasmaSheet = [[], []]
+    fractionalDistanceInPlasmaSheet = []
     newstr = ''.join((ch if ch in '0123456789.' else ' ') for ch in path)
     pathstring = [i for i in newstr.split()]
     start = float(pathstring[0])
     end = float(pathstring[1])
     phi = float(pathstring[2])
-    hemisphereArray = ['Northern', 'Southern']
 
     for i in range(len(loaded)):
         np.savetxt('temp.txt', np.c_[loaded[i]], delimiter='\t')
@@ -184,17 +184,22 @@ def generateAlfvenTravelTimes(path):
         indexOfMin = B.index(np.amin(B))
         lineNumber.append(r[indexOfMin])
         rangeArray = [0, indexOfMin, indexOfMin, len(r)-1]
+        totalDistanceTravelled = 0
+        distanceInPlasmSheet = 0
         for k in range(2):
             time = 0
             timeInPlasmaSheet = 0
             for j in range(rangeArray[0+k*2], rangeArray[1+k*2]):
                 deltaR = np.abs(r[j+1] - r[j])
+                totalDistanceTravelled += deltaR
                 timeToAdd = (1/alfven[j+1]) * deltaR * 71492e3
                 time += timeToAdd
                 if np.abs(z[j]) < 4:
+                    distanceInPlasmSheet += deltaR
                     timeInPlasmaSheet += timeToAdd
             travelTime[k].append(time)
             fractionalTimeSpendInPlasmaSheet[k].append(timeInPlasmaSheet/time)
+        fractionalDistanceInPlasmaSheet.append(distanceInPlasmSheet / totalDistanceTravelled)
     np.savetxt('travelTimes/alfvenTravelTimesfor%0.2fto%0.2fatPhi%0.2f.txt' % (start, end, phi),
-                       np.c_[lineNumber, travelTime[0], fractionalTimeSpendInPlasmaSheet[0], travelTime[1], fractionalTimeSpendInPlasmaSheet[1]], delimiter='\t')
+                       np.c_[lineNumber, travelTime[0], fractionalTimeSpendInPlasmaSheet[0], travelTime[1], fractionalTimeSpendInPlasmaSheet[1], fractionalDistanceInPlasmaSheet], delimiter='\t')
 
