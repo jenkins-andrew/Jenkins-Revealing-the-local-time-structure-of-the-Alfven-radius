@@ -45,7 +45,7 @@ def plotMultiplePhis(directory):
 
 def plotOnePhiSet(path):
     combineTraces(path)
-    x, y, z, B = np.loadtxt('temp.txt', delimiter='\t', unpack=True)
+    x, y, z, B, rho, alfvenVelocity, radialVelocity = np.loadtxt('temp.txt', delimiter='\t', unpack=True)
     #xc, yc, zc, Bc = np.loadtxt('newoutput/radius15.00to15.00phi5.10CurrentOn=False.txt', delimiter='\t', unpack=True)
 
     fig = plt.figure()
