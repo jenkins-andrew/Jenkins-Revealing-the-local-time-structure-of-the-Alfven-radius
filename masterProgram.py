@@ -68,11 +68,12 @@ while True:
                                    "(3) Plot the field lines or plasma sheet with field lines (file dependent)\n"
                                    "(4) Generate total mass density along pre-made field lines\n"
                                    "(5) Generate txt file for one field line\n"
-                                   "(6) Calculate Alfven travel times\n"))
+                                   "(6) Calculate Alfven travel times\n"
+                                   "(7) Produce orbital trace plot\n"))
     except ValueError:
         print("Not a valid input:")
         continue
-    if (majorRunChoice > 6) | (majorRunChoice < 1):
+    if (majorRunChoice > 7) | (majorRunChoice < 1):
         print("Not a valid input:")
     else:
         break
@@ -176,3 +177,9 @@ elif majorRunChoice == 6:
     for i in range(len(files)):
         path = folder + '/' + files[i]
         FieldandDensityGridGenerator.generateAlfvenTravelTimes(path)
+
+elif majorRunChoice == 7:
+    folder = input("Which folder of files would you like to find Alfven travel times for?\n")
+    print("Which file for the trace?:")
+    path = printChoiceListAndOption(folder)
+    PlotFieldLines.orbitalTraces(path)
