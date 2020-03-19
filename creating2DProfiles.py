@@ -1,5 +1,6 @@
 import numpy as np
 from Magnetic_field_models import field_models
+import matplotlib.ticker as tick
 
 
 def equatorialMagneticField(r, phi):
@@ -239,7 +240,7 @@ def averageMagFieldModel(fieldObject, r, theta, phi, model='VIP4'):
     :param model: the type of model for the magnetic field
     :return: the magnitude of the magnetic field in nT
     """
-    br, bt, bp, bx, by, bz = fieldObject.Internal_Field(r, theta, phi, True, model)
+    br, bt, bp, bx, by, bz = fieldObject.Internal_Field(r, theta, phi, False, model)
     b = magnitudeVector(br, bt, bp)
     return b
 
@@ -294,35 +295,35 @@ for r in np.arange(6, 100, 0.5):
     for phi in np.arange(0, 2 * np.pi + 0.01, 0.1):
         xInRJ.append(r * np.cos(phi))
         yInRJ.append(r * np.sin(phi))
-        equatorialMagField.append(equatorialMagneticField(r, phi))
+        equatorialMagField.append(averageMagFieldModel(fieldGenerator, r, 0.5*np.pi, phi))
         numberDensity.append(totalMassDensity(r, speciesList, speciesMass))
         radialVelocity.append(radialVelocityFunc(r, speciesList, speciesMass))
-        # alfvenVelocity.append(alfvenVelocityAtRThetaPhi(fieldGenerator, r, 0.5*np.pi, phi, speciesList, speciesMass))
-
-equatorialMagField = np.array(equatorialMagField)
-numberDensity = np.array(numberDensity)
-
-alfvenVelocity.extend(alfvenVelocityFunc(equatorialMagField, numberDensity))
-
-# Check if Alfven velocity is greater than radial, if so set a binary choice to 0
-# will be used to create a plot later
+        alfvenVelocity.append(alfvenVelocityAtRThetaPhi(fieldGenerator, r, 0.5*np.pi, phi, speciesList, speciesMass))
+#
+# equatorialMagField = np.array(equatorialMagField)
+# numberDensity = np.array(numberDensity)
+#
+# alfvenVelocity.extend(alfvenVelocityFunc(equatorialMagField, numberDensity))
+#
+# # Check if Alfven velocity is greater than radial, if so set a binary choice to 0
+# # will be used to create a plot later
 for i in range(len(alfvenVelocity)):
     if alfvenVelocity[i] > radialVelocity[i]:
         alfvenPointCheck.append(0)
     else:
         alfvenPointCheck.append(1)
 
-# for r in np.arange(6, 100, 0.5):
-#     for z in np.arange(-12, 12, 0.1):
-#         theta = np.arctan2(z, r)
-#         radiusForZDensity.append(r)
-#         zInRJ.append(z)
-#         plasmaZDensity.append(densityAtZFromEquator(z, r, speciesList))
-#         radialVelocityAtZ.append(radialVelocityFuncAtZ(r, z, speciesList, speciesMass))
-#         alfvenVelocityAtZ.append(alfvenVelocityAtRThetaPhi(fieldGenerator, r, theta, 120, speciesMass, speciesMass))
-
-
-# Save outputs
+# # for r in np.arange(6, 100, 0.5):
+# #     for z in np.arange(-12, 12, 0.1):
+# #         theta = np.arctan2(z, r)
+# #         radiusForZDensity.append(r)
+# #         zInRJ.append(z)
+# #         plasmaZDensity.append(densityAtZFromEquator(z, r, speciesList))
+# #         radialVelocityAtZ.append(radialVelocityFuncAtZ(r, z, speciesList, speciesMass))
+# #         alfvenVelocityAtZ.append(alfvenVelocityAtRThetaPhi(fieldGenerator, r, theta, 120, speciesMass, speciesMass))
+#
+#
+# # Save outputs
 np.savetxt('alfvenCheck.txt', np.c_[xInRJ, yInRJ, equatorialMagField, numberDensity, alfvenVelocity, radialVelocity,
                                     alfvenPointCheck], delimiter='\t', header='x\ty\tb\tp\tAlfvenV\tRadialV\tCheck')
 # np.savetxt('scaleheighttest.txt', np.c_[radius, scaleHeight], delimiter='\t', header='r\tscaleHeight')
