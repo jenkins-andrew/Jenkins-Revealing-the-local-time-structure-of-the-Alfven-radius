@@ -82,7 +82,10 @@ def totalMassDensity(r, species, massAmuArray):
     :param massAmuArray: List of species with masses in amu
     :return: Mass Density in kg/m^3
     """
-    M = np.zeros(len(r))
+    try:
+        M = np.zeros(len(r))
+    except:
+        M = 0
     for i in massAmuArray:
         mass = massAmuArray[i]
         try:
