@@ -1,11 +1,34 @@
 from mpl_toolkits import mplot3d
 
 from scipy.interpolate import griddata
+import creating2DProfiles
 import numpy as np
 from matplotlib import colors
 import matplotlib.pyplot as plt
 from matplotlib import ticker, cm
 import os
+import matplotlib.ticker as tick
+
+speciesList = {'e-': [1, 2451, -6.27, 4.21],
+               'o+': [0.24, 592, -7.36, 0.368],
+               'o++': [0.03, 76.3, -6.73, 0.086],
+               's+': [0.07, 163, -6.81, 0.169],
+               's++': [0.22, 538, -6.74, 0.598],
+               's+++': [0.004, 90.7, -6.21, 0.165],
+               'h+': [0.02, 50.6, -5.31, 0.212],
+               'na+': [0.04, 97.2, -6.75, 0.106],
+               'hoto+': [0.06, 134, -4.63, 1.057]}
+ME = 0.00054858
+speciesMass = {'e-': 0.00054858,
+               'o++': 15.999 - (ME * 2),
+               's+': 32.065 - ME,
+               's++': 32.065 - (ME * 2),
+               's+++': 32.065 - (ME * 3),
+               'h+': 1.00784 - ME,
+               'na+': 22.989769 - ME,
+               'hoto+': 15.999 - (ME * 2),
+               'o+': 15.999 - ME
+               }
 
 
 def sph_cart(r, theta, phi):
@@ -29,6 +52,38 @@ def combineTraces(path, skipNumber=1):
         output.extend(loaded[i])
     np.savetxt('temp.txt', np.c_[output], delimiter='\t')
 
+
+def orbitalTraces(path):
+    file = open('orbitalAngle.txt', 'w+')
+    lineNumber, tNorth, ftNorth, tSouth, ftSouth, fD = np.loadtxt(path, delimiter='\t', unpack=True)
+    angleconversion = 2*np.pi / 9.9250
+    mask = (lineNumber < 60)
+    tNorth = angleconversion * (tNorth[mask] + tSouth[mask])/2/ 3600
+    fig, ax = plt.subplots()
+    step = 9.9250*3600 * 0.01/2
+    for i in range(len(lineNumber[mask])):
+        x, y = [], []
+        for j in np.arange(0, tNorth[i], 0.01*np.pi):
+            lineNumber[i] += step * creating2DProfiles.radialVelocityFunc(lineNumber[i], speciesList, speciesMass)/71492e3
+            x.append(lineNumber[i] * np.cos(j))
+            y.append(lineNumber[i] * np.sin(j))
+        plt.plot(x, y, color='yellow', linewidth=4)
+        file.write(str(lineNumber[i])+'\t'+str(tNorth[i]*180/np.pi/360)+'\n')
+    # plt.tick_params(right=True, which='both', labelsize=18)
+    # plt.xlabel(r'x (R$_J$)', size=18)
+    # plt.ylabel(r'y (R$_J$)', size=18)
+    plt.xlim(-60, 60)
+    plt.ylim(-60, 60)
+    Jupiter = plt.Circle((0, 0), radius=1, color='k')
+    outerCircle = plt.Circle((0, 0), radius=60, color='k', fill=False)
+    ax.add_artist(Jupiter)
+    ax.add_artist(outerCircle)
+    fig.patch.set_visible(False)
+    ax.axis('off')
+    plt.tight_layout()
+    # plt.legend(fontsize=18)
+    # plt.show()
+    plt.savefig('Figures/orbitalTrace.png', transparent=True)
 
 def plotMultiplePhis(directory):
 
@@ -167,7 +222,7 @@ def plotCorotation(path):
     # plt.yticks(size=18)
     # plt.tight_layout()
 
-    plt.figure()
+    fig, ax = plt.subplots()
     plt.rcParams['xtick.labelsize'] = 18
     plt.rcParams['ytick.labelsize'] = 18
     heatmap = plt.contourf(xtest, ztest, NGrid, cmap=plt.cm.get_cmap('gist_rainbow'), levels=20,
@@ -182,6 +237,11 @@ def plotCorotation(path):
     plt.ylabel('z $(R_J)$', fontsize=18)
     plt.xticks(size=18)
     plt.yticks(size=18)
+    ax.xaxis.set_major_locator(tick.MultipleLocator(25))
+    ax.xaxis.set_minor_locator(tick.MultipleLocator(5))
+    ax.yaxis.set_major_locator(tick.MultipleLocator(25))
+    ax.yaxis.set_minor_locator(tick.MultipleLocator(5))
+    ax.tick_params(right=True, which='both', labelsize=18)
     plt.xlim(minR)
     #plt.ylim(np.amin(z[corotationMask]), np.amax(z[corotationMask]))
     plt.tight_layout()
