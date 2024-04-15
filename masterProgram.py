@@ -69,11 +69,12 @@ while True:
                                    "(4) Generate total mass density along pre-made field lines\n"
                                    "(5) Generate txt file for one field line\n"
                                    "(6) Calculate Alfven travel times\n"
-                                   "(7) Produce orbital trace plot\n"))
+                                   "(7) Produce orbital trace plot\n"
+                                   "(8) Find radial distance for an orbital angle limit\n"))
     except ValueError:
         print("Not a valid input:")
         continue
-    if (majorRunChoice > 7) | (majorRunChoice < 1):
+    if (majorRunChoice > 8) | (majorRunChoice < 1):
         print("Not a valid input:")
     else:
         break
@@ -166,7 +167,6 @@ elif majorRunChoice == 5:
 
     arrayNumber = int((fieldLineNumber-start) / fieldLineStep)
     print("Field trace starting at %0.2f for phi = %0.2f" % (fieldLineNumber, phi))
-    output = np.load(path, allow_pickle=True)
     print(arrayNumber, path)
     np.savetxt('fieldtrace%0.2fphi%0.2f.txt' % (fieldLineNumber, phi), np.c_[output[arrayNumber]], delimiter='\t')
 
@@ -182,4 +182,28 @@ elif majorRunChoice == 7:
     folder = input("Which folder of files would you like to find Alfven travel times for?\n")
     print("Which file for the trace?:")
     path = printChoiceListAndOption(folder)
-    PlotFieldLines.orbitalTraces(path)
+    PlotFieldLines.betterOrbitalTrace(path)
+
+elif majorRunChoice == 8:
+    limit = float(input("Angle limit (degrees)\n"))
+    percentageError = float(input("Percentage error in limit\n"))
+    guess = float(input("Guess of radial starting distance\n"))
+    phi = 112
+    path = pathString(guess, guess, phi, False)
+    angle = 0
+    radial = guess
+    outOfLimit = True
+    while (angle < limit) | (angle > (1+percentageError*.01)*limit):
+        FieldTrace.produceTraceArrays(radial, radial, phi * np.pi / 180, phi * np.pi / 180, False)
+        FieldandDensityGridGenerator.generateAlfvenAndRadial(path)
+        FieldandDensityGridGenerator.generateAlfvenTravelTimes(path)
+        angle = PlotFieldLines.angleTravelledThrough('travelTimes/alfvenTravelTimesfor%0.2fto%0.2fatPhi%0.2f.txt' % (radial, radial, phi*np.pi/180))
+        print(angle)
+        dif = abs(angle - limit)
+        if angle > (1+percentageError*.01)*limit:
+            radial -= dif/1.12
+        elif angle < limit:
+            radial += dif/1.12
+        path = pathString(radial, radial, phi, False)
+
+    print("Angle is %0.2f at radial distance %0.2f" %(angle, radial))

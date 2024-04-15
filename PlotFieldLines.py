@@ -58,17 +58,62 @@ def orbitalTraces(path):
     lineNumber, tNorth, ftNorth, tSouth, ftSouth, fD = np.loadtxt(path, delimiter='\t', unpack=True)
     angleconversion = 2*np.pi / 9.9250
     mask = (lineNumber < 60)
-    tNorth = angleconversion * (tNorth[mask] + tSouth[mask])/2/ 3600
+    print(lineNumber)
+    tNorth = angleconversion * (tNorth[mask] + tSouth[mask])/3600
     fig, ax = plt.subplots()
     step = 9.9250*3600 * 0.01/2
     for i in range(len(lineNumber[mask])):
         x, y = [], []
+        file.write(str(lineNumber[i])+'\t')
         for j in np.arange(0, tNorth[i], 0.01*np.pi):
             lineNumber[i] += step * creating2DProfiles.radialVelocityFunc(lineNumber[i], speciesList, speciesMass)/71492e3
             x.append(lineNumber[i] * np.cos(j))
             y.append(lineNumber[i] * np.sin(j))
         plt.plot(x, y, color='yellow', linewidth=4)
-        file.write(str(lineNumber[i])+'\t'+str(tNorth[i]*180/np.pi/360)+'\n')
+        file.write(str(lineNumber[i])+'\t'+str(tNorth[i]*180/np.pi)+'\n')
+    # plt.tick_params(right=True, which='both', labelsize=18)
+    # plt.xlabel(r'x (R$_J$)', size=18)
+    # plt.ylabel(r'y (R$_J$)', size=18)
+    plt.xlim(-60, 60)
+    plt.ylim(-60, 60)
+    Jupiter = plt.Circle((0, 0), radius=1, color='k')
+    outerCircle = plt.Circle((0, 0), radius=60, color='k', fill=False)
+    ax.add_artist(Jupiter)
+    ax.add_artist(outerCircle)
+    fig.patch.set_visible(False)
+    ax.axis('off')
+    plt.tight_layout()
+    # plt.legend(fontsize=18)
+    plt.show()
+    # plt.savefig('Figures/orbitalTrace.png', transparent=True)
+
+def vPhiCalc(r):
+    vPhi = -0.1461*r**2 + 16.59*r - 64.99
+    # vPhi = r*9.286 + 23.57
+    return vPhi*1e3/71492e3
+
+def betterOrbitalTrace(path):
+    file = open('orbitalAngle.txt', 'w+')
+    lineNumber, tNorth, ftNorth, tSouth, ftSouth, fD = np.loadtxt(path, delimiter='\t', unpack=True)
+    mask = (lineNumber < 60)
+    totalTravelTime = (tNorth[mask] + tSouth[mask])
+    fig, ax = plt.subplots()
+    step = 1
+    for i in range(len(lineNumber[mask])):
+        x, y = [], []
+        file.write(str(round(lineNumber[i], 2))+'\t')
+        angle = 0
+        length = 0
+        newRadialDistance = lineNumber[i]
+        for j in np.arange(0, totalTravelTime[i], step):
+            angle += step * vPhiCalc(newRadialDistance) *np.pi/180
+            newRadialDistance += step * creating2DProfiles.radialVelocityFunc(newRadialDistance, speciesList, speciesMass)/71492e3
+            x.append(newRadialDistance * np.cos(angle))
+            y.append(newRadialDistance * np.sin(angle))
+            if len(x) > 1:
+                length += np.sqrt((x[-1]-x[-2])**2+(y[-1]-y[-2])**2)
+        plt.plot(x, y, color='yellow', linewidth=4)
+        file.write(str(round(totalTravelTime[i], 2))+'\t'+str(round(newRadialDistance-lineNumber[i], 2))+'\t'+str(round(angle*180/np.pi, 2))+'\t'+str(round(length, 2))+'\n')
     # plt.tick_params(right=True, which='both', labelsize=18)
     # plt.xlabel(r'x (R$_J$)', size=18)
     # plt.ylabel(r'y (R$_J$)', size=18)
@@ -83,7 +128,16 @@ def orbitalTraces(path):
     plt.tight_layout()
     # plt.legend(fontsize=18)
     # plt.show()
-    plt.savefig('Figures/orbitalTrace.png', transparent=True)
+    plt.savefig('Figures/latestOrbitalTrace.png', transparent=True)
+
+def angleTravelledThrough(path):
+    lineNumber, tNorth, ftNorth, tSouth, ftSouth, fD = np.loadtxt(path, delimiter='\t', unpack=True)
+    totalTravelTime = (tNorth + tSouth)
+    step = 1
+    angle = 0
+    for j in np.arange(0, totalTravelTime, step):
+        angle += step * vPhiCalc(lineNumber)
+    return angle
 
 def plotMultiplePhis(directory):
 
@@ -163,6 +217,7 @@ def plotCorotation(path):
 
     # Making the 3D grid for the magnetic field
     BGrid = griddata((radius, z), np.log10(B), (xtest, ztest))
+    outputradius, outputdensity = [], []
 
     NGrid = griddata((radius[corotationMask], z[corotationMask]), np.log10(rho[corotationMask]), (xtest, ztest))
     notNGrid = griddata((radius[corotationBackwardsMask], z[corotationBackwardsMask]), np.log10(rho[corotationBackwardsMask]), (xtest, ztest))
@@ -172,7 +227,13 @@ def plotCorotation(path):
     # AlfvenGrid[mask] = np.nan
     #
     RadialGrid = griddata((radius, z), np.log10(radialVelocity), (xtest, ztest))
-    #RadialGrid[mask] = np.nan
+    # RadialGrid[mask] = np.nan
+
+    file = open('equatorialValues.txt', 'w+')
+    equator = int((0 - np.amin(z)) / step)
+    for rtest in np.arange(6, 80):
+        arrayNumber = int((rtest - minR) / step)
+        file.write(str(rtest)+'\t'+str(BGrid[equator, arrayNumber])+'\n')
 
     # AlfvenPointGrid = griddata((radius, z), alfvenPointCheck, (xtest, ztest))
     # AlfvenPointGrid[mask] = np.nan
@@ -193,19 +254,19 @@ def plotCorotation(path):
     # plt.yticks(size=18)
     # plt.tight_layout()
     #
-    plt.figure()
-    plt.rcParams['xtick.labelsize'] = 18
-    plt.rcParams['ytick.labelsize'] = 18
-    heatmap = plt.contourf(xtest, ztest, BGrid, cmap=plt.cm.get_cmap('gist_rainbow'), levels=30, alpha=0.4)
-    clb = plt.colorbar(heatmap)
-    clb.ax.set_title('B$_n$ $\log$(nT)', fontsize=18)
-    plt.plot(radius2, z2, '--k')
-    plt.xlabel('r $(R_J)$', fontsize=18)
-    plt.ylabel('z $(R_J)$', fontsize=18)
-    plt.xticks(size=18)
-    plt.yticks(size=18)
-    plt.xlim(minR)
-    plt.tight_layout()
+    # plt.figure()
+    # plt.rcParams['xtick.labelsize'] = 18
+    # plt.rcParams['ytick.labelsize'] = 18
+    # heatmap = plt.contourf(xtest, ztest, BGrid, cmap=plt.cm.get_cmap('gist_rainbow'), levels=30, alpha=0.4)
+    # clb = plt.colorbar(heatmap)
+    # clb.ax.set_title('B$_n$ $\log$(nT)', fontsize=18)
+    # plt.plot(radius2, z2, '--k')
+    # plt.xlabel('r $(R_J)$', fontsize=18)
+    # plt.ylabel('z $(R_J)$', fontsize=18)
+    # plt.xticks(size=18)
+    # plt.yticks(size=18)
+    # plt.xlim(minR)
+    # plt.tight_layout()
     # #
     # plt.figure()
     # heatmap = plt.contourf(xtest, ztest, NGrid, cmap=plt.cm.get_cmap('gist_rainbow'), alpha=0.4)
@@ -237,9 +298,11 @@ def plotCorotation(path):
     plt.ylabel('z $(R_J)$', fontsize=18)
     plt.xticks(size=18)
     plt.yticks(size=18)
-    ax.xaxis.set_major_locator(tick.MultipleLocator(25))
+    ax.tick_params(axis='both', which='major', size=6)
+    ax.tick_params(axis='both', which='minor', size=4)
+    ax.xaxis.set_major_locator(tick.MultipleLocator(10))
     ax.xaxis.set_minor_locator(tick.MultipleLocator(5))
-    ax.yaxis.set_major_locator(tick.MultipleLocator(25))
+    ax.yaxis.set_major_locator(tick.MultipleLocator(10))
     ax.yaxis.set_minor_locator(tick.MultipleLocator(5))
     ax.tick_params(right=True, which='both', labelsize=18)
     plt.xlim(minR)
@@ -258,11 +321,17 @@ def plotCorotation(path):
     clb = plt.colorbar(heatmap)
     plt.plot(radius2, z2, '--k', alpha=0.6)
     clb.ax.set_title(r'$\log$(ms$^{-1}$)', fontsize=18)
-    plt.title('Alfven V', fontsize=18, wrap=True)
+    plt.title('Alfvén Velocity', fontsize=18, wrap=True)
     plt.xlabel('Radius $(R_J)$', fontsize=18)
     plt.ylabel('z $(R_J)$', fontsize=18)
     plt.xticks(size=18)
     plt.yticks(size=18)
+    ax.tick_params(axis='both', which='major', size=6)
+    ax.tick_params(axis='both', which='minor', size=4)
+    ax.xaxis.set_major_locator(tick.MultipleLocator(10))
+    ax.xaxis.set_minor_locator(tick.MultipleLocator(5))
+    ax.yaxis.set_major_locator(tick.MultipleLocator(10))
+    ax.yaxis.set_minor_locator(tick.MultipleLocator(5))
     plt.xlim(minR)
 
     ax = plt.subplot(122)
@@ -272,11 +341,17 @@ def plotCorotation(path):
     clb = plt.colorbar(heatmap)
     plt.plot(radius2, z2, '--k', alpha=0.6)
     clb.ax.set_title(r'$\log$(ms$^{-1}$)', fontsize=18)
-    plt.title('Radial V', fontsize=18, wrap=True)
+    plt.title('Radial Velocity', fontsize=18, wrap=True)
     plt.xlabel('Radius $(R_J)$', fontsize=18)
     plt.ylabel('z $(R_J)$', fontsize=18)
     plt.xticks(size=18)
     plt.yticks(size=18)
+    ax.tick_params(axis='both', which='major', size=6)
+    ax.tick_params(axis='both', which='minor', size=4)
+    ax.xaxis.set_major_locator(tick.MultipleLocator(10))
+    ax.xaxis.set_minor_locator(tick.MultipleLocator(5))
+    ax.yaxis.set_major_locator(tick.MultipleLocator(10))
+    ax.yaxis.set_minor_locator(tick.MultipleLocator(5))
     plt.xlim(minR)
     plt.tight_layout()
 
