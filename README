@@ -1,8 +1,6 @@
-Listed are the datasets and code required to create the plots
+Listed is code required to create the plots
 
-Figure	Code	Data file	Additional steps
-1	creating2DProfiles, PlotFieldLines	alfvenCheck.txt	
-2	creating2DProfiles, PlotFieldLines	alfvenCheck.txt	Overlay in an image editor
-3	creating2DProfiles, PlotFieldLines	alfvenTravelTimesfor6.00to80.00atPhi1.95.txt, orbitalAngle.txt	Overlay in an image editor
-
-The master programme was used to run other code and select files. 
+Figure	Code
+1	creating2DProfiles, then Plotting2DProfiles
+2	creating2DProfiles, then Plotting2DProfiles lines 175 to 186 (uncommented), then overlay in an image editor
+3	Run masterProgram option 2 from 6 to 100 at phi1.95, then option 6 over the folder created, then option 7 referencing alfvenTravelTimesfor6.00to100.00atPhi1.95.txt, then overlay in an image editor
